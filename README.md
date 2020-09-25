@@ -14,3 +14,29 @@ The simulator consists of several parts:
 4. A html frontend to receive and visualize this data
 
 The connection between frontend end and http server is implemented via socket.io, so communication might be bidirectional, which allows for simulating sensors as well.
+
+## Installation
+
+Install node.js, if not already installed:
+
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+
+Then, install the robot software:
+
+    git clone https://github.com/jschirrmacher/coon-chaser.git
+    cd coon-chaser
+    npm i  // for production, add `--production`
+
+## Start simulator
+
+To run the simulator software type this command:
+
+    npm run start-dev
+
+Then, start a browser and open http://localhost:10000
+
+## Start production
+
+To run the production version which doesn't use the simulator, but the actual GPIO run:
+
+    npm start
