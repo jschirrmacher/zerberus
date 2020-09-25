@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Robot Simulator</title>
+    <style>
+      td {
+        border: 1px solid grey;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Connecting to server...</h1>
+
+    <table>
+      <tr><th>PIN</th><th>Value</th></tr>
+      <tr><td>1</td><td id="gpio-1">0</td></tr>
+      <tr><td>2</td><td id="gpio-2">0</td></tr>
+      <tr><td>3</td><td id="gpio-3">0</td></tr>
+      <tr><td>4</td><td id="gpio-4">0</td></tr>
+      <tr><td>5</td><td id="gpio-5">0</td></tr>
+      <tr><td>6</td><td id="gpio-6">0</td></tr>
+      <tr><td>7</td><td id="gpio-7">0</td></tr>
+      <tr><td>8</td><td id="gpio-8">0</td></tr>
+      <tr><td>9</td><td id="gpio-9">0</td></tr>
+      <tr><td>10</td><td id="gpio-10">0</td></tr>
+    </table>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
