@@ -2,6 +2,8 @@ import express from 'express'
 import path from 'path'
 import http from 'http'
 import IO from 'socket.io'
+import gpio from './gpioRouter'
+import gpioRouter from './gpioRouter'
 
 const port = process.env.port || 10000
 const logger = console
@@ -26,14 +28,11 @@ app.use((req, res, next) => {
 
 app.use('/', express.static(path.resolve(__dirname, '..', 'frontend')))
 
-app.use('/gpio/:pin/:value', (req, res) => {
-  io.emit('gpio', req.params)
-  res.json({ ok: true })
-})
+app.use(gpioRouter(io))
 
 app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
   logger.error(err)
-  res.status(500).json({error: err.toString()})
+  res.status(err.httpStatus || 500).json({error: err.toString()})
 })
 
 server.listen(port, () => logger.info(`Running on http://localhost:${port}`))

@@ -1,0 +1,25 @@
+#gpio {
+  border: 2px solid black;
+}
+#gpio td {
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 14px;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+#gpio .power-5v {
+  background-color: red;
+}
+#gpio .power-3-3v {
+  background-color: orange;
+}
+#gpio .gnd {
+  background-color: #aaaaaa;
+}
+#gpio .on {
+  background-color: lightgreen;
+}
