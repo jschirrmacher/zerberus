@@ -40,3 +40,13 @@ Then, start a browser and open http://localhost:10000
 To run the production version which doesn't use the simulator, but the actual GPIO run:
 
     npm start
+
+## Try simulator
+
+You can try the simulator by calling it's REST API like this (in a separate browser tab), for example by switching on and off the RX0 pin:
+
+    http://localhost:10000/gpio/RX0/1
+
+and
+
+    http://localhost:10000/gpio/RX0/0

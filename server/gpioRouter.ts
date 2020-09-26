@@ -47,7 +47,7 @@ export default function (io: Server) {
 
   router.get('/gpio/:pin/:value', (req, res, next) => {
     const pin = gpioPins[req.params.pin]
-    const value = !!req.params.value
+    const value = !!+req.params.value
     if (pin) {
       io.emit('gpio', { pin, value })
       res.json({ ok: true })
