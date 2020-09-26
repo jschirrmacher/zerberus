@@ -12,7 +12,7 @@ setInterval(() => {
   if (dutyCycle > 255) {
     dutyCycle = 0;
   }
-}, 20)
+}, 200)
 
 let pulseWidth = 1000
 let increment = 100

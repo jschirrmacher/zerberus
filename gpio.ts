@@ -1,25 +1,24 @@
 import fetch from 'node-fetch'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
+const simulatorUrl = 'http://localhost:10000/gpio'
 
 class GpioSimulator {
   gpioPin: number
 
   constructor(gpio: number, options: Record<string, unknown> = {}) {
     this.gpioPin = gpio
+    if (options.mode) {
+      fetch(simulatorUrl + '/mode/' + gpio + '/' + options.mode, { method: 'POST' })
+    }
   }
 
-  static INPUT = 1
-  static OUTPUT = 2
-  static ALT0 = 3
-  static ALT1 = 4
-  static ALT2 = 5
-  static ALT3 = 6
-  static ALT4 = 7
-  static ALT5 = 8
+  static INPUT = 'IN'
+  static OUTPUT = 'OUT'
+  static PWM = 'PWM'
 
   pwmWrite(dutyCycle: number): GpioSimulator {
-    fetch('http://localhost:10000/gpio/' + this.gpioPin + '/')
+    fetch(simulatorUrl + '/pwm/' + this.gpioPin + '/' + dutyCycle, { method: 'POST' })
     return this
   }
 

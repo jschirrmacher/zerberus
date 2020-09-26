@@ -1,32 +1,38 @@
 #gpio {
   border: 2px solid black;
 }
-#gpio td {
+#gpio td span {
+  display: inline-block;
   box-sizing: border-box;
   width: 30px;
   height: 30px;
   padding: 0;
   font-size: 14px;
   text-align: center;
+  line-height: 2em;
   border: 2px solid black;
   border-radius: 50%;
 }
-#gpio .power-5v {
+#gpio .power-5v span {
   background-color: red;
 }
-#gpio .power-3-3v {
+#gpio .power-3-3v span {
   background-color: orange;
 }
-#gpio .gnd {
+#gpio .gnd span {
   background-color: #aaaaaa;
 }
-#gpio .on {
+#gpio .on span {
   background-color: lightgreen;
 }
 #gpio td:first-of-type:before,
-#gpio td:first-of-type:after {
+#gpio td:last-of-type:after {
   content: ' ';
-  width: 30px;
+  width: 20px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
 }
 #gpio td:first-of-type.mode-in:before,
 #gpio td:last-of-type.mode-out:after {
@@ -35,4 +41,8 @@
 #gpio td:last-of-type.mode-in:after,
 #gpio td:first-of-type.mode-out:before {
   content: '<';
+}
+#gpio td:last-of-type.mode-pwm:after,
+#gpio td:first-of-type.mode-pwm:before {
+  content: '~';
 }

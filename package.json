@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Software for a robot to chase racoons in your garden",
   "scripts": {
-    "start": "NODE_ENV=production ts-node robot.ts",
-    "start-dev": "ts-node server",
+    "start": "NODE_ENV=production ts-node robot",
+    "simulator:start": "ts-node server",
+    "simulator:robot": "ts-node robot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

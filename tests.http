@@ -5,4 +5,4 @@ POST http://localhost:10000/gpio/RXD/0
 
 
 ###
-POST http://localhost:10000/gpio/mode/RXD/OUT
+POST http://localhost:10000/gpio/mode/TXD/PWM
