@@ -43,10 +43,15 @@ To run the production version which doesn't use the simulator, but the actual GP
 
 ## Try simulator
 
-You can try the simulator by calling it's REST API like this (in a separate browser tab), for example by switching on and off the RX0 pin:
+You can try the simulator by calling it's REST API like this (in a separate browser tab), for example by switching on and off the RXD pin:
 
-    http://localhost:10000/gpio/RX0/1
+    POST http://localhost:10000/gpio/RXD/1
 
 and
 
-    http://localhost:10000/gpio/RX0/0
+    POST http://localhost:10000/gpio/RXD/0
+
+## Supported functions
+
+- Mode: POST http://localhost:10000/gpio/mode/:pin/:mode - currently only "IN" and "OUT" supported
+- Write: POST http://localhost:10000/gpio/:pin/:value - values can be "0" or "1"

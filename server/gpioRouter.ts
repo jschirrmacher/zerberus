@@ -1,4 +1,4 @@
-import { Router } from "express"
+import { NextFunction, Request, Response, Router } from "express"
 import { Server } from "socket.io"
 
 const gpioPins = {
@@ -8,9 +8,9 @@ const gpioPins = {
   3: 5,
   GPCLK0: 7,
   4: 7,
-  TX0: 8,
+  TXD: 8,
   14: 8,
-  RX0: 10,
+  RXD: 10,
   15: 10,
   17: 11,
   18: 12,
@@ -42,19 +42,53 @@ const gpioPins = {
   21: 40
 }
 
+const gpioModes = ['IN', 'OUT', 'PWM']
+
 export default function (io: Server) {
   const router = Router()
 
-  router.get('/gpio/:pin/:value', (req, res, next) => {
-    const pin = gpioPins[req.params.pin]
-    const value = !!+req.params.value
-    if (pin) {
-      io.emit('gpio', { pin, value })
-      res.json({ ok: true })
-    } else {
-      next({ httpStatus: 400, error: 'Unknown GPIO pin' })
+  function jsonResult(func: (req: Request) => void) {
+    return function (req: Request, res: Response, next: NextFunction) {
+      try {
+        const result = func(req)
+        res.json(result)
+      } catch (error) {
+        next(error)
+      }
     }
-  })
+  }
+
+  function assertKnownPin(pinFromRequest: string): number {
+    const pin = gpioPins[pinFromRequest]
+    if (!pin) {
+      throw { httpStatus: 400, error: 'Unknown GPIO pin' }
+    }
+    return pin
+  }
+
+  router.post('/gpio/mode/:pin/:value', jsonResult((req: Request) => {
+    const pin = assertKnownPin(req.params.pin)
+    if (!gpioModes.includes(req.params.value)) {
+      throw { httpStatus: 400, error: 'Unknown GPIO mode' }
+    }
+    io.emit('gpio-mode', { pin, mode: req.params.value })
+    return { ok: true }
+  }))
+
+  router.post('/gpio/:pin/:value', jsonResult((req: Request) => {
+    const pin = assertKnownPin(req.params.pin)
+    const value = !!+req.params.value
+    io.emit('gpio-write', { pin, value })
+    return { ok: true }
+  }))
+
+  router.get('/gpio/:pin', jsonResult((req: Request) => {
+
+  }))
+
+  router.post('/gpio/pwm/:pin/:value', jsonResult((req: Request) => {
+
+  }))
 
   return router
 }

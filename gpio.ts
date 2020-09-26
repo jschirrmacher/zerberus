@@ -1,8 +1,12 @@
+import fetch from 'node-fetch'
+
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
 class GpioSimulator {
-  constructor(gpio: number, options: Record<string, unknown> = {}) {
+  gpioPin: number
 
+  constructor(gpio: number, options: Record<string, unknown> = {}) {
+    this.gpioPin = gpio
   }
 
   static INPUT = 1
@@ -13,6 +17,11 @@ class GpioSimulator {
   static ALT3 = 6
   static ALT4 = 7
   static ALT5 = 8
+
+  pwmWrite(dutyCycle: number): GpioSimulator {
+    fetch('http://localhost:10000/gpio/' + this.gpioPin + '/')
+    return this
+  }
 
   servoWrite(pulseWidth: number): GpioSimulator {
     return this

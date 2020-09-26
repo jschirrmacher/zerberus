@@ -23,3 +23,16 @@
 #gpio .on {
   background-color: lightgreen;
 }
+#gpio td:first-of-type:before,
+#gpio td:first-of-type:after {
+  content: ' ';
+  width: 30px;
+}
+#gpio td:first-of-type.mode-in:before,
+#gpio td:last-of-type.mode-out:after {
+  content: '>';
+}
+#gpio td:last-of-type.mode-in:after,
+#gpio td:first-of-type.mode-out:before {
+  content: '<';
+}

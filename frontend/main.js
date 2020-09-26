@@ -8,7 +8,15 @@
     })
   })
 
-  socket.on('gpio', msg => {
+  socket.on('gpio-mode', msg => {
+    const el = document.querySelector('#gpio #pin-' + msg.pin)
+    if (el) {
+      el.classList = Array.from(el.classList).filter(c => !c.match(/^mode-/))
+      el.classList.add('mode-' + msg.mode.toLowerCase())
+    }
+  })
+
+  socket.on('gpio-write', msg => {
     const el = document.querySelector('#gpio #pin-' + msg.pin)
     if (el) {
       el.classList.toggle('on', !!msg.value)

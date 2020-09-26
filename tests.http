@@ -1,0 +1,8 @@
+POST http://localhost:10000/gpio/TXD/1
+
+###
+POST http://localhost:10000/gpio/RXD/0
+
+
+###
+POST http://localhost:10000/gpio/mode/RXD/OUT
