@@ -1,6 +1,11 @@
-POST http://localhost:10000/gpio/TXD/1
+### Switch on LED
+POST http://localhost:10000/gpio/19/1
 
-###
+### Switch off LED
+POST http://localhost:10000/gpio/19/0
+
+
+### 
 POST http://localhost:10000/gpio/RXD/0
 
 

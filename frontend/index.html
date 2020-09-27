@@ -7,28 +7,55 @@
   <body>
     <h1>Connecting to server...</h1>
 
-    <table id="gpio">
-      <tr><td class="power-3-3v"><span>1</span></td>  <td class="power-5v"><span>2</span></td></tr>
-      <tr><td id="pin-3"><span>3</span></td>          <td class="power-5v"><span>4</span></td></tr>
-      <tr><td id="pin-5"><span>5</span></td>          <td class="gnd"><span>6</span></td></tr>
-      <tr><td id="pin-7"><span>7</span></td>          <td id="pin-8"><span>8</span></td></tr>
-      <tr><td class="gnd"><span>9</span></td>         <td id="pin-10"><span>10</span></td></tr>
-      <tr><td id="pin-11"><span>11</span></td>        <td id="pin-12"><span>12</span></td></tr>
-      <tr><td id="pin-13"><span>13</span></td>        <td class="gnd"><span>14</span></td></tr>
-      <tr><td id="pin-15"><span>15</span></td>        <td id="pin-16"><span>16</span></td></tr>
-      <tr><td class="power-3-3v"><span>17</span></td> <td id="pin-18"><span>18</span></td></tr>
-      <tr><td id="pin-19"><span>19</span></td>        <td class="gnd"><span>20</span></td></tr>
-      <tr><td id="pin-21"><span>21</span></td>        <td id="pin-22"><span>22</span></td></tr>
-      <tr><td id="pin-23"><span>23</span></td>        <td id="pin-24"><span>24</span></td></tr>
-      <tr><td class="gnd"><span>25</span></td>        <td id="pin-26"><span>26</span></td></tr>
-      <tr><td id="pin-27"><span>27</span></td>        <td id="pin-28"><span>28</span></td></tr>
-      <tr><td id="pin-29"><span>29</span></td>        <td class="gnd"><span>30</span></td></tr>
-      <tr><td id="pin-31"><span>31</span></td>        <td id="pin-32"><span>32</span></td></tr>
-      <tr><td id="pin-33"><span>33</span></td>        <td class="gnd"><span>34</span></td></tr>
-      <tr><td id="pin-35"><span>35</span></td>        <td id="pin-36"><span>36</span></td></tr>
-      <tr><td id="pin-37"><span>37</span></td>        <td id="pin-38"><span>38</span></td></tr>
-      <tr><td class="gnd"><span>39</span></td>        <td id="pin-40"><span>40</span></td></tr>
-    </table>
+    <div class="board">
+      <div class="unit">
+        <table id="gpio">
+          <tr><td class="power-3-3v"><span>1</span></td>  <td class="power-5v"><span>2</span></td></tr>
+          <tr><td id="pin-3"><span>3</span></td>          <td class="power-5v"><span>4</span></td></tr>
+          <tr><td id="pin-5"><span>5</span></td>          <td class="gnd"><span>6</span></td></tr>
+          <tr><td id="pin-7"><span>7</span></td>          <td id="pin-8"><span>8</span></td></tr>
+          <tr><td class="gnd"><span>9</span></td>         <td id="pin-10"><span>10</span></td></tr>
+          <tr><td id="pin-11"><span>11</span></td>        <td id="pin-12"><span>12</span></td></tr>
+          <tr><td id="pin-13"><span>13</span></td>        <td class="gnd"><span>14</span></td></tr>
+          <tr><td id="pin-15"><span>15</span></td>        <td id="pin-16"><span>16</span></td></tr>
+          <tr><td class="power-3-3v"><span>17</span></td> <td id="pin-18"><span>18</span></td></tr>
+          <tr><td id="pin-19"><span>19</span></td>        <td class="gnd"><span>20</span></td></tr>
+          <tr><td id="pin-21"><span>21</span></td>        <td id="pin-22"><span>22</span></td></tr>
+          <tr><td id="pin-23"><span>23</span></td>        <td id="pin-24"><span>24</span></td></tr>
+          <tr><td class="gnd"><span>25</span></td>        <td id="pin-26"><span>26</span></td></tr>
+          <tr><td id="pin-27"><span>27</span></td>        <td id="pin-28"><span>28</span></td></tr>
+          <tr><td id="pin-29"><span>29</span></td>        <td class="gnd"><span>30</span></td></tr>
+          <tr><td id="pin-31"><span>31</span></td>        <td id="pin-32"><span>32</span></td></tr>
+          <tr><td id="pin-33"><span>33</span></td>        <td class="gnd"><span>34</span></td></tr>
+          <tr><td id="pin-35"><span>35</span></td>        <td id="pin-36"><span>36</span></td></tr>
+          <tr><td id="pin-37"><span>37</span></td>        <td id="pin-38"><span>38</span></td></tr>
+          <tr><td class="gnd"><span>39</span></td>        <td id="pin-40"><span>40</span></td></tr>
+        </table>
+      </div>
+
+      <div class="unit">
+        <div class="led" data-connected="pin-35">
+          <div class="shadow"></div>
+        </div>
+      </div>
+
+      <div class="unit">
+        <div class="motor" data-connected="pin-3">
+          <img src="wheel.svg">
+        </div>
+      </div>
+
+      <div class="unit">
+        <div class="motor" data-connected="pin-5">
+          <img src="wheel.svg">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="credit">
+      <p>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</p>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>

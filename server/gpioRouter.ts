@@ -35,7 +35,7 @@ const gpioPins = {
   6: 31,
   12: 32,
   13: 33,
-  19: 25,
+  19: 35,
   16: 36,
   26: 37,
   20: 38,
@@ -87,7 +87,10 @@ export default function (io: Server) {
   }))
 
   router.post('/gpio/pwm/:pin/:value', jsonResult((req: Request) => {
-
+    const pin = assertKnownPin(req.params.pin)
+    const value = Math.min(255, Math.max(0, +req.params.value))
+    io.emit('gpio-pwm', { pin, value })
+    return { ok: true }
   }))
 
   return router
