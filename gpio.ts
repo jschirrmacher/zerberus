@@ -17,6 +17,11 @@ class GpioSimulator {
   static OUTPUT = 'OUT'
   static PWM = 'PWM'
 
+  write(value: number) {
+    fetch(simulatorUrl + '/' + this.gpioPin + '/' + value, { method: 'POST' })
+    return this
+  }
+
   pwmWrite(dutyCycle: number): GpioSimulator {
     fetch(simulatorUrl + '/pwm/' + this.gpioPin + '/' + dutyCycle, { method: 'POST' })
     return this

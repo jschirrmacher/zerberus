@@ -56,3 +56,5 @@ If you use Visual Studio code, you can open the file 'tests.http' and click some
 ## Writing a robot program
 
 Take a look at the `/robot` folder. There you find the current state of our robot control program (not much yet). You can try yourself by executing `npm run simulator:robot`. On an actual Rasperry Pi, you can run `npm start` to let it work with the real GPIO.
+
+The LED will bling every half second, corresponding to GPIO pin #35 (which is port 19).

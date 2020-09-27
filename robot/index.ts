@@ -1,29 +1,36 @@
 const Gpio = require('../gpio')
 
-const led = new Gpio(17, {mode: Gpio.OUTPUT})
+const led = new Gpio(19, {mode: Gpio.OUTPUT})
 const motor = new Gpio(10, {mode: Gpio.OUTPUT})
 
-let dutyCycle = 0
-
+let value = 0
 setInterval(() => {
-  led.pwmWrite(dutyCycle);
+  led.write(value)
+  value = 1 - value
+}, 500)
 
-  dutyCycle += 5;
-  if (dutyCycle > 255) {
-    dutyCycle = 0;
-  }
-}, 200)
 
-let pulseWidth = 1000
-let increment = 100
+// let dutyCycle = 0
 
-setInterval(() => {
-  motor.servoWrite(pulseWidth)
+// setInterval(() => {
+//   led.pwmWrite(dutyCycle);
 
-  pulseWidth += increment
-  if (pulseWidth >= 2000) {
-    increment = -100
-  } else if (pulseWidth <= 1000) {
-    increment = 100
-  }
-}, 1000)
+//   dutyCycle += 5;
+//   if (dutyCycle > 255) {
+//     dutyCycle = 0;
+//   }
+// }, 200)
+
+// let pulseWidth = 1000
+// let increment = 100
+
+// setInterval(() => {
+//   motor.servoWrite(pulseWidth)
+
+//   pulseWidth += increment
+//   if (pulseWidth >= 2000) {
+//     increment = -100
+//   } else if (pulseWidth <= 1000) {
+//     increment = 100
+//   }
+// }, 1000)
