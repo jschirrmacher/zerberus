@@ -39,16 +39,34 @@
 
   function connectMotors() {
     document.querySelectorAll('.motor').forEach(motor => {
-      motor.angle = 0
-      const pin = document.querySelector('#' + motor.dataset.connected)
-      const wheel = motor.querySelector('img')
-      pin.onValue = value => {
+      function resetInterval() {
         motor.interval && clearInterval(motor.interval)
-        motor.interval = setInterval(() => {
-          angle = (angle + value * 10) % 360
-          wheel.style.transform = `rotate(${angle}deg)`
-        }, 50)
+        if (motor.control.in1 !== motor.control.in2) {
+          const direction = motor.control.in1 ? 1 : -1
+          const value = direction * 10
+          motor.interval = setInterval(() => {
+            motor.angle = (motor.angle + value) % 360
+            motor.wheel.style.transform = `rotate(${motor.angle}deg)`
+          }, 50)
+        }
       }
+  
+      function setValueHandler(name) {
+        return function (value) {
+          if (motor.control[name] !== value) {
+            motor.control[name] = value
+            resetInterval()
+          }
+        }
+      }
+  
+      motor.control = { in1: false, in2: false, ena: false }
+      motor.angle = 0
+      motor.wheel = motor.querySelector('img')
+      const [ in1, in2, ena ] = motor.dataset.connected.split(',')
+      document.querySelector('#' + in1).onValue = setValueHandler('in1')
+      document.querySelector('#' + in2).onValue = setValueHandler('in2')
+      document.querySelector('#' + ena).onValue = setValueHandler('ena')
     })
   }
 })()
