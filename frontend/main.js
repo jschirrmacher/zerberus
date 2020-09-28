@@ -5,6 +5,7 @@
     document.querySelector('h1').innerText = msg
     document.querySelectorAll('#gpio td').forEach(pin => {
       pin.classList.toggle('on', false)
+      pin.classList = Array.from(pin.classList).filter(c => !c.match(/^mode-/))
     })
   })
 
@@ -26,6 +27,15 @@
     }
   })
 
+  socket.on('gpio-pwm', msg => {
+    const el = document.querySelector('#gpio #pin-' + msg.pin)
+    if (el) {
+      if (el.onValue) {
+        el.onValue(+msg.value)
+      }
+    }
+  })
+
   connectLEDs()
   connectMotors()
 
@@ -43,7 +53,7 @@
         motor.interval && clearInterval(motor.interval)
         if (motor.control.in1 !== motor.control.in2) {
           const direction = motor.control.in1 ? 1 : -1
-          const value = direction * 10
+          const value = direction * motor.control.ena / 10
           motor.interval = setInterval(() => {
             motor.angle = (motor.angle + value) % 360
             motor.wheel.style.transform = `rotate(${motor.angle}deg)`
