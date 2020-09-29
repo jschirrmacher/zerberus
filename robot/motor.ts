@@ -25,12 +25,12 @@ export default function (in1: number, in2: number, ena: number): Motor {
       function sendSpeed(motor: Motor, speed: number) {
         motor.speed = speed
         if (motor.speed < 0 && motor.forward) {
-          motor.in1.write(1)
-          motor.in2.write(0)
+          motor.in1.digitalWrite(1)
+          motor.in2.digitalWrite(0)
           motor.forward = false
         } else if (motor.speed > 0 && !motor.forward) {
-          motor.in1.write(0)
-          motor.in2.write(1)
+          motor.in1.digitalWrite(0)
+          motor.in2.digitalWrite(1)
           motor.forward = true
         }
         motor.ena.pwmWrite(speed)
@@ -45,14 +45,16 @@ export default function (in1: number, in2: number, ena: number): Motor {
     },
     
     stop() {
-      this.in1.write(0)
-      this.in2.write(0)
+      this.ena.pwmWrite(0)
+      this.in1.digitalWrite(0)
+      this.in2.digitalWrite(0)
       this.break = true
     },
 
     float() {
-      this.in1.write(1)
-      this.in2.write(1)
+      this.ena.pwmWrite(0)
+      this.in1.digitalWrite(1)
+      this.in2.digitalWrite(1)
       this.break = false
     }
   }
