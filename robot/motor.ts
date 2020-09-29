@@ -7,7 +7,7 @@ type Motor = {
   speed: number,
   forward: boolean,
   break: boolean,
-  setSpeed: (speed: number) => void,
+  accelerate: (speed: number) => void,
   stop: () => void,
   float: () => void,
 }
@@ -18,10 +18,10 @@ export default function (in1: number, in2: number, ena: number): Motor {
     in2: new Gpio(in2, { mode: Gpio.OUTPUT }),
     ena: new Gpio(ena, { mode: Gpio.PWM }),
     speed: 0,
-    forward: true,
+    forward: false,
     break: false,
 
-    setSpeed(speed = 100) {
+    accelerate(speed = 100) {
       function sendSpeed(motor: Motor, speed: number) {
         motor.speed = speed
         if (motor.speed < 0 && motor.forward) {
@@ -38,8 +38,9 @@ export default function (in1: number, in2: number, ena: number): Motor {
 
       this.break = false
       if (speed !== this.speed) {
-        sendSpeed(this, this.speed + Math.sign(speed - this.speed))
-        setTimeout(() => this.setSpeed.bind(this)(speed), 20)
+        const diff = Math.min(5, Math.abs(speed - this.speed))
+        sendSpeed(this, this.speed + Math.sign(speed - this.speed) * diff)
+        setTimeout(() => this.accelerate.bind(this)(speed), 100)
       }
     },
     
