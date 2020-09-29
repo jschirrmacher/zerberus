@@ -17,8 +17,8 @@ async function wait(millseconds: number) {
 }
 
 (async () => {
-  motor1.accelerate(10)
-  await wait(1000)
+  motor1.accelerate(20)
+  await wait(10000)
   motor1.accelerate(0)
   motor1.stop()
 })()
