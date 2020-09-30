@@ -19,28 +19,16 @@ async function wait(millseconds: number) {
 }
 
 setInterval(async () => {
-  car.accelerate(100)
+  car.accelerate(50)
   await wait(1000)
   car.accelerate(0)
   await wait(1000)
-  car.accelerate(-100)
+  car.accelerate(-50)
   await wait(1000)
   car.accelerate(0)
-  car.stop()
-}, 3000)
+}, 4000)
 
-// setInterval(async () => {
-//   motor1.accelerate(100)
-//   await wait(1000)
-//   motor2.accelerate(50)
-//   await wait(1000)
-//   motor1.float()
-//   motor2.float()
-//   await wait(1000)
-//   motor1.accelerate(-50)
-//   motor2.accelerate(-100)
-//   await wait(1000)
-//   motor2.stop()
-//   await wait(1000)
-//   motor1.stop()
-// }, 6000)
+process.on('SIGINT', function() {
+  console.log("Caught interrupt signal");
+  car.stop()
+})
