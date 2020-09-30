@@ -1,6 +1,6 @@
 const Gpio = require('../gpio')
 
-type Motor = {
+export type Motor = {
   in1: typeof Gpio,
   in2: typeof Gpio,
   ena: typeof Gpio,
