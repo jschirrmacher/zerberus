@@ -33,12 +33,12 @@ export default function (in1: number, in2: number, ena: number): Motor {
           motor.in2.digitalWrite(0)
           motor.forward = true
         }
-        motor.ena.pwmWrite(Math.abs(speed))
+        motor.ena.pwmWrite(Math.abs(speed) * 2.55)
       }
 
       this.break = false
       if (speed !== this.speed) {
-        const diff = Math.min(5, Math.abs(speed - this.speed))
+        const diff = Math.min(20, Math.abs(speed - this.speed))
         sendSpeed(this, this.speed + Math.sign(speed - this.speed) * diff)
         setTimeout(() => this.accelerate.bind(this)(speed), 100)
       }
