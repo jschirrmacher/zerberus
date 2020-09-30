@@ -33,7 +33,7 @@ export default function (in1: number, in2: number, ena: number): Motor {
           motor.in2.digitalWrite(0)
           motor.forward = true
         }
-        motor.ena.pwmWrite(speed)
+        motor.ena.pwmWrite(Math.abs(speed))
       }
 
       this.break = false
