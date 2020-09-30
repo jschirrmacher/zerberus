@@ -18,7 +18,7 @@ async function wait(millseconds: number) {
   return new Promise(resolve => setTimeout(resolve, millseconds))
 }
 
-setInterval(async () => {
+const loop = setInterval(async () => {
   car.accelerate(50)
   await wait(1000)
   car.accelerate(0)
@@ -29,6 +29,8 @@ setInterval(async () => {
 }, 4000)
 
 process.on('SIGINT', function() {
-  console.log("Caught interrupt signal");
+  console.log("Caught interrupt signal")
+  clearInterval(loop)
   car.stop()
+  process.exit
 })
