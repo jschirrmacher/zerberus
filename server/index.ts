@@ -2,7 +2,6 @@ import express from 'express'
 import path from 'path'
 import http from 'http'
 import IO from 'socket.io'
-import gpio from './gpioRouter'
 import gpioRouter from './gpioRouter'
 
 const port = process.env.port || 10000
