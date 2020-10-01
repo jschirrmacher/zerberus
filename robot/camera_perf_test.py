@@ -3,7 +3,7 @@ from pathlib import Path
 import time
 import os
 
-root_dir = "./../pictures/test/"
+root_dir = "./../pictures/all_images/"
 Path(root_dir).mkdir(parents=True, exist_ok=True)
 
 filelist = [ f for f in os.listdir(root_dir) ]
@@ -14,7 +14,7 @@ num = int(input("Number of images to take"))
 
 if __name__ == "__main__":
     camera = PiCamera()
-    camera.hflip = True
+    camera.vflip = True
     camera.exposure_mode = 'night'
     print("Taking a " + str(num) + " pictures to time how long it takes")
     start = time.time()
