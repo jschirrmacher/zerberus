@@ -11,12 +11,14 @@ async function wait(millseconds: number) {
 }
 
 async function loop() {
-  car.accelerate(-50)
+  console.log('starting loop')
+  car.accelerate(50)
   await wait(500)
   car.turn(0, Direction.left)
-  await wait(12000)
+  await wait(15000)
   car.stop()
-  setImmediate(loop)
+  console.log('end of loop')
+  // setImmediate(loop)
 }
 
 loop()
@@ -24,5 +26,5 @@ loop()
 process.on('SIGINT', function() {
   console.log("Caught interrupt signal")
   car.stop()
-  process.exit
+  process.exit()
 })
