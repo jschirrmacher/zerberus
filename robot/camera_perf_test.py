@@ -18,10 +18,11 @@ if __name__ == "__main__":
     camera.exposure_mode = 'night'
     print("Taking a " + str(num) + " pictures to time how long it takes")
     start = time.time()
-    
-    for i in range(num):
-        camera.capture(root_dir + str(i) + ".png", use_video_port=True)
-        time.sleep(300)
+    c = 0
+
+    for filename in camera.capture_continuous('{counter:03d}.jpg'):
+        c += 1
+        time.sleep(1)
 
     end = time.time()
     print(num, " pictures: ", end - start)
