@@ -13,12 +13,15 @@ for f in filelist:
 num = int(input("Number of images to take"))
 
 if __name__ == "__main__":
-    camera = PiCamera()
+    camera = PiCamera(use_video_port=True)
+    camera.hflip = True
+    camera.exposure_mode = 'night'
     print("Taking a " + str(num) + " pictures to time how long it takes")
     start = time.time()
     
     for i in range(num):
         camera.capture(root_dir + str(i) + ".png")
+        time.sleep(300)
 
     end = time.time()
     print(num, " pictures: ", end - start)
