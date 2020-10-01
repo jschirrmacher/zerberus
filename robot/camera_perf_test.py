@@ -15,6 +15,7 @@ num = int(input("Number of images to take"))
 if __name__ == "__main__":
     camera = PiCamera()
     camera.vflip = True
+    camera.hflip = True
     camera.exposure_mode = 'night'
     print("Taking a " + str(num) + " pictures to time how long it takes")
     start = time.time()
