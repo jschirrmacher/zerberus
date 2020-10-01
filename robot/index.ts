@@ -21,7 +21,7 @@ async function wait(millseconds: number) {
 const loop = setInterval(async () => {
   car.accelerate(50)
   await wait(500)
-  car.turn(100, Direction.left)
+  car.turn(0, Direction.left)
   await wait(3500)
   car.accelerate(0)
 }, 4000)
