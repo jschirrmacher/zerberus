@@ -1,11 +1,11 @@
 import { Motor } from './Motor'
 
 export enum Direction {
-  left = 0,
-  right = 1,
+  left = 'left',
+  right = 'right',
 }
 
-export default function (motor1: Motor, motor2: Motor) {
+export default function (motors: {left: Motor, right: Motor}) {
   return {
     /*
       Accelerate car to the given speed.
@@ -14,28 +14,31 @@ export default function (motor1: Motor, motor2: Motor) {
       The car only accelerated in a way, that battery and controller health is preserved.
     */
     accelerate(speed = 100) {
-      motor1.accelerate(speed)
-      motor2.accelerate(speed)
+      motors.left.accelerate(speed)
+      motors.right.accelerate(speed)
     },
 
     stop() {
-      motor1.stop()
-      motor2.stop()
+      motors.left.stop()
+      motors.right.stop()
     },
 
     float() {
-      motor1.float()
-      motor2.float()
+      motors.left.float()
+      motors.right.float()
     },
 
     /*
       Turn the car in the given direction.
-      The radius might be 0, which means that the car turns on its own axis.
-      This is done be let one side go forward in the current speed and the
-      other side go backwards in the same speed.
+      The radius is given as a percentage of the speed of the inner motor
+      in comparison to the outer motor. So, 0 means the inner motor doesn't
+      turn at all, while 100 lets both motors run at the same speed, and so
+      keeps the car going straight forward.
+      To turn in place, specify -100 as percentage.
     */
     turn(radius: number, direction: Direction) {
-
+      const currentSpeed = motors[direction].speed
+      motors[direction].accelerate(currentSpeed * radius / 100)
     },
   }
 }

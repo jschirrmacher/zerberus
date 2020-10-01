@@ -1,5 +1,5 @@
 import Motor from './Motor'
-import Car from './Car'
+import Car, { Direction } from './Car'
 const Gpio = require('../gpio')
 
 // const led = new Gpio(19, {mode: Gpio.OUTPUT})
@@ -12,7 +12,7 @@ const Gpio = require('../gpio')
 
 const motor1 = Motor(2, 3, 4)
 const motor2 = Motor(17, 27, 22)
-const car = Car(motor1, motor2)
+const car = Car({ left: motor1, right: motor2 })
 
 async function wait(millseconds: number) {
   return new Promise(resolve => setTimeout(resolve, millseconds))
@@ -20,11 +20,15 @@ async function wait(millseconds: number) {
 
 const loop = setInterval(async () => {
   car.accelerate(50)
-  await wait(1000)
+  await wait(500)
+  car.turn(50, Direction.left)
+  await wait(500)
   car.accelerate(0)
   await wait(1000)
   car.accelerate(-50)
-  await wait(1000)
+  await wait(500)
+  car.turn(50, Direction.right)
+  await wait(500)
   car.accelerate(0)
 }, 4000)
 
