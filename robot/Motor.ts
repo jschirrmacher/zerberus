@@ -24,11 +24,11 @@ export default function (in1: number, in2: number, ena: number): Motor {
     accelerate(speed = 100) {
       function sendSpeed(motor: Motor, speed: number) {
         motor.speed = speed
-        if (motor.speed < 0 && motor.forward) {
+        if (motor.speed <= 0 && motor.forward) {
           motor.in1.digitalWrite(0)
           motor.in2.digitalWrite(1)
           motor.forward = false
-        } else if (motor.speed > 0 && !motor.forward) {
+        } else if (motor.speed >= 0 && !motor.forward) {
           motor.in1.digitalWrite(1)
           motor.in2.digitalWrite(0)
           motor.forward = true
