@@ -19,12 +19,11 @@ async function wait(millseconds: number) {
 }
 
 const loop = setInterval(async () => {
-  car.accelerate(50)
-  await wait(500)
+  car.accelerate(-50)
   car.turn(0, Direction.left)
-  await wait(3500)
-  car.accelerate(0)
-}, 4000)
+  await wait(12000)
+  car.stop()
+}, 12000)
 
 process.on('SIGINT', function() {
   console.log("Caught interrupt signal")
