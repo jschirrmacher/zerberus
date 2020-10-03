@@ -5,7 +5,11 @@ export enum Direction {
   right = 'right',
 }
 
-async function wait(millseconds: number) {
+function otherDirection(direction: Direction): Direction {
+  return direction === Direction.left ? Direction.right : Direction.left
+}
+
+async function wait(millseconds: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, millseconds))
 }
 
@@ -37,10 +41,11 @@ export default function (motors: {left: Motor, right: Motor}) {
       If 'onTheSpot' is set true, the wheels will turn in different directions.
     */
     async turn(degrees: number, direction: Direction, onTheSpot = false) {
-      const currentSpeed = motors[direction].speed
-      motors[direction].accelerate(onTheSpot ? -currentSpeed : 0)
+      const motor = motors[otherDirection(direction)]
+      const currentSpeed = motor.speed
+      motor.accelerate(onTheSpot ? -currentSpeed : 0)
       await wait(18.5 * degrees)
-      motors[direction].accelerate(currentSpeed)
+      motor.accelerate(currentSpeed)
     },
   }
 }
