@@ -5,6 +5,10 @@ export enum Direction {
   right = 'right',
 }
 
+async function wait(millseconds: number) {
+  return new Promise(resolve => setTimeout(resolve, millseconds))
+}
+
 export default function (motors: {left: Motor, right: Motor}) {
   return {
     /*
@@ -29,16 +33,14 @@ export default function (motors: {left: Motor, right: Motor}) {
     },
 
     /*
-      Turn the car in the given direction.
-      The radius is given as a percentage of the speed of the inner motor
-      in comparison to the outer motor. So, 0 means the inner motor doesn't
-      turn at all, while 100 lets both motors run at the same speed, and so
-      keeps the car going straight forward.
-      To turn in place, specify -100 as percentage.
+      Turn the car in the given direction to a given degree.
+      If 'onTheSpot' is set true, the wheels will turn in different directions.
     */
-    turn(radius: number, direction: Direction) {
+    async turn(degrees: number, direction: Direction, onTheSpot = false) {
       const currentSpeed = motors[direction].speed
-      motors[direction].accelerate(currentSpeed * radius / 100)
+      motors[direction].accelerate(onTheSpot ? -currentSpeed : 0)
+      await wait(18.5 * degrees)
+      motors[direction].accelerate(currentSpeed)
     },
   }
 }
