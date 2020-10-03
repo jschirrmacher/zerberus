@@ -36,20 +36,18 @@ export default function (motors: {left: Motor, right: Motor}) {
     },
 
     /*
-      Turn the car in the given direction to a given degree.
+      Turn the car in the given direction to a given degree in a given speed.
       If 'onTheSpot' is set true, the wheels will turn in different directions.
     */
-    async turn(degrees: number, direction: Direction, onTheSpot = false) {
+    async turn(degrees: number, direction: Direction, speed: number, onTheSpot = false) {
       const motor = motors[otherDirection(direction)]
-      const currentSpeed = motor.speed
       if (onTheSpot) {
-        motor.float()
-        await motor.accelerate(-currentSpeed)
+        await motor.accelerate(-speed)
       } else {
         motor.float()
       }
       await wait(18.5 * degrees)
-      await motor.accelerate(currentSpeed)
+      await motor.accelerate(speed)
     },
   }
 }
