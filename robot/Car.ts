@@ -11,28 +11,29 @@ function otherDirection(direction: Direction): Direction {
 }
 
 export default function (motors: {left: Motor, right: Motor}) {
-  return {
+  const car = {
     /*
       Accelerate car to the given speed.
       The speed is specified as a percentage of the motor's max speed.
       Speed can also be negative, so that the car runs backwards.
       The car only accelerated in a way, that battery and controller health is preserved.
     */
-    async accelerate(speed: number) {
+    async accelerate(speed: number): Promise<void> {
       await Promise.all([
         motors.left.accelerate(speed),
         motors.right.accelerate(speed)
       ])
     },
 
-    async stop() {
-      motors.left.stop()
-      motors.right.stop()
-      await wait(100)
-      this.float()
+    async stop(): Promise<void> {
+      await Promise.all([
+        motors.left.stop(),
+        motors.right.stop()
+      ])
+      car.float()
     },
 
-    async float() {
+    float(): void {
       motors.left.float()
       motors.right.float()
     },
@@ -40,16 +41,20 @@ export default function (motors: {left: Motor, right: Motor}) {
     /*
       Turn the car in the given direction to a given degree in a given speed.
       If 'onTheSpot' is set true, the wheels will turn in different directions.
+      After turning, the motors are switched to floating.
     */
-    async turn(degrees: number, direction: Direction, speed: number, onTheSpot = false) {
+    async turn(degrees: number, direction: Direction, speed: number, onTheSpot = false): Promise<void> {
       const motor = motors[otherDirection(direction)]
+      const other = motors[direction]
       if (onTheSpot) {
-        await motor.accelerate(-speed)
+        await Promise.all([motor.accelerate(-speed), other.accelerate(speed)])
       } else {
-        motor.float()
+        await Promise.all([motor.float(), other.accelerate(speed)])
       }
       await wait(18.5 * degrees)
-      await motor.accelerate(speed)
+      await Promise.all([motor.float(), other.float()])
     },
   }
+
+  return car
 }
