@@ -48,10 +48,11 @@ export default function (motors: {left: Motor, right: Motor}) {
       const other = motors[direction]
       if (onTheSpot) {
         await Promise.all([motor.accelerate(-speed), other.accelerate(speed)])
+        await wait(2.16 * degrees)
       } else {
         await Promise.all([motor.float(), other.accelerate(speed)])
+        await wait(18.5 * degrees)
       }
-      await wait(18.5 * degrees)
       await Promise.all([motor.float(), other.float()])
     },
   }
