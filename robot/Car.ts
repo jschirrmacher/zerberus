@@ -25,12 +25,14 @@ export default function (motors: {left: Motor, right: Motor}) {
       ])
     },
 
-    stop() {
+    async stop() {
       motors.left.stop()
       motors.right.stop()
+      await wait(100)
+      this.float()
     },
 
-    float() {
+    async float() {
       motors.left.float()
       motors.right.float()
     },

@@ -28,7 +28,7 @@ async function turnOnSpot() {
   await car.turn(360, Direction.left, 100, true)
 }
 
-turnOnSpot()
+turnOnSpot().then(car.stop)
 
 process.on('SIGINT', function() {
   console.log("Caught interrupt signal")
