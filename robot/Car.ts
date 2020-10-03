@@ -1,4 +1,5 @@
 import { Motor } from './Motor'
+import wait from './wait'
 
 export enum Direction {
   left = 'left',
@@ -9,10 +10,6 @@ function otherDirection(direction: Direction): Direction {
   return direction === Direction.left ? Direction.right : Direction.left
 }
 
-async function wait(millseconds: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, millseconds))
-}
-
 export default function (motors: {left: Motor, right: Motor}) {
   return {
     /*
@@ -21,9 +18,11 @@ export default function (motors: {left: Motor, right: Motor}) {
       Speed can also be negative, so that the car runs backwards.
       The car only accelerated in a way, that battery and controller health is preserved.
     */
-    accelerate(speed = 100) {
-      motors.left.accelerate(speed)
-      motors.right.accelerate(speed)
+    async accelerate(speed: number) {
+      await Promise.all([
+        motors.left.accelerate(speed),
+        motors.right.accelerate(speed)
+      ])
     },
 
     stop() {
@@ -43,9 +42,14 @@ export default function (motors: {left: Motor, right: Motor}) {
     async turn(degrees: number, direction: Direction, onTheSpot = false) {
       const motor = motors[otherDirection(direction)]
       const currentSpeed = motor.speed
-      motor.accelerate(onTheSpot ? -currentSpeed : 0)
+      if (onTheSpot) {
+        motor.float()
+        await motor.accelerate(-currentSpeed)
+      } else {
+        motor.float()
+      }
       await wait(18.5 * degrees)
-      motor.accelerate(currentSpeed)
+      await motor.accelerate(currentSpeed)
     },
   }
 }
