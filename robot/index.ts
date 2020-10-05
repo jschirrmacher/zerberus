@@ -2,11 +2,11 @@ import Motor from './Motor'
 import Car, { Direction } from './Car'
 import wait from './wait'
 import { basename } from 'path'
-import Encoder from './Encoder'
+// import Encoder from './Encoder'
 
 const motor1 = Motor(2, 3, 4)
 const motor2 = Motor(17, 27, 22)
-const encoder1 = Encoder(14, 15)
+// const encoder1 = Encoder(14, 15)
 const car = Car({ left: motor1, right: motor2 })
 
 async function loop() {
