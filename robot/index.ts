@@ -60,7 +60,7 @@ const commands = {
 if (!process.argv[2]) {
   console.error('\nUsage: ' + basename(process.argv.join(' ')) + ' <command>\nwith <command> equal to one of\n\t' + Object.keys(commands).join('\n\t'))
 } else {
-  commands[process.argv[2]].then(car.stop)
+  commands[process.argv[2]]().then(car.stop)
 }
 
 process.on('SIGINT', function() {
