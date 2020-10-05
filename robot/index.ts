@@ -2,9 +2,11 @@ import Motor from './Motor'
 import Car, { Direction } from './Car'
 import wait from './wait'
 import { basename } from 'path'
+import Encoder from './Encoder'
 
 const motor1 = Motor(2, 3, 4)
 const motor2 = Motor(17, 27, 22)
+const encoder1 = Encoder(14, 15)
 const car = Car({ left: motor1, right: motor2 })
 
 async function loop() {
@@ -43,6 +45,16 @@ const commands = {
     await car.accelerate(-50)
     await wait(500)
   },
+
+  async demo() {
+    await car.accelerate(40)
+    await wait(500)
+    await car.accelerate(60)
+    await wait(500)
+    await car.turn(180, Direction.left, 50, true)
+    await wait(500)
+    await this.turnOnSpot()
+  }
 }
 
 if (!process.argv[2]) {
