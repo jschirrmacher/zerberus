@@ -2,23 +2,14 @@ import Motor from './Motor'
 import Car, { Direction } from './Car'
 import wait from './wait'
 import { basename } from 'path'
-// import Encoder from './Encoder'
+import Encoder from './Encoder'
+
+const CPR = 544
 
 const motor1 = Motor(2, 3, 4)
 const motor2 = Motor(17, 27, 22)
-// const encoder1 = Encoder(14, 15)
+const encoder1 = Encoder(14, 15)
 const car = Car({ left: motor1, right: motor2 })
-
-async function loop() {
-  console.log('turn left 45°')
-  await car.turn(45, Direction.left, 50)
-  console.log('turn right 270°')
-  await car.turn(270, Direction.right, 50)
-  console.log('turn left 45°')
-  await car.turn(45, Direction.left, 50)
-  console.log('turn left 180° on the spot')
-  await car.turn(180, Direction.left, 50, true)
-}
 
 const commands = {
   async loop() {
@@ -37,8 +28,9 @@ const commands = {
   },
   
   async forward() {
+    encoder1.on(2 * CPR).then(car.stop)   // two wheel turns
     await car.accelerate(50)
-    await wait(500)
+    await wait(1000)
   },
   
   async back() {
