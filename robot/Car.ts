@@ -42,16 +42,22 @@ export default function (motors: {left: Motor, right: Motor}) {
       Turn the car in the given direction to a given degree in a given speed.
       If 'onTheSpot' is set true, the wheels will turn in different directions.
       After turning, the motors are switched to floating.
+      Speed should always be positive when turning.
     */
     async turn(degrees: number, direction: Direction, speed: number, onTheSpot = false): Promise<void> {
+      if (speed <= 0 || speed > 100) {
+        throw Error('Speed should be between 1 and 100')
+      }
       const motor = motors[otherDirection(direction)]
       const other = motors[direction]
       if (onTheSpot) {
         await Promise.all([motor.accelerate(-speed), other.accelerate(speed)])
-        await wait(2.16 * degrees)
+        const turningSpeed = (100 - speed) * .1 + 2.1
+        await wait(turningSpeed * degrees)
       } else {
         await Promise.all([motor.float(), other.accelerate(speed)])
-        await wait(18.5 * degrees)
+        const turningSpeed = (100 - speed) * -.296 + 3.7
+        await wait(turningSpeed * degrees)
       }
       await Promise.all([motor.float(), other.float()])
     },
