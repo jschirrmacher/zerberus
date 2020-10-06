@@ -6,10 +6,10 @@ import Encoder from './Encoder'
 
 const CPR = 544
 
-const motor1 = Motor(2, 3, 4)
-const motor2 = Motor(17, 27, 22)
-const encoder1 = Encoder(14, 15)
-const car = Car({ left: motor1, right: motor2 })
+const leftEncoder = Encoder(14, 15)
+const leftMotorSet = Motor(2, 3, 4, leftEncoder)
+const rightMotorSet = Motor(17, 27, 22)
+const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const commands = {
   async loop() {
@@ -28,7 +28,7 @@ const commands = {
   },
   
   async forward() {
-    encoder1.on(2 * CPR).then(car.stop)   // two wheel turns
+    leftEncoder.on(2 * CPR).then(car.stop)   // two wheel turns
     await car.accelerate(50)
     await wait(1000)
   },
