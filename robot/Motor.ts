@@ -1,61 +1,89 @@
+import { Encoder } from "./Encoder"
+import wait from "./wait"
+
 const Gpio = require('../gpio')
 
+const MAX_ACCELERATION = 40
+
 export type Motor = {
-  in1: typeof Gpio,
-  in2: typeof Gpio,
-  ena: typeof Gpio,
+  no: number,
   speed: number,
-  forward: boolean,
-  break: boolean,
-  accelerate: (speed: number) => void,
+  mode: MotorMode,
+  accelerate: (speed: number) => Promise<void>,
   stop: () => void,
   float: () => void,
+  getPosition: () => number,
+  on(position: number): Promise<void>,
 }
 
-export default function (in1: number, in2: number, ena: number): Motor {
-  return {    
-    in1: new Gpio(in1, { mode: Gpio.OUTPUT }),
-    in2: new Gpio(in2, { mode: Gpio.OUTPUT }),
-    ena: new Gpio(ena, { mode: Gpio.PWM }),
+enum MotorMode {
+  BREAK = 'break',
+  FLOAT = 'float',
+  FORWARD = 'forward',
+  BACKWARDS = 'backwards'
+}
+
+let motorNo = 1
+
+export default function (pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder): Motor {
+  const in1 = new Gpio(pin_in1, { mode: Gpio.OUTPUT })
+  const in2 = new Gpio(pin_in2, { mode: Gpio.OUTPUT })
+  const ena = new Gpio(pin_ena, { mode: Gpio.PWM })
+
+  function setMode(motor: Motor, mode: MotorMode): void {
+    in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
+    in2.digitalWrite(mode === MotorMode.BACKWARDS || mode === MotorMode.FLOAT ? 1 : 0)
+    motor.mode = mode
+  }
+
+  async function sendSpeed(motor: Motor, speed: number): Promise<void> {
+    if (speed < 0 && motor.mode !== MotorMode.BACKWARDS) {
+      setMode(motor, MotorMode.BACKWARDS)
+    } else if (speed > 0 && motor.mode !== MotorMode.FORWARD) {
+      setMode(motor, MotorMode.FORWARD)
+    } else if (speed === 0 && motor.mode !== MotorMode.FLOAT) {
+      setMode(motor, MotorMode.FLOAT)
+    }
+    const pwmValue = Math.round(Math.abs(speed * 2.55))
+    ena.pwmWrite(pwmValue)
+    await wait(Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100)
+    motor.speed = speed
+  }
+
+  return {
+    no: motorNo++, 
     speed: 0,
-    forward: false,
-    break: false,
+    mode: MotorMode.FLOAT,
 
-    accelerate(speed = 100) {
-      function sendSpeed(motor: Motor, speed: number) {
-        motor.speed = speed
-        if (motor.speed <= 0 && motor.forward) {
-          motor.in1.digitalWrite(0)
-          motor.in2.digitalWrite(1)
-          motor.forward = false
-        } else if (motor.speed >= 0 && !motor.forward) {
-          motor.in1.digitalWrite(1)
-          motor.in2.digitalWrite(0)
-          motor.forward = true
-        }
-        motor.ena.pwmWrite(Math.round(Math.abs(speed * 2.55)))
-      }
-
-      this.break = false
-      if (speed !== this.speed) {
-        const diff = Math.min(40, Math.abs(speed - this.speed))
-        sendSpeed(this, this.speed + Math.sign(speed - this.speed) * diff)
-        setTimeout(() => this.accelerate.bind(this)(speed), 100)
+    async accelerate(speed: number): Promise<void> {
+      while (speed !== this.speed) {
+        const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
+        const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
+        console.debug(`accelerate #${this.no} from ${this.speed} to ${newSpeed} to eventually achieve ${speed}`)
+        await sendSpeed(this, newSpeed)
       }
     },
     
-    stop() {
-      this.ena.pwmWrite(0)
-      this.in1.digitalWrite(0)
-      this.in2.digitalWrite(0)
-      this.break = true
+    stop(): void {
+      console.debug(`break motor #${this.no}`)
+      ena.pwmWrite(0)
+      setMode(this, MotorMode.BREAK)
+      this.speed = 0
     },
 
-    float() {
-      this.ena.pwmWrite(0)
-      this.in1.digitalWrite(1)
-      this.in2.digitalWrite(1)
-      this.break = false
+    float(): void {
+      console.debug(`float motor #${this.no}`)
+      ena.pwmWrite(0)
+      setMode(this, MotorMode.FLOAT)
+      this.speed = 0
+    },
+
+    getPosition(): number {
+      return encoder.get()
+    },
+
+    async on(position: number): Promise<void> {
+      await encoder.on(position)
     }
   }
 }

@@ -1,44 +1,67 @@
 import { Motor } from './Motor'
+import wait from './wait'
 
 export enum Direction {
   left = 'left',
   right = 'right',
 }
 
+function otherDirection(direction: Direction): Direction {
+  return direction === Direction.left ? Direction.right : Direction.left
+}
+
 export default function (motors: {left: Motor, right: Motor}) {
-  return {
+  const car = {
     /*
       Accelerate car to the given speed.
       The speed is specified as a percentage of the motor's max speed.
       Speed can also be negative, so that the car runs backwards.
       The car only accelerated in a way, that battery and controller health is preserved.
     */
-    accelerate(speed = 100) {
-      motors.left.accelerate(speed)
-      motors.right.accelerate(speed)
+    async accelerate(speed: number): Promise<void> {
+      await Promise.all([
+        motors.left.accelerate(speed),
+        motors.right.accelerate(speed)
+      ])
     },
 
-    stop() {
-      motors.left.stop()
-      motors.right.stop()
+    async stop(): Promise<void> {
+      await Promise.all([
+        motors.left.stop(),
+        motors.right.stop()
+      ])
+      car.float()
     },
 
-    float() {
+    float(): void {
       motors.left.float()
       motors.right.float()
     },
 
     /*
-      Turn the car in the given direction.
-      The radius is given as a percentage of the speed of the inner motor
-      in comparison to the outer motor. So, 0 means the inner motor doesn't
-      turn at all, while 100 lets both motors run at the same speed, and so
-      keeps the car going straight forward.
-      To turn in place, specify -100 as percentage.
+      Turn the car in the given direction to a given degree in a given speed.
+      If 'onTheSpot' is set true, the wheels will turn in different directions.
+      After turning, the motors are switched to floating.
+      Speed should always be positive when turning.
     */
-    turn(radius: number, direction: Direction) {
-      const currentSpeed = motors[direction].speed
-      motors[direction].accelerate(currentSpeed * radius / 100)
+    async turn(degrees: number, direction: Direction, speed: number, onTheSpot = false): Promise<void> {
+      if (speed <= 0 || speed > 100) {
+        throw Error('Speed should be between 1 and 100')
+      }
+      const motor = motors[otherDirection(direction)]
+      const other = motors[direction]
+      if (onTheSpot) {
+        await Promise.all([motor.accelerate(-speed), other.accelerate(speed)])
+        const turningSpeed = (100 - speed) * .1 + 2.1
+        await wait(turningSpeed * degrees)
+      } else {
+        await Promise.all([motor.float(), other.accelerate(speed)])
+        const turningSpeed = (100 - speed) * -.296 + 3.7
+        await wait(turningSpeed * degrees)
+      }
+      await Promise.all([motor.float(), other.float()])
     },
   }
+
+  return car
 }
