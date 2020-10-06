@@ -46,6 +46,24 @@ const commands = {
     await car.turn(180, Direction.left, 50, true)
     await wait(500)
     await this.turnOnSpot()
+  },
+
+  async star() {
+    await car.accelerate(60)
+    await wait(500)
+    await car.turn(10, Direction.left, 60, true)
+    await car.accelerate(60)
+    await wait(500)
+    await car.turn(10, Direction.left, 60, true)
+    await car.accelerate(60)
+    await wait(500)
+    await car.turn(10, Direction.left, 60, true)
+    await car.accelerate(60)
+    await wait(500)
+    await car.turn(10, Direction.left, 60, true)
+    await car.accelerate(60)
+    await wait(500)
+    await car.turn(10, Direction.left, 60, true)
   }
 }
 
