@@ -1,6 +1,8 @@
 import { Motor } from './Motor'
 import wait from './wait'
 
+const WIDTH_OF_AXIS = 250 // mm
+
 export enum Direction {
   left = 'left',
   right = 'right',
@@ -12,6 +14,13 @@ function otherDirection(direction: Direction): Direction {
 
 export default function (motors: {left: Motor, right: Motor}) {
   const car = {
+    // positions in ticks. A tick is the minimal measurable unit of the motors
+    positionX: 0 as number,
+    positionY: 0 as number,
+
+    // Orientation of the car in degree
+    orientation: 0 as number,
+
     /*
       Accelerate car to the given speed.
       The speed is specified as a percentage of the motor's max speed.
@@ -25,6 +34,9 @@ export default function (motors: {left: Motor, right: Motor}) {
       ])
     },
 
+    /*
+      Stop the car by using the motor brake
+    */
     async stop(): Promise<void> {
       await Promise.all([
         motors.left.stop(),
@@ -33,6 +45,9 @@ export default function (motors: {left: Motor, right: Motor}) {
       car.float()
     },
 
+    /*
+      Let the motors float, thus, no further acceleration, but no braking
+    */
     float(): void {
       motors.left.float()
       motors.right.float()
@@ -62,6 +77,27 @@ export default function (motors: {left: Motor, right: Motor}) {
       await Promise.all([motor.float(), other.float()])
     },
   }
+
+  let oldLeftPos = motors.left.getPosition()
+  let oldRightPos = motors.right.getPosition()
+
+  function updatePosition() {
+    const leftPos = motors.left.getPosition()
+    const rightPos = motors.right.getPosition()
+    const diffLeft = Math.abs(oldLeftPos - leftPos)
+    const diffRight = Math.abs(oldRightPos - rightPos)
+    const dirLeft = Math.sign(oldLeftPos - leftPos)
+    const dirRight = Math.sign(oldRightPos - rightPos)
+    const forwardWay = (oldLeftPos - leftPos + oldRightPos - rightPos) / 2
+
+    if (diffLeft > diffRight && dirLeft === 1 && dirRight === 1) {
+      
+    }
+    oldLeftPos = leftPos
+    oldRightPos = rightPos
+  }
+
+  setInterval(updatePosition, 10)
 
   return car
 }
