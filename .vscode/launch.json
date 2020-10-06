@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Python: Train classifier",
+      "type": "python",
+      "request": "launch",
+      "program": "./image_recognition/train_classifier.py",
+      "console": "integratedTerminal"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Launch Server",

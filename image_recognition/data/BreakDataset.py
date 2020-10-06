@@ -9,13 +9,13 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
 class BreakDataset(Dataset):
-    def __init__(self, basedir = "./"):
+    def __init__(self, basedir = "./image_recognition/data/"):
         self.basedir = basedir
         self.break_images =  [f for f in listdir(basedir + "break")]
         self.cont_images =  [f for f in listdir(basedir + "continue")]
 
     def __len__(self):
-        return len(self.break_images + self.cont_images)
+        return max(len(self.break_images),len(self.cont_images)) * 2
 
     def _transform(self):
         return transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -24,14 +24,14 @@ class BreakDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        if idx < len(self.break_images):
-            sample = {'image': io.imread(self.basedir + "break/" + self.break_images[idx]), 'break': 1}
+        if idx < max(len(self.break_images),len(self.cont_images)):
+            sample = {'image': io.imread(self.basedir + "break/" + self.break_images[idx % len(self.break_images)]), 'break': 1}
         else:
-            sample = {'image': io.imread(self.basedir + "continue/" + self.cont_images[idx - len(self.break_images)]), 'break': 0}
+            sample = {'image': io.imread(self.basedir + "continue/" + self.cont_images[idx % len(self.cont_images)]), 'break': 0}
 
         sample['image'] = transform.resize(sample['image'], (72, 128))
         sample['image'] = self._transform()(sample['image']).float()
-        return [sample['image'], torch.from_numpy(np.array([sample['break']])).float()]
+        return [sample['image'], [float(sample['break'])]]
 
 if __name__ == "__main__":
     dataset = BreakDataset()
