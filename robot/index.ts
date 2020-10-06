@@ -7,8 +7,8 @@ import Encoder from './Encoder'
 const CPR = 544
 
 const leftEncoder = Encoder(14, 15)
-const leftMotorSet = Motor(2, 3, 4, leftEncoder)
-const rightMotorSet = Motor(17, 27, 22)
+const leftMotorSet = Motor(3, 2, 4, leftEncoder)
+const rightMotorSet = Motor(27, 17, 22)
 const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const commands = {
@@ -49,22 +49,15 @@ const commands = {
   },
 
   async star() {
-    await car.accelerate(60)
-    await wait(500)
-    await car.turn(10, Direction.left, 60, true)
-    await car.accelerate(60)
-    await wait(500)
-    await car.turn(10, Direction.left, 60, true)
-    await car.accelerate(60)
-    await wait(500)
-    await car.turn(10, Direction.left, 60, true)
-    await car.accelerate(60)
-    await wait(500)
-    await car.turn(10, Direction.left, 60, true)
-    await car.accelerate(60)
-    await wait(500)
-    await car.turn(10, Direction.left, 60, true)
-  }
+    for (let i=0; i < 10; i++) {
+      await car.accelerate(40)
+      await wait(2500)
+      // take photo
+      await car.accelerate(-40)
+      await wait(2500)
+      await car.turn(10, Direction.left, 60, true)
+    }
+  },
 }
 
 if (!process.argv[2]) {
