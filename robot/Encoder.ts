@@ -55,7 +55,7 @@ export default function (pin_a: number, pin_b: number): Encoder {
       position, thus allowing to run until the required distance from the current position
       is reached, either forward or backwards.
     */
-    async on(tick: number): Promise<void> {
+    on(tick: number): Promise<void> {
       return new Promise(resolve => {
         listeners[pos + tick] = () => {
           delete listeners[pos + tick]
