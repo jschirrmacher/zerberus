@@ -7,8 +7,9 @@ import Encoder from './Encoder'
 const CPR = 544
 
 const leftEncoder = Encoder(14, 15)
+const rightEncoder = Encoder(10, 9)
 const leftMotorSet = Motor(3, 2, 4, leftEncoder)
-const rightMotorSet = Motor(27, 17, 22)
+const rightMotorSet = Motor(27, 17, 22, rightEncoder)
 const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const commands = {
