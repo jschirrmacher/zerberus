@@ -1,3 +1,9 @@
 /node_modules
 /image_recognition/data/all_images
 /pictures
+image_recognition/data/break/
+image_recognition/data/continue/
+.vscode/settings.json
+image_recognition/data/__pycache__/
+image_recognition/data/.ipynb_checkpoints/
+image_recognition/__pycache__

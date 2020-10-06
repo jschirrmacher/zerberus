@@ -5,7 +5,7 @@ import random
 import string
 import re
 
-to_replace_filter = r"^\d+\.png"
+to_replace_filter = r"^\d+\.jpg"
 dir_path = r"./all_images/"
 files = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
 base_name = input("Base file name:")
