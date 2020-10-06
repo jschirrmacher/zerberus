@@ -66,14 +66,14 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     
     stop(): void {
       console.debug(`break motor #${this.no}`)
-      this.ena.pwmWrite(0)
+      ena.pwmWrite(0)
       setMode(this, MotorMode.BREAK)
       this.speed = 0
     },
 
     float(): void {
       console.debug(`float motor #${this.no}`)
-      this.ena.pwmWrite(0)
+      ena.pwmWrite(0)
       setMode(this, MotorMode.FLOAT)
       this.speed = 0
     },
