@@ -96,7 +96,7 @@ export default function (motors: {left: Motor, right: Motor}) {
     oldRightPos = rightPos
 
     const theta = (a - b) / WIDTH_OF_AXIS
-    const radius = WIDTH_OF_AXIS * (a + b) / (2 * (a - b))
+    const radius = theta ? WIDTH_OF_AXIS * (a + b) / (2 * (a - b)) : 0
     const dY = Math.sin(theta) * radius
     const dX = (1 - Math.cos(theta)) * radius
     const delta = Math.PI / 2 - car.orientation
