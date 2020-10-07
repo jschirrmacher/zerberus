@@ -12,6 +12,12 @@ function otherDirection(direction: Direction): Direction {
   return direction === Direction.left ? Direction.right : Direction.left
 }
 
+const twoPi = 2 * Math.PI
+
+function normalizeAngle(angle: number): number {
+  return angle - twoPi * Math.floor(angle / twoPi)
+}
+
 export default function (motors: {left: Motor, right: Motor}) {
   const car = {
     // positions in ticks. A tick is the minimal measurable unit of the motors
@@ -84,17 +90,19 @@ export default function (motors: {left: Motor, right: Motor}) {
   function updatePosition() {
     const leftPos = motors.left.getPosition()
     const rightPos = motors.right.getPosition()
-    const diffLeft = Math.abs(oldLeftPos - leftPos)
-    const diffRight = Math.abs(oldRightPos - rightPos)
-    const dirLeft = Math.sign(oldLeftPos - leftPos)
-    const dirRight = Math.sign(oldRightPos - rightPos)
-    const forwardWay = (oldLeftPos - leftPos + oldRightPos - rightPos) / 2
-
-    if (diffLeft > diffRight && dirLeft === 1 && dirRight === 1) {
-      
-    }
+    const a = leftPos - oldLeftPos
+    const b = rightPos - oldRightPos
     oldLeftPos = leftPos
     oldRightPos = rightPos
+
+    const theta = (a - b) / WIDTH_OF_AXIS
+    const radius = WIDTH_OF_AXIS * (a + b) / (2 * (a - b))
+    const dY = Math.sin(theta) * radius
+    const dX = (1 - Math.cos(theta)) * radius
+    const delta = Math.PI / 2 - car.orientation
+    car.positionX += dY * Math.cos(car.orientation) + dX * Math.cos(delta)
+    car.positionY += dY * Math.sin(car.orientation) - dX * Math.sin(delta)
+    car.orientation = normalizeAngle(car.orientation + theta)
   }
 
   setInterval(updatePosition, 10)
