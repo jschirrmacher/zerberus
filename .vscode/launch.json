@@ -11,6 +11,7 @@
       "program": "./image_recognition/train_classifier.py",
       "console": "integratedTerminal"
     },
+    {
       "name": "Attach",
       "port": 9229,
       "request": "attach",
