@@ -1,4 +1,4 @@
-import Gpio from 'pigpio'
+const Gpio = require('../gpio')
 
 export type Encoder = {
   no: number,
