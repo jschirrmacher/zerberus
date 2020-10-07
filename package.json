@@ -4,7 +4,7 @@
   "description": "Software for a robot to chase racoons in your garden",
   "scripts": {
     "start": "NODE_ENV=production ts-node robot",
-    "simulator:start": "ts-node server",
+    "simulator:start": "ts-node simulator/server",
     "simulator:robot": "ts-node robot",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
