@@ -1,4 +1,15 @@
 (function () {
+  const canvas = document.querySelector('#car-area canvas')
+  const ctx = canvas.getContext('2d')
+  ctx.strokeStyle = 'red'
+  ctx.lineWidth = 3
+  ctx.beginPath()
+  ctx.moveTo(canvas.width / 2, canvas.height / 2)
+  ctx.lineTo(canvas.width / 2 - 1, canvas.height / 2 - 1)
+  ctx.stroke()
+
+  let lastPos = { x: canvas.width / 2 - 1, y: canvas.height / 2 - 1 }
+  
   const socket = io()
 
   socket.on('hi', msg => {
@@ -37,6 +48,12 @@
   })
 
   socket.on('car-position', msg => {
+    ctx.beginPath()
+    ctx.moveTo(lastPos.x, lastPos.y)
+    lastPos.x = msg.posX + canvas.width / 2
+    lastPos.y = msg.posY + canvas.height / 2
+    ctx.lineTo(lastPos.x, lastPos.y)
+    ctx.stroke()
     console.log(msg)
   })
 

@@ -76,11 +76,11 @@ export default function (motors: {left: Motor, right: Motor}) {
       const other = motors[direction]
       if (onTheSpot) {
         await Promise.all([motor.accelerate(-speed), other.accelerate(speed)])
-        const turningSpeed = (100 - speed) * .1 + 2.1
+        const turningSpeed = Math.abs((100 - Math.abs(speed)) * .1 + 2.1)
         await wait(turningSpeed * degrees)
       } else {
         await Promise.all([motor.float(), other.accelerate(speed)])
-        const turningSpeed = (100 - speed) * -.296 + 3.7
+        const turningSpeed = Math.abs((100 - Math.abs(speed)) * -.4 + 3.7)
         await wait(turningSpeed * degrees)
       }
       await Promise.all([motor.float(), other.float()])
@@ -113,7 +113,7 @@ export default function (motors: {left: Motor, right: Motor}) {
     }
   }
 
-  setInterval(updatePosition, 10)
+  setInterval(updatePosition, 40)
 
   return car
 }

@@ -46,16 +46,18 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     } else if (speed === 0 && motor.mode !== MotorMode.FLOAT) {
       setMode(motor, MotorMode.FLOAT)
     }
-    const pwmValue = Math.round(Math.abs(speed * 2.55))
-    ena.pwmWrite(pwmValue)
-    await wait(Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100)
-    motor.speed = speed
 
     if (encoder.simulate) {
       const ticks = speed * 0.544
       encoderTimer && clearInterval(encoderTimer)
       encoderTimer = setInterval(() => encoder.simulate(ticks), 100)
     }
+
+    const pwmValue = Math.round(Math.abs(speed * 2.55))
+    const time = Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100
+    motor.speed = speed
+    ena.pwmWrite(pwmValue)
+    await wait(time)
   }
 
   return {
@@ -75,6 +77,7 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     stop(): void {
       console.debug(`break motor #${this.no}`)
       ena.pwmWrite(0)
+      encoderTimer && clearInterval(encoderTimer)
       setMode(this, MotorMode.BREAK)
       this.speed = 0
     },
@@ -82,6 +85,7 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     float(): void {
       console.debug(`float motor #${this.no}`)
       ena.pwmWrite(0)
+      encoderTimer && clearInterval(encoderTimer)
       setMode(this, MotorMode.FLOAT)
       this.speed = 0
     },

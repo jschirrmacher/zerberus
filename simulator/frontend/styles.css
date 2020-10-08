@@ -82,3 +82,12 @@
 .motor img {
   width: 100px;
 }
+
+#car-area {
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+#car-area canvas {
+  border: 1px solid #aaaaaa;
+}

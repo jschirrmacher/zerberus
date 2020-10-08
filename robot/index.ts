@@ -14,13 +14,9 @@ const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const commands = {
   async loop() {
-    console.log('turn left 45°')
     await car.turn(45, Direction.left, 50)
-    console.log('turn right 270°')
     await car.turn(270, Direction.right, 50)
-    console.log('turn left 45°')
     await car.turn(45, Direction.left, 50)
-    console.log('turn left 180° on the spot')
     await car.turn(180, Direction.left, 50, true)
   },
   
@@ -59,6 +55,16 @@ const commands = {
       await car.turn(10, Direction.left, 60, true)
     }
   },
+
+  async curve() {
+    await car.turn(90, Direction.left, 50)
+    await car.accelerate(-30)
+    await wait(1500)
+    await car.turn(90, Direction.right, 50)
+    await car.accelerate(30)
+    await wait(1500)
+    await car.stop()
+  }
 }
 
 if (!process.argv[2]) {
