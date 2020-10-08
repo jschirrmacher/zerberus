@@ -29,6 +29,8 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
   const in1 = new Gpio(pin_in1, { mode: Gpio.OUTPUT })
   const in2 = new Gpio(pin_in2, { mode: Gpio.OUTPUT })
   const ena = new Gpio(pin_ena, { mode: Gpio.PWM })
+  
+  let encoderTimer: NodeJS.Timeout
 
   function setMode(motor: Motor, mode: MotorMode): void {
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
@@ -48,6 +50,12 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     ena.pwmWrite(pwmValue)
     await wait(Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100)
     motor.speed = speed
+
+    if (encoder.simulate) {
+      const ticks = speed * 0.544
+      encoderTimer && clearInterval(encoderTimer)
+      encoderTimer = setInterval(() => encoder.simulate(ticks), 100)
+    }
   }
 
   return {

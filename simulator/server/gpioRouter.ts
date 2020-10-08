@@ -58,6 +58,11 @@ export default function (io: Server) {
     }
   }
 
+  router.post('/gpio/car/position', jsonResult((req: Request) => {
+    io.emit('car-position', req.body)
+    return { ok: true }
+  }))
+
   function assertKnownPin(pinFromRequest: string): number {
     const pin = gpioPins[pinFromRequest]
     if (!pin) {

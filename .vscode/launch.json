@@ -27,7 +27,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/server/index.ts",
+      "program": "${workspaceFolder}/simulator/server/index.ts",
       "runtimeExecutable": "node",
       "runtimeArgs": [
         "-r",

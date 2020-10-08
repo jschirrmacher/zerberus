@@ -1,7 +1,10 @@
 import { Motor } from './Motor'
 import wait from './wait'
+const Gpio = require('../gpio')
 
 const WIDTH_OF_AXIS = 250 // mm
+
+const epsilon = 0.1
 
 export enum Direction {
   left = 'left',
@@ -86,6 +89,7 @@ export default function (motors: {left: Motor, right: Motor}) {
 
   let oldLeftPos = motors.left.getPosition()
   let oldRightPos = motors.right.getPosition()
+  const gpio = new Gpio()
 
   function updatePosition() {
     const leftPos = motors.left.getPosition()
@@ -103,6 +107,10 @@ export default function (motors: {left: Motor, right: Motor}) {
     car.positionX += dY * Math.cos(car.orientation) + dX * Math.cos(delta)
     car.positionY += dY * Math.sin(car.orientation) - dX * Math.sin(delta)
     car.orientation = normalizeAngle(car.orientation + theta)
+
+    if (gpio.setCarPosition && (Math.abs(a) > epsilon || Math.abs(b) > epsilon || Math.abs(theta) > epsilon)) {
+      gpio.setCarPosition(car.positionX, car.positionY, car.orientation)
+    }
   }
 
   setInterval(updatePosition, 10)

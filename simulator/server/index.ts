@@ -2,6 +2,7 @@ import express from 'express'
 import path from 'path'
 import http from 'http'
 import IO from 'socket.io'
+import bodyParser from 'body-parser'
 import gpioRouter from './gpioRouter'
 
 const port = process.env.port || 10000
@@ -9,6 +10,9 @@ const logger = console
 
 const app = express()
 const server = http.createServer(app)
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 const io = IO(server)
 io.on('connection', (socket) => {

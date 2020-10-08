@@ -1,6 +1,5 @@
 import fetch from 'node-fetch'
 import { Readable, Stream } from 'stream'
-import crypto from 'crypto'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const simulatorUrl = 'http://localhost:10000/gpio'
@@ -29,8 +28,9 @@ class GpioSimulator {
     return this
   }
 
-  servoWrite(pulseWidth: number): GpioSimulator {
-    return this
+  setCarPosition(posX: number, posY: number, orientation: number): void {
+    const headers = { 'content-type': 'application/json' }
+    fetch(`${simulatorUrl}/car/position`, { method: 'POST', headers, body: JSON.stringify({ posX, posY, orientation }) })
   }
 }
 
@@ -43,13 +43,6 @@ class GpioNotifierSimulator {
       read() {},
       objectMode: true,
     })
-
-    setInterval(() => {
-      this.dataStream.push({
-        flags: 0,
-        level: crypto.randomBytes(4).readUInt32BE()
-      })
-    }, 10)
   }
 
   stream() {

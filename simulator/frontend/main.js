@@ -36,6 +36,10 @@
     }
   })
 
+  socket.on('car-position', msg => {
+    console.log(msg)
+  })
+
   connectLEDs()
   connectMotors()
 

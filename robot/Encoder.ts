@@ -3,7 +3,8 @@ const Gpio = require('../gpio')
 export type Encoder = {
   no: number,
   get: () => number,
-  on(revolution: number): Promise<void>
+  on(revolution: number): Promise<void>,
+  simulate: (diff: number) => void,
 }
 
 let encoderNo = 1
@@ -64,6 +65,18 @@ export default function (pin_a: number, pin_b: number): Encoder {
           resolve()
         }
       })
+    },
+
+    /*
+      Simulate a number of encoder ticks
+    */
+    simulate(diff: number) {
+      const between = (val: number, a: number, b: number): boolean => (val > a && val <= b) || (val < a && val >= b)
+
+      Object.keys(listeners)
+        .filter(val => between(+val, pos, pos + diff))
+        .forEach(val => listeners[val]())
+      pos += diff
     }
   }
 }
