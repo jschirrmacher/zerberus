@@ -24,6 +24,8 @@ export default function (pin_a: number, pin_b: number): Encoder {
   let oldVal = 0
   const listeners = {}
 
+  new Gpio(pin_a, { mode: Gpio.INPUT })
+  new Gpio(pin_b, { mode: Gpio.INPUT })
   const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
   stream.stream().on('data', notification => {
     if (!(notification.flags & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
