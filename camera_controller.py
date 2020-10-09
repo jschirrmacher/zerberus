@@ -36,7 +36,7 @@ if __name__ == "__main__":
         img = t(img).float()
         print("Got picture in " + str(time() - tstep))
         tstep = time()
-        output = net.forward(img)
+        output = net.forward(img.unsqueeze(0))
         print(output)
         print("Analysed picture in " + str(time() - tstep))
         tstep = time()
