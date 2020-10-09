@@ -49,7 +49,6 @@ for epoch in range(2):  # loop over the dataset multiple times
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
-        labels = labels.float()
         # zero the parameter gradients
         optimizer.zero_grad()
 

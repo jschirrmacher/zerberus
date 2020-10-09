@@ -3,6 +3,7 @@ from pathlib import Path
 from image_recognition.classifier_net import Net
 from skimage import io, transform
 from torchvision import transforms, utils
+import torch
 from time import time
 import atexit
 
@@ -13,9 +14,9 @@ def exit_handler():
 
 atexit.register(exit_handler)
 
-PATH = '../class_net.pth'
+PATH = './class_net.pth'
 
-root_dir = "../pictures/all_images/"
+root_dir = "./pictures/all_images/"
 Path(root_dir).mkdir(parents=True, exist_ok=True)
 
 if __name__ == "__main__":
@@ -28,10 +29,11 @@ if __name__ == "__main__":
         ret, frame = cap.read()
         frame = cv2.flip(frame, 0)
         frame = cv2.flip(frame, 1)
-        cv2.imwrite(root_dir + '/{counter:04d}.png', frame)
-        img = io.imread(root_dir + '/{counter:04d}.png')
+        cv2.imwrite(root_dir + str(counter) + '.png', frame)
+        img = io.imread(root_dir + str(counter) + '.png')
+        counter += 1
         img = transform.resize(img, (72, 128))
-        img = self._transform()(img).float()
+        img = t(img).float()
         print("Got picture in " + str(time() - tstep))
         tstep = time()
         output = net.forward(img)

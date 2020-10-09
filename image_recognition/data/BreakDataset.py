@@ -31,7 +31,7 @@ class BreakDataset(Dataset):
 
         sample['image'] = transform.resize(sample['image'], (72, 128))
         sample['image'] = self._transform()(sample['image']).float()
-        return [sample['image'], [float(sample['break'])]]
+        return [sample['image'], torch.Tensor([float(sample['break'])]).float()]
 
 if __name__ == "__main__":
     dataset = BreakDataset()
