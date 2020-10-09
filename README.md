@@ -59,3 +59,18 @@ If you use Visual Studio code, you can open the file 'tests.http' and click some
 
 - Mode: `POST http://localhost:10000/gpio/mode/:pin/:mode` - currently only "IN", "OUT" and "PWM" are supported. This will be shown in the simulator by a greater, less than or tilde sign right beside the pin.
 - Write: `POST http://localhost:10000/gpio/:pin/:value` - values can be "0" or "1"
+
+## Writing a robot program
+
+Take a look at the `/robot` folder. There you find the current state of our robot control program (not much yet). You can try yourself by executing `npm run simulator:robot`. On an actual Rasperry Pi, you can run `npm start` to let it work with the real GPIO.
+
+The LED will bling every half second, corresponding to GPIO pin #35 (which is port 19).
+
+## Setup raspberry pi
+ - Install beta raspbian 64bit OS (https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
+ - Follow https://mathinf.eu/pytorch/arm64/
+ - Enable camera using `sudo raspi-config`
+ - sudo apt-get install libssl-dev
+ - sudo pip3 install scikit-build
+ - sudo pip3 install opencv-python
+ - sudo apt-get install caca-utils

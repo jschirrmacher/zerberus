@@ -1,4 +1,4 @@
-from picamera import PiCamera
+import cv2
 from pathlib import Path
 import time
 import os
@@ -13,20 +13,15 @@ for f in filelist:
 num = int(input("Number of images to take"))
 
 if __name__ == "__main__":
-    camera = PiCamera()
-    camera.vflip = True
-    camera.hflip = True
-    camera.exposure_mode = 'night'
+    cap = cv2.VideoCapture(0)
     print("Taking a " + str(num) + " pictures to time how long it takes")
     start = time.time()
-    camera.start_preview()
-    c = 0
-
-    for filename in camera.capture_continuous(root_dir + '{counter:03d}.jpg'):
-        c += 1
-        if c > num:
-            break
+    for i in range(num):
+        ret, frame = cap.read()
+        frame = cv2.flip(frame, 0)
+        frame = cv2.flip(frame, 1)
+        cv2.imwrite(root_dir + str(i) + ".png")
         time.sleep(1)
-
     end = time.time()
+    cap.release()
     print(num, " pictures: ", end - start)
