@@ -69,8 +69,13 @@ The LED will bling every half second, corresponding to GPIO pin #35 (which is po
 ## Setup raspberry pi
  - Install beta raspbian 64bit OS (https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
  - Follow https://mathinf.eu/pytorch/arm64/
+ - Configure https://www.piwheels.org/
  - Enable camera using `sudo raspi-config`
  - sudo apt-get install libssl-dev
  - sudo pip3 install scikit-build
  - sudo pip3 install opencv-python
  - sudo apt-get install caca-utils
+ - sudo apt-get install -y gfortran
+ - sudo apt-get -y install liblapack-dev libblas-dev
+ - sudo pip3 install scikit-image
+

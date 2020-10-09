@@ -1,9 +1,12 @@
 import cv2
-from image_recognition import classifier_net.Net
+from pathlib import Path
+from image_recognition.classifier_net import Net
 from skimage import io, transform
 from torchvision import transforms, utils
 from time import time
 import atexit
+
+cap = cv2.VideoCapture(0)
 
 def exit_handler():
     cap.release()
@@ -14,7 +17,6 @@ PATH = '../class_net.pth'
 
 root_dir = "../pictures/all_images/"
 Path(root_dir).mkdir(parents=True, exist_ok=True)
-cap = cv2.VideoCapture(0)
 
 if __name__ == "__main__":
     net = Net()
