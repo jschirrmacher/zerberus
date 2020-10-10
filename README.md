@@ -30,6 +30,7 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - sudo apt-get -y install liblapack-dev libblas-dev
 - sudo pip3 install scikit-image
 - curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+- sudo apt-get install -y nodejs
 
 ### Install robot software
 
