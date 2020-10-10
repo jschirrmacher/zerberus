@@ -1,9 +1,14 @@
 const Gpio = require('../gpio')
 
+export type Trigger = {
+  promise: Promise<void>,
+  cancel: () => void,
+}
+
 export type Encoder = {
   no: number,
   get: () => number,
-  on(revolution: number): Promise<void>,
+  on(revolution: number): Trigger,
   simulate: (diff: number) => void,
 }
 
@@ -58,25 +63,32 @@ export default function (pin_a: number, pin_b: number): Encoder {
       position, thus allowing to run until the required distance from the current position
       is reached, either forward or backwards.
     */
-    on(tick: number): Promise<void> {
-      return new Promise(resolve => {
-        listeners[pos + tick] = () => {
-          delete listeners[pos + tick]
-          resolve()
-        }
-      })
+    on(tick: number): Trigger {
+      const triggerTime = Math.round(pos + tick)
+      const encNo = this.no
+      console.debug(`Setting up encoder #${encNo} trigger @${pos} to @${triggerTime}`)
+      return {
+        promise: new Promise(resolve => {
+          listeners[triggerTime] = function() {
+            console.debug(`Triggered encoder #${encNo} listener @${triggerTime} at ${pos}`)
+            delete listeners[triggerTime]
+            resolve()
+          }
+        }),
+        cancel: () => delete listeners[triggerTime]
+      }
     },
 
     /*
       Simulate a number of encoder ticks
     */
     simulate(diff: number) {
-      const between = (val: number, a: number, b: number): boolean => (val > a && val <= b) || (val < a && val >= b)
-
+      const between = (a: number, b: number) => (val: string): boolean => (+val > a && +val <= b) || (+val < a && +val >= b)
+      const relevantListenersFilter = between(pos, pos += diff)
+      console.debug(`Simulated ${diff} ticks on encoder #${this.no} at position ${pos}`)
       Object.keys(listeners)
-        .filter(val => between(+val, pos, pos + diff))
+        .filter(relevantListenersFilter)
         .forEach(val => listeners[val]())
-      pos += diff
     }
   }
 }

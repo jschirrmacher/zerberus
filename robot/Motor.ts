@@ -1,19 +1,22 @@
-import { Encoder } from "./Encoder"
+import { Encoder, Trigger } from "./Encoder"
 import wait from "./wait"
 
 const Gpio = require('../gpio')
 
 const MAX_ACCELERATION = 40
+const SAMPLE_FREQ = 10
 
 export type Motor = {
   no: number,
   speed: number,
   mode: MotorMode,
   accelerate: (speed: number) => Promise<void>,
+  go(speed: number, ticks: number): Promise<void>,
   stop: () => void,
   float: () => void,
   getPosition: () => number,
   on(position: number): Promise<void>,
+  destruct(): void,
 }
 
 enum MotorMode {
@@ -31,6 +34,7 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
   const ena = new Gpio(pin_ena, { mode: Gpio.PWM })
   
   let encoderTimer: NodeJS.Timeout
+  let encoderTrigger: Trigger
 
   function setMode(motor: Motor, mode: MotorMode): void {
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
@@ -48,9 +52,10 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     }
 
     if (encoder.simulate) {
-      const ticks = speed * 0.544
+      const ticks = Math.round(speed / 100 * 544 * (1 / SAMPLE_FREQ))
       encoderTimer && clearInterval(encoderTimer)
-      encoderTimer = setInterval(() => encoder.simulate(ticks), 100)
+      // console.debug(`Setting encoder frequency for motor #${motor.no} to ${ticks}`)
+      encoderTimer = setInterval(() => encoder.simulate(ticks), 1000 / SAMPLE_FREQ)
     }
 
     const pwmValue = Math.round(Math.abs(speed * 2.55))
@@ -60,34 +65,46 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     await wait(time)
   }
 
+  function halt(motor: Motor, mode: MotorMode): void {
+    console.debug(`${mode} motor #${motor.no}`)
+    ena.pwmWrite(0)
+    encoderTimer && clearInterval(encoderTimer)
+    encoderTimer = undefined
+    encoderTrigger && encoderTrigger.cancel()
+    encoderTrigger = undefined
+    setMode(motor, mode)
+    motor.speed = 0
+  }
+
   return {
     no: motorNo++, 
     speed: 0,
     mode: MotorMode.FLOAT,
 
     async accelerate(speed: number): Promise<void> {
+      console.debug(`Motor #${this.no}: accelerate(from=${this.speed}% to ${speed}%)`)
       while (speed !== this.speed) {
         const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
         const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
-        console.debug(`accelerate #${this.no} from ${this.speed} to ${newSpeed} to eventually achieve ${speed}`)
         await sendSpeed(this, newSpeed)
       }
     },
+
+    async go(speed: number, distance: number): Promise<void> {
+      console.debug(`Motor #${this.no}: go(speed=${speed}, distance=${distance})`)
+      encoderTrigger = encoder.on(distance * Math.sign(speed))
+      await this.accelerate(speed)
+      await encoderTrigger.promise
+      encoderTrigger = undefined
+      await this.float()
+    },
     
     stop(): void {
-      console.debug(`break motor #${this.no}`)
-      ena.pwmWrite(0)
-      encoderTimer && clearInterval(encoderTimer)
-      setMode(this, MotorMode.BREAK)
-      this.speed = 0
+      halt(this, MotorMode.BREAK)
     },
-
+    
     float(): void {
-      console.debug(`float motor #${this.no}`)
-      ena.pwmWrite(0)
-      encoderTimer && clearInterval(encoderTimer)
-      setMode(this, MotorMode.FLOAT)
-      this.speed = 0
+      halt(this, MotorMode.FLOAT)
     },
 
     getPosition(): number {
@@ -96,6 +113,11 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
 
     async on(position: number): Promise<void> {
       await encoder.on(position)
+    },
+
+    destruct(): void {
+      encoderTimer && clearInterval(encoderTimer)
+      encoderTrigger && encoderTrigger.cancel()
     }
   }
 }

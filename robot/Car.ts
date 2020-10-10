@@ -1,10 +1,9 @@
 import { Motor } from './Motor'
-import wait from './wait'
 const Gpio = require('../gpio')
 
 const WIDTH_OF_AXIS = 250 // mm
-
 const epsilon = 0.1
+const twoPi = 2 * Math.PI
 
 export enum Direction {
   left = 'left',
@@ -15,13 +14,13 @@ function otherDirection(direction: Direction): Direction {
   return direction === Direction.left ? Direction.right : Direction.left
 }
 
-const twoPi = 2 * Math.PI
-
 function normalizeAngle(angle: number): number {
   return angle - twoPi * Math.floor(angle / twoPi)
 }
 
 export default function (motors: {left: Motor, right: Motor}) {
+  let interval: NodeJS.Timer
+
   const car = {
     // positions in ticks. A tick is the minimal measurable unit of the motors
     positionX: 0 as number,
@@ -72,19 +71,43 @@ export default function (motors: {left: Motor, right: Motor}) {
       if (speed <= 0 || speed > 100) {
         throw Error('Speed should be between 1 and 100')
       }
+      console.debug(`Turn car to the ${direction} ${degrees}° in ${speed}% speed`)
       const motor = motors[otherDirection(direction)]
       const other = motors[direction]
+      const angle = normalizeAngle(degrees / 180 * Math.PI - this.orientation)
       if (onTheSpot) {
-        await Promise.all([motor.accelerate(-speed), other.accelerate(speed)])
-        const turningSpeed = Math.abs((100 - Math.abs(speed)) * .1 + 2.1)
-        await wait(turningSpeed * degrees)
+        const distance = WIDTH_OF_AXIS / 2 * angle
+        await Promise.all([motor.go(-speed, distance), other.go(speed, distance)])
       } else {
-        await Promise.all([motor.float(), other.accelerate(speed)])
-        const turningSpeed = Math.abs((100 - Math.abs(speed)) * -.4 + 3.7)
-        await wait(turningSpeed * degrees)
+        const distance = WIDTH_OF_AXIS * angle
+        await Promise.all([motor.float(), other.go(speed, distance)])
       }
       await Promise.all([motor.float(), other.float()])
     },
+
+    async go(distance: number, speed: number): Promise<void> {
+      await Promise.all([
+        motors.left.go(speed, distance),
+        motors.right.go(speed, distance)
+      ])
+      await this.float()
+    },
+
+    async goto(posX: number, posY: number, speed: number): Promise<void> {
+      const dX = posX - this.positionX
+      const dY = posY - this.positionY
+      const direction = Math.atan(dY / dX) + (dX < 0 && dY < 0 ? Math.PI : 0)
+      const distance = Math.sqrt(dX * dX + dY * dY)
+      await this.turn((direction - this.orientation) * (180 / Math.PI), Direction.left, speed, true)
+      await this.go(distance, speed)
+    },
+
+    async destruct() {
+      await car.stop()
+      motors.left.destruct()
+      motors.right.destruct()
+      interval && clearInterval(interval)
+    }
   }
 
   let oldLeftPos = motors.left.getPosition()
@@ -113,7 +136,7 @@ export default function (motors: {left: Motor, right: Motor}) {
     }
   }
 
-  setInterval(updatePosition, 40)
+  interval = setInterval(updatePosition, 50)
 
   return car
 }
