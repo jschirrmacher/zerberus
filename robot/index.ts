@@ -28,7 +28,8 @@ const commands = {
   },
   
   async forward() {
-    await car.go(2 * CPR, 50)
+    await car.go(200, 50)
+    await car.stop()
   },
   
   async back() {
@@ -69,10 +70,16 @@ const commands = {
 }
 
 if (!process.argv[2] || !commands[process.argv[2]]) {
-  console.error('\nUsage: ' + basename(process.argv.join(' ')) + ' <command>\nwith <command> equal to one of\n\t' + Object.keys(commands).join('\n\t'))
+  const programCall = basename(process.argv.join(' ')) + ' <command>\n'
+  const availableCommands = '\n\t' + Object.keys(commands).join('\n\t')
+  console.error(`Usage: ${programCall}with <command> equal to one of ${availableCommands}`)
   car.destruct()
 } else {
-  commands[process.argv[2]]().then(car.destruct)
+  commands[process.argv[2]]().then(() => {
+    console.log('Pos: ' + car.positionX + ', ' + car.positionY)
+    console.log('Ori: ' + car.orientation)
+    car.destruct()
+  })
 }
 
 process.on('SIGINT', function() {
