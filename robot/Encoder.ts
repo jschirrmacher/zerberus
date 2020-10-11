@@ -35,9 +35,9 @@ export default function (pin_a: number, pin_b: number): Encoder {
     if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
       // const tick = chunk.readUInt32LE(4)
       const level = chunk.readUInt32LE(8)
-      const newVal = ((level >> (pin_a - 1)) & 1) | ((level >> pin_b) & 1)
+      const newVal = ((level >>> pin_a) & 1) << 1 | ((level >>> pin_b) & 1)
       const diff = QEM[oldVal][newVal]
-      if (diff !== NaN) {
+      if (!Number.isNaN(diff)) {
         pos += diff
         if (listeners[pos]) {
           listeners[pos]()
