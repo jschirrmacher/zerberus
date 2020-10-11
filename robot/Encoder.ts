@@ -1,3 +1,4 @@
+import stream from 'stream'
 const Gpio = require('../gpio')
 
 export type Trigger = {
@@ -22,6 +23,20 @@ const QEM = [
   [NaN, 1, -1, 0],
 ]
 
+class NotificationTransformer extends stream.Transform {
+  _transform(chunk: Buffer, enc: string, next: () => void) {
+    do {
+      if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
+        this.push({
+          tick: chunk.readUInt32LE(4),
+          level: chunk.readUInt32LE(8)
+        })
+      }
+    } while (chunk = chunk.slice(0, 12))
+    next()
+  }
+}
+
 /*
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
@@ -34,18 +49,16 @@ export default function (pin_a: number, pin_b: number): Encoder {
   new Gpio(pin_a, { mode: Gpio.INPUT })
   new Gpio(pin_b, { mode: Gpio.INPUT })
   const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
-  stream.stream().on('data', notification => {
-    if (!(notification.flags & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
-      const newVal = ((notification.level >> (pin_a - 1)) & 1) | ((notification.level >> pin_b) & 1)
-      const diff = QEM[oldVal][newVal]
-      if (diff !== NaN) {
-        pos += diff
-        if (listeners[pos]) {
-          listeners[pos]()
-        }
+  stream.stream().pipe(NotificationTransformer).on('data', (notification: { level: number, tick: number }) => {
+    const newVal = ((notification.level >> (pin_a - 1)) & 1) | ((notification.level >> pin_b) & 1)
+    const diff = QEM[oldVal][newVal]
+    if (diff !== NaN) {
+      pos += diff
+      if (listeners[pos]) {
+        listeners[pos]()
       }
-      oldVal = newVal
     }
+    oldVal = newVal
   })
 
   return {
