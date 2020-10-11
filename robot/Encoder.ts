@@ -46,7 +46,7 @@ export default function (pin_a: number, pin_b: number): Encoder {
       oldVal = newVal
     }
 
-    setImmediate(() => handleChunk(chunk.slice(12)))
+    chunk.length > 12 && setImmediate(() => handleChunk(chunk.slice(12)))
   }
 
   new Gpio(pin_a, { mode: Gpio.INPUT })
