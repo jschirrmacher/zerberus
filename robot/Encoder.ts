@@ -31,26 +31,28 @@ export default function (pin_a: number, pin_b: number): Encoder {
   let oldVal = 0
   const listeners = {}
 
+  function handleChunk(chunk: Buffer) {
+    if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
+      // const tick = chunk.readUInt32LE(4)
+      const level = chunk.readUInt32LE(8)
+      const newVal = ((level >> (pin_a - 1)) & 1) | ((level >> pin_b) & 1)
+      const diff = QEM[oldVal][newVal]
+      if (diff !== NaN) {
+        pos += diff
+        if (listeners[pos]) {
+          listeners[pos]()
+        }
+      }
+      oldVal = newVal
+    }
+
+    setImmediate(() => handleChunk(chunk.slice(12)))
+  }
+
   new Gpio(pin_a, { mode: Gpio.INPUT })
   new Gpio(pin_b, { mode: Gpio.INPUT })
   const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
-  stream.stream().on('data', (chunk: Buffer) => {
-    do {
-      if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
-        // const tick = chunk.readUInt32LE(4)
-        const level = chunk.readUInt32LE(8)
-        const newVal = ((level >> (pin_a - 1)) & 1) | ((level >> pin_b) & 1)
-        const diff = QEM[oldVal][newVal]
-        if (diff !== NaN) {
-          pos += diff
-          if (listeners[pos]) {
-            listeners[pos]()
-          }
-        }
-        oldVal = newVal
-      }
-    } while (chunk = chunk.slice(0, 12))
-  })
+  stream.stream().on('data', handleChunk)
 
   return {
     no: encoderNo++,
