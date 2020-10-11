@@ -24,15 +24,10 @@ const QEM = [
 ]
 
 class NotificationTransformer extends stream.Transform {
-  writableObjectMode: true
-  
   _transform(chunk: Buffer, enc: string, next: () => void) {
     do {
       if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
-        this.push({
-          tick: chunk.readUInt32LE(4),
-          level: chunk.readUInt32LE(8)
-        })
+        this.push(chunk.slice(4, 8))
       }
     } while (chunk = chunk.slice(0, 12))
     next()
@@ -52,8 +47,10 @@ export default function (pin_a: number, pin_b: number): Encoder {
   new Gpio(pin_a, { mode: Gpio.INPUT })
   new Gpio(pin_b, { mode: Gpio.INPUT })
   const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
-  stream.stream().pipe(transformer).on('data', (notification: { level: number, tick: number }) => {
-    const newVal = ((notification.level >> (pin_a - 1)) & 1) | ((notification.level >> pin_b) & 1)
+  stream.stream().pipe(transformer).on('data', (chunk: Buffer) => { // (notification: { level: number, tick: number }) => {
+    // const tick = chunk.readUInt32LE(0)
+    const level = chunk.readUInt32LE(4)
+    const newVal = ((level >> (pin_a - 1)) & 1) | ((level >> pin_b) & 1)
     const diff = QEM[oldVal][newVal]
     if (diff !== NaN) {
       pos += diff
