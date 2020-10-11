@@ -24,6 +24,8 @@ const QEM = [
 ]
 
 class NotificationTransformer extends stream.Transform {
+  writableObjectMode: true
+  
   _transform(chunk: Buffer, enc: string, next: () => void) {
     do {
       if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
