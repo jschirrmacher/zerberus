@@ -6,6 +6,7 @@ const simulatorUrl = 'http://localhost:10000/gpio'
 
 class GpioSimulator {
   gpioPin: number
+  simulated: true
 
   constructor(gpio: number, options: Record<string, unknown> = {}) {
     this.gpioPin = gpio
@@ -37,6 +38,7 @@ class GpioSimulator {
 class GpioNotifierSimulator {
   PI_NTFY_FLAGS_ALIVE = 1 << 6
   dataStream: Readable
+  simulated: true
 
   constructor() {
     this.dataStream = new Stream.Readable({

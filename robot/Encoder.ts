@@ -7,6 +7,7 @@ export type Trigger = {
 
 export type Encoder = {
   no: number,
+  simulated: boolean,
   get: () => number,
   on(revolution: number): Trigger,
   simulate: (diff: number) => void,
@@ -49,6 +50,7 @@ export default function (pin_a: number, pin_b: number): Encoder {
 
   return {
     no: encoderNo++,
+    simulated: stream.simulated,
     
     /*
       Get current position of encoder since it was created.

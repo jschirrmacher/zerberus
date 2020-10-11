@@ -51,7 +51,7 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
       setMode(motor, MotorMode.FLOAT)
     }
 
-    if (encoder.simulate) {
+    if (encoder.simulated) {
       const ticks = Math.round(speed / 100 * 544 * (1 / SAMPLE_FREQ))
       encoderTimer && clearInterval(encoderTimer)
       // console.debug(`Setting encoder frequency for motor #${motor.no} to ${ticks}`)
