@@ -1,6 +1,5 @@
 import Motor from './Motor'
 import Car, { Direction } from './Car'
-import wait from './wait'
 import { basename } from 'path'
 import Encoder from './Encoder'
 

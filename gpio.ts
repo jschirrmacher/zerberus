@@ -51,7 +51,9 @@ class GpioNotifierSimulator {
 }
 
 if (NODE_ENV === 'production') {
-  module.exports = require('pigpio').Gpio
+  const pigpio = require('pigpio')
+  module.exports = pigpio.Gpio
+  module.exports.Notifier = pigpio.Notifier
 } else {
   module.exports = GpioSimulator
   module.exports.Notifier = GpioNotifierSimulator

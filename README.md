@@ -44,7 +44,7 @@ Then, install the robot software:
 
 To run the production version which doesn't use the simulator, but the actual GPIO run:
 
-    npm start <sequence-name>
+    sudo npm start <sequence-name>
 
 Running `npm start` without a sequence name prints a list of currently available sequences.
 
@@ -52,7 +52,7 @@ Running `npm start` without a sequence name prints a list of currently available
 
 To run the simulator software type this command:
 
-    npm run simulator:start
+    sudo npm run simulator:start
 
 Then, start a browser and open http://localhost:10000
 
