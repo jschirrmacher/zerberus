@@ -69,21 +69,25 @@ const commands = {
   },
 }
 
-if (!process.argv[2] || !commands[process.argv[2]]) {
-  const programCall = basename(process.argv.join(' ')) + ' <command>\n'
-  const availableCommands = '\n\t' + Object.keys(commands).join('\n\t')
-  console.error(`Usage: ${programCall}with <command> equal to one of ${availableCommands}`)
-  car.destruct()
-} else {
-  commands[process.argv[2]]().then(() => {
-    console.log('Pos: ' + car.positionX + ', ' + car.positionY)
-    console.log('Ori: ' + car.orientation)
-    car.destruct()
-  })
-}
-
 process.on('SIGINT', function() {
   console.log("Caught interrupt signal")
   car.destruct()
   process.exit()
 })
+
+try {
+  if (!process.argv[2] || !commands[process.argv[2]]) {
+    const programCall = basename(process.argv.join(' ')) + ' <command>\n'
+    const availableCommands = '\n\t' + Object.keys(commands).join('\n\t')
+    console.error(`Usage: ${programCall}with <command> equal to one of ${availableCommands}`)
+  } else {
+    commands[process.argv[2]]().then(() => {
+      console.log('Pos: ' + car.positionX + ', ' + car.positionY)
+      console.log('Ori: ' + car.orientation)
+    })
+  }
+} catch (error) {
+  console.error(error)
+} finally {
+  car.destruct()
+}
