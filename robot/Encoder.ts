@@ -45,11 +45,12 @@ export default function (pin_a: number, pin_b: number): Encoder {
   let pos = 0
   let oldVal = 0
   const listeners = {}
+  const transformer = new NotificationTransformer()
 
   new Gpio(pin_a, { mode: Gpio.INPUT })
   new Gpio(pin_b, { mode: Gpio.INPUT })
   const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
-  stream.stream().pipe(NotificationTransformer).on('data', (notification: { level: number, tick: number }) => {
+  stream.stream().pipe(transformer).on('data', (notification: { level: number, tick: number }) => {
     const newVal = ((notification.level >> (pin_a - 1)) & 1) | ((notification.level >> pin_b) & 1)
     const diff = QEM[oldVal][newVal]
     if (diff !== NaN) {
