@@ -77,18 +77,18 @@ export default function (motors: {left: Motor, right: Motor}) {
       const angle = normalizeAngle(degrees / 180 * Math.PI - this.orientation)
       if (onTheSpot) {
         const distance = WIDTH_OF_AXIS / 2 * angle
-        await Promise.all([motor.go(-speed, distance), other.go(speed, distance)])
+        await Promise.all([motor.go(distance, -speed), other.go(distance, speed)])
       } else {
         const distance = WIDTH_OF_AXIS * angle
-        await Promise.all([motor.float(), other.go(speed, distance)])
+        await Promise.all([motor.float(), other.go(distance, speed)])
       }
       await Promise.all([motor.float(), other.float()])
     },
 
     async go(distance: number, speed: number): Promise<void> {
       await Promise.all([
-        motors.left.go(speed, distance),
-        motors.right.go(speed, distance)
+        motors.left.go(distance, speed),
+        motors.right.go(distance, speed)
       ])
       await this.float()
     },

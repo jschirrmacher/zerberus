@@ -11,7 +11,7 @@ export type Motor = {
   speed: number,
   mode: MotorMode,
   accelerate: (speed: number) => Promise<void>,
-  go(speed: number, ticks: number): Promise<void>,
+  go(distance: number, speed: number): Promise<void>,
   stop: () => void,
   float: () => void,
   getPosition: () => number,
@@ -90,8 +90,8 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
       }
     },
 
-    async go(speed: number, distance: number): Promise<void> {
-      console.debug(`Motor #${this.no}: go(speed=${speed}, distance=${distance})`)
+    async go(distance: number, speed: number): Promise<void> {
+      console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed})`)
       encoderTrigger = encoder.on(distance * Math.sign(speed))
       await this.accelerate(speed)
       await encoderTrigger.promise
