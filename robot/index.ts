@@ -75,19 +75,20 @@ process.on('SIGINT', function() {
   process.exit()
 })
 
-try {
-  if (!process.argv[2] || !commands[process.argv[2]]) {
-    const programCall = basename(process.argv.join(' ')) + ' <command>\n'
-    const availableCommands = '\n\t' + Object.keys(commands).join('\n\t')
-    console.error(`Usage: ${programCall}with <command> equal to one of ${availableCommands}`)
-  } else {
-    commands[process.argv[2]]().then(() => {
-      console.log('Pos: ' + car.positionX + ', ' + car.positionY)
-      console.log('Ori: ' + car.orientation)
-    })
+;(async function () {
+  try {
+    if (!process.argv[2] || !commands[process.argv[2]]) {
+      const programCall = basename(process.argv.join(' ')) + ' <command>\n'
+      const availableCommands = '\n\t' + Object.keys(commands).join('\n\t')
+      console.error(`Usage: ${programCall}with <command> equal to one of ${availableCommands}`)
+    } else {
+      await commands[process.argv[2]]()
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    console.log('Pos: ' + car.positionX + ', ' + car.positionY)
+    console.log('Ori: ' + car.orientation)
+    car.destruct()
   }
-} catch (error) {
-  console.error(error)
-} finally {
-  car.destruct()
-}
+})()
