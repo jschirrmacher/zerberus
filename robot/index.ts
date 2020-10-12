@@ -6,9 +6,9 @@ import Encoder from './Encoder'
 const CPR = 544
 
 const leftEncoder = Encoder(14, 15)
-const rightEncoder = Encoder(10, 9)
-const leftMotorSet = Motor(3, 2, 4, leftEncoder)
-const rightMotorSet = Motor(27, 17, 22, rightEncoder)
+const rightEncoder = Encoder(19, 26)
+const leftMotorSet = Motor(27, 17, 22, rightEncoder)
+const rightMotorSet = Motor(3, 2, 4, leftEncoder)
 const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const commands = {
@@ -20,7 +20,8 @@ const commands = {
   },
 
   async turn() {
-    await car.turn(180, Direction.right, 70)
+    await car.turn(90, Direction.right, 70)
+    await car.turn(90, Direction.left, 70)
   },
   
   async turnOnSpot() {
