@@ -74,7 +74,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       console.debug(`Turn car to the ${direction} ${degrees}° in ${speed}% speed`)
       const motor = motors[otherDirection(direction)]
       const other = motors[direction]
-      const angle = normalizeAngle(degrees / 180 * Math.PI - this.orientation)
+      const angle = degrees / 180 * Math.PI
       if (onTheSpot) {
         const distance = WIDTH_OF_AXIS / 2 * angle
         await Promise.all([motor.go(distance, -speed), other.go(distance, speed)])
