@@ -38,13 +38,14 @@ class GpioSimulator {
 class GpioNotifierSimulator {
   PI_NTFY_FLAGS_ALIVE = 1 << 6
   dataStream: Readable
-  simulated: true
+  simulated: boolean
 
   constructor() {
     this.dataStream = new Stream.Readable({
       read() {},
       objectMode: true,
     })
+    this.simulated = true
   }
 
   stream() {
