@@ -68,7 +68,7 @@ export default function (pin_a: number, pin_b: number): Encoder {
     */
     tick(diff: number, time: number): void {
       encoder.currentPosition += diff
-      encoder.currentSpeed = lastTick ? (time - lastTick) / diff : undefined
+      encoder.currentSpeed = lastTick ? diff / (time - lastTick) : undefined
       console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, time=${time}, lastTick=${lastTick}`)
       lastTick = time
       Object.values(listeners).forEach(listener => listener(encoder.currentPosition, encoder.currentSpeed))
