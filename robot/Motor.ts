@@ -4,7 +4,7 @@ import wait from "./wait"
 const Gpio = require('../gpio')
 
 const MAX_ACCELERATION = 40
-const SAMPLE_FREQ = 10
+const SAMPLE_DURATION_MS = 10
 
 export type Motor = {
   no: number,
@@ -34,7 +34,6 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
   const ena = new Gpio(pin_ena, { mode: Gpio.PWM })
   
   let encoderTimer: NodeJS.Timeout
-  let encoderTrigger: Trigger
 
   function setMode(motor: Motor, mode: MotorMode): void {
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
@@ -52,10 +51,12 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     }
 
     if (encoder.simulated) {
-      const ticks = Math.round(speed / 100 * 544 * (1 / SAMPLE_FREQ))
+      let simTime = 0
       encoderTimer && clearInterval(encoderTimer)
-      // console.debug(`Setting encoder frequency for motor #${motor.no} to ${ticks}`)
-      encoderTimer = setInterval(() => encoder.simulate(ticks), 1000 / SAMPLE_FREQ)
+      if (speed !== 0) {
+        const ticks = Math.round(Math.abs(speed) * 544000 * SAMPLE_DURATION_MS * 1000)
+        encoderTimer = setInterval(() => encoder.tick(speed < 0 ? -1 : 1, simTime += ticks), SAMPLE_DURATION_MS)
+      }
     }
 
     const pwmValue = Math.round(Math.abs(speed * 2.55))
@@ -70,13 +71,11 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     ena.pwmWrite(0)
     encoderTimer && clearInterval(encoderTimer)
     encoderTimer = undefined
-    encoderTrigger && encoderTrigger.cancel()
-    encoderTrigger = undefined
     setMode(motor, mode)
     motor.speed = 0
   }
 
-  return {
+  const motor = {
     no: motorNo++, 
     speed: 0,
     mode: MotorMode.FLOAT,
@@ -92,11 +91,9 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
 
     async go(distance: number, speed: number): Promise<void> {
       console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed})`)
-      encoderTrigger = encoder.on(distance * Math.sign(speed))
+      const trigger = encoder.position(encoder.currentPosition + distance * Math.sign(speed))
       await this.accelerate(speed)
-      await encoderTrigger.promise
-      encoderTrigger = undefined
-      await this.float()
+      await trigger.promise
     },
     
     stop(): void {
@@ -108,16 +105,17 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     },
 
     getPosition(): number {
-      return encoder.get()
+      return encoder.currentPosition
     },
 
-    async on(position: number): Promise<void> {
-      await encoder.on(position)
+    on(position: number): Promise<void> {
+      return encoder.position(position).promise
     },
 
     destruct(): void {
       encoderTimer && clearInterval(encoderTimer)
-      encoderTrigger && encoderTrigger.cancel()
     }
   }
+  
+  return motor
 }
