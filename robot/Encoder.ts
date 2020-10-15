@@ -1,5 +1,7 @@
 const Gpio = require('../gpio')
 
+const TICKS_PER_REV = 544
+
 export type Trigger = {
   promise: Promise<void>,
   cancel: () => void,
@@ -59,6 +61,10 @@ export default function (pin_a: number, pin_b: number): Encoder {
     no: encoderNo++,
     simulated: stream.simulated,
     currentPosition: 0,
+
+    /*
+      The current speed of the motor is measured in revolutions per second
+    */
     currentSpeed: undefined as number,
 
     /*
@@ -68,8 +74,10 @@ export default function (pin_a: number, pin_b: number): Encoder {
     */
     tick(diff: number, time: number): void {
       encoder.currentPosition += diff
-      encoder.currentSpeed = lastTick ? diff / (time - lastTick) : undefined
-      console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, time=${time}, lastTick=${lastTick}`)
+      if (lastTick) {
+        encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
+      }
+      // console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
       lastTick = time
       Object.values(listeners).forEach(listener => listener(encoder.currentPosition, encoder.currentSpeed))
     },
