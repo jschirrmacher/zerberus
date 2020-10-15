@@ -34,6 +34,7 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
   const ena = new Gpio(pin_ena, { mode: Gpio.PWM })
   
   let encoderTimer: NodeJS.Timeout
+  let simTime = 0
 
   function setMode(motor: Motor, mode: MotorMode): void {
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
@@ -51,10 +52,9 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
     }
 
     if (encoder.simulated) {
-      let simTime = 0
       encoderTimer && clearInterval(encoderTimer)
       if (speed !== 0) {
-        const ticks = Math.round(Math.abs(speed) * 544000 * SAMPLE_DURATION_MS * 1000)
+        const ticks = Math.round(SAMPLE_DURATION_MS * 50000 / Math.abs(speed))
         encoderTimer = setInterval(() => encoder.tick(speed < 0 ? -1 : 1, simTime += ticks), SAMPLE_DURATION_MS)
       }
     }
