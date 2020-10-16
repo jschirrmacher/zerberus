@@ -1,6 +1,6 @@
 const Gpio = require('../gpio')
 
-const TICKS_PER_REV = 544
+export const TICKS_PER_REV = 544
 
 export type Trigger = {
   promise: Promise<void>,

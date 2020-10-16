@@ -1,9 +1,14 @@
 import { Motor } from './Motor'
+import { TICKS_PER_REV } from './Encoder'
 const Gpio = require('../gpio')
 
-const WIDTH_OF_AXIS = 250 // mm
+const WIDTH_OF_AXIS = 270 // mm
+const DIAMETER = 120 // mm
+
 const epsilon = 0.1
 const twoPi = 2 * Math.PI
+const PERIMETER = DIAMETER * twoPi
+const TICKS_PER_MM =  TICKS_PER_REV / PERIMETER
 
 export enum Direction {
   left = 'left',
@@ -76,10 +81,10 @@ export default function (motors: {left: Motor, right: Motor}) {
       const other = motors[direction]
       const angle = degrees / 180 * Math.PI
       if (onTheSpot) {
-        const distance = WIDTH_OF_AXIS / 2 * angle
+        const distance = WIDTH_OF_AXIS / 2 * angle * TICKS_PER_MM
         await Promise.all([motor.go(distance, -speed), other.go(distance, speed)])
       } else {
-        const distance = WIDTH_OF_AXIS * angle
+        const distance = WIDTH_OF_AXIS * angle * TICKS_PER_MM
         await Promise.all([motor.float(), other.go(distance, speed)])
       }
       await Promise.all([motor.float(), other.float()])
