@@ -7,8 +7,8 @@ const DIAMETER = 120 // mm
 
 const epsilon = 0.1
 const twoPi = 2 * Math.PI
-const PERIMETER = DIAMETER * twoPi
-const TICKS_PER_MM =  TICKS_PER_REV / PERIMETER
+const PERIMETER = DIAMETER * Math.PI
+const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
 
 export enum Direction {
   left = 'left',
