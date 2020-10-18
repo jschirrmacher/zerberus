@@ -6,7 +6,7 @@
     "start": "NODE_ENV=production ts-node robot",
     "simulator:start": "ts-node simulator/server",
     "simulator:robot": "ts-node robot",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r ts-node/register robot/**/*.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +21,10 @@
     "typescript": "^4.0.3"
   },
   "devDependencies": {
+    "@types/mocha": "^8.0.3",
     "body-parser": "^1.19.0",
-    "node-fetch": "^2.6.1"
+    "mocha": "^8.2.0",
+    "node-fetch": "^2.6.1",
+    "should": "^13.2.3"
   }
 }
