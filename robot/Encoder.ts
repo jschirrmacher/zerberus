@@ -1,13 +1,8 @@
+import ListenerList, { Trigger } from './ListenerList'
+
 const Gpio = require('../gpio')
 
 export const TICKS_PER_REV = 544
-
-export type Trigger = {
-  promise: Promise<void>,
-  cancel: () => void,
-}
-
-type Listener = (pos: number, speed: number) => boolean
 
 export type Encoder = {
   no: number,
@@ -36,27 +31,8 @@ export default function (pin_a: number, pin_b: number): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
   const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
-  let listeners = {} as Record<number, Listener>
-  let listenerId = 0
+  let listeners = ListenerList()
 
-  function addListener(func: Listener): Trigger {
-    const id = ++listenerId
-    return {
-      promise: new Promise(resolve => {
-        listeners[id] = (pos: number, speed: number) => {
-          const condition = func(pos, speed)
-          if (condition) {
-            console.debug(`Encoder #${encoder.no} triggered`)
-            delete listeners[id]
-            resolve()
-          }
-          return condition
-        }
-      }),
-      cancel: () => delete listeners[id]
-    }
-  }
-  
   const encoder = {
     no: encoderNo++,
     simulated: stream.simulated,
@@ -77,9 +53,9 @@ export default function (pin_a: number, pin_b: number): Encoder {
       if (lastTick) {
         encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
       }
-      // console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
+      console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
       lastTick = time
-      Object.values(listeners).forEach(listener => listener(encoder.currentPosition, encoder.currentSpeed))
+      listeners.call(encoder.currentPosition, encoder.currentSpeed)
     },
 
     /*
@@ -88,13 +64,13 @@ export default function (pin_a: number, pin_b: number): Encoder {
     position(desiredPosition: number): Trigger {
       console.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
       const direction = Math.sign(desiredPosition - encoder.currentPosition)
-      return addListener((pos: number, speed: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
+      return listeners.add((pos: number, speed: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
     },
 
     speed(desiredSpeed: number): Trigger {
       console.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
       const direction = Math.sign(desiredSpeed - encoder.currentSpeed)
-      return addListener((pos: number, speed: number) => direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed)
+      return listeners.add((pos: number, speed: number) => direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed)
     }
   }
 

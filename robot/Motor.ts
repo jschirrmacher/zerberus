@@ -1,7 +1,10 @@
-import { Encoder, Trigger } from "./Encoder"
+import { Encoder, TICKS_PER_REV } from "./Encoder"
 import wait from "./wait"
 
 const Gpio = require('../gpio')
+
+export const DIAMETER = 120 // mm
+export const TICKS_PER_MM = TICKS_PER_REV / (DIAMETER * Math.PI)
 
 const MAX_ACCELERATION = 40
 const SAMPLE_DURATION_MS = 10
