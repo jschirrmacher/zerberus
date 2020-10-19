@@ -1,14 +1,15 @@
-import { Motor } from './Motor'
-import { TICKS_PER_REV } from './Encoder'
+import { Motor, TICKS_PER_MM } from './Motor'
+import { Position, create as createPosition } from './Position'
+import { create as createOrientation, DegreeAngle, Orientation, radians } from './Orientation'
+import ListenerList from './ListenerList'
 const Gpio = require('../gpio')
 
-const WIDTH_OF_AXIS = 270 // mm
-const DIAMETER = 120 // mm
+export const WIDTH_OF_AXIS = 270 // mm
+const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
+const RAD_PER_TICKDIFF = 1 / AXIS_WIDTH_IN_TICKS
 
 const epsilon = 0.1
 const twoPi = 2 * Math.PI
-const PERIMETER = DIAMETER * Math.PI
-const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
 
 export enum Direction {
   left = 'left',
@@ -23,16 +24,19 @@ function normalizeAngle(angle: number): number {
   return angle - twoPi * Math.floor(angle / twoPi)
 }
 
+function assertValidSpeed(speed: number): void {
+  if (speed <= 0 || speed > 100) {
+    throw Error('Speed should be between 1 and 100')
+  }
+}
+
 export default function (motors: {left: Motor, right: Motor}) {
   let interval: NodeJS.Timer
+  const listeners = ListenerList()
 
   const car = {
-    // positions in ticks. A tick is the minimal measurable unit of the motors
-    positionX: 0 as number,
-    positionY: 0 as number,
-
-    // Orientation of the car in degree
-    orientation: 0 as number,
+    position: createPosition(0, 0),
+    orientation: createOrientation(0),
 
     /*
       Accelerate car to the given speed.
@@ -72,14 +76,12 @@ export default function (motors: {left: Motor, right: Motor}) {
       After turning, the motors are switched to floating.
       Speed should always be positive when turning.
     */
-    async turn(degrees: number, direction: Direction, speed: number, onTheSpot = false): Promise<void> {
-      if (speed <= 0 || speed > 100) {
-        throw Error('Speed should be between 1 and 100')
-      }
+    async turn(degrees: DegreeAngle, direction: Direction, speed: number, onTheSpot = false): Promise<void> {
+      assertValidSpeed(speed)
       console.debug(`Turn car to the ${direction} ${degrees}° in ${speed}% speed`)
       const motor = motors[otherDirection(direction)]
       const other = motors[direction]
-      const angle = degrees / 180 * Math.PI
+      const angle = normalizeAngle(degrees / 180 * Math.PI)
       if (onTheSpot) {
         const distance = WIDTH_OF_AXIS / 2 * angle * TICKS_PER_MM
         await Promise.all([motor.go(distance, -speed), other.go(distance, speed)])
@@ -87,24 +89,53 @@ export default function (motors: {left: Motor, right: Motor}) {
         const distance = WIDTH_OF_AXIS * angle * TICKS_PER_MM
         await Promise.all([motor.float(), other.go(distance, speed)])
       }
-      await Promise.all([motor.float(), other.float()])
+      car.float()
     },
 
+    /*
+      Move the car a given distance (measured in motor ticks) in the specified speed.
+      The speed is a percentage, with 100% being the maximal capacity of the motors.
+      After reaching the position, the car is switched to floating mode.
+    */
     async go(distance: number, speed: number): Promise<void> {
       await Promise.all([
         motors.left.go(distance, speed),
         motors.right.go(distance, speed)
       ])
-      await this.float()
+      this.float()
     },
 
-    async goto(posX: number, posY: number, speed: number): Promise<void> {
-      const dX = posX - this.positionX
-      const dY = posY - this.positionY
-      const direction = Math.atan(dY / dX) + (dX < 0 && dY < 0 ? Math.PI : 0)
-      const distance = Math.sqrt(dX * dX + dY * dY)
-      await this.turn((direction - this.orientation) * (180 / Math.PI), Direction.left, speed, true)
-      await this.go(distance, speed)
+    /*
+      Turn car to the given destination angle.
+    */
+    async turnTo(destination: Orientation, speed: number): Promise<void> {
+      assertValidSpeed(speed)
+      console.log(`turn to ${destination.degreeAngle()}°`)
+      const direction = normalizeAngle(destination.angle - this.orientation.angle) < Math.PI ? Direction.left : Direction.right
+      const trigger = listeners.add((pos: Position, orientation: Orientation) => normalizeAngle(Math.abs(orientation.angle - destination.angle)) < epsilon)
+      motors[otherDirection(direction)].accelerate(-speed)
+      motors[direction].accelerate(speed)
+      await trigger.promise
+      car.float()
+    },
+
+    /*
+      Move car to the given position with the specified speed.
+      After reaching the position, the car is switched to floating mode.
+      The speed is a percentage, with 100% being the maximal capacity of the motors.
+    */
+    async goto(position: Position, speed: number): Promise<void> {
+      console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
+      assertValidSpeed(speed)
+      await this.turnTo(createOrientation(this.position.angleTo(position)), speed)
+      console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
+      const distance = this.position.distanceTo(position)
+      console.debug(`car.goto(${position.x}, ${position.y}, ${speed}) -> distance=${distance}`)
+      await Promise.all([
+        motors.left.go(distance, speed),
+        motors.right.go(distance, speed)
+      ])
+      car.float()
     },
 
     async destruct() {
@@ -127,21 +158,27 @@ export default function (motors: {left: Motor, right: Motor}) {
     oldLeftPos = leftPos
     oldRightPos = rightPos
 
-    const theta = (a - b) / WIDTH_OF_AXIS
-    const radius = theta ? WIDTH_OF_AXIS * (a + b) / (2 * (a - b)) : 0
-    const dY = Math.sin(theta) * radius
+    const theta = (a - b) / AXIS_WIDTH_IN_TICKS
+    const radius = theta ? AXIS_WIDTH_IN_TICKS * (a + b) / (2 * (a - b)) : 0
+    const dY = theta ? (Math.sin(theta) * radius) : (Math.sign(a) === Math.sign(b) ? Math.sign(a) * Math.min(Math.abs(a), Math.abs(b)) : (a + b))
     const dX = (1 - Math.cos(theta)) * radius
-    const delta = Math.PI / 2 - car.orientation
-    car.positionX += dY * Math.cos(car.orientation) + dX * Math.cos(delta)
-    car.positionY += dY * Math.sin(car.orientation) - dX * Math.sin(delta)
-    car.orientation = normalizeAngle(car.orientation + theta)
 
-    if (gpio.setCarPosition && (Math.abs(a) > epsilon || Math.abs(b) > epsilon || Math.abs(theta) > epsilon)) {
-      gpio.setCarPosition(car.positionX, car.positionY, car.orientation)
+    const delta = Math.PI / 2 - car.orientation.angle
+    car.position.x += dY * Math.cos(car.orientation.angle) + dX * Math.cos(delta)
+    car.position.y += dY * Math.sin(car.orientation.angle) - dX * Math.sin(delta)
+    car.orientation = createOrientation(normalizeAngle(car.orientation.angle + theta))
+
+    // console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}`)
+    if ((Math.abs(a) > epsilon || Math.abs(b) > epsilon || Math.abs(theta) > epsilon)) {
+      listeners.call(car.position, car.orientation)
     }
   }
 
   interval = setInterval(updatePosition, 50)
+
+  if (gpio.setCarPosition) {
+    listeners.add(gpio.setCarPosition)
+  }
 
   return car
 }

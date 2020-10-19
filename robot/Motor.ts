@@ -4,7 +4,8 @@ import wait from "./wait"
 const Gpio = require('../gpio')
 
 export const DIAMETER = 120 // mm
-export const TICKS_PER_MM = TICKS_PER_REV / (DIAMETER * Math.PI)
+export const PERIMETER = DIAMETER * Math.PI
+export const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
 
 const MAX_ACCELERATION = 40
 const SAMPLE_DURATION_MS = 10

@@ -1,5 +1,7 @@
 import fetch from 'node-fetch'
 import { Readable, Stream } from 'stream'
+import { Orientation } from './robot/Orientation'
+import { Position } from './robot/Position'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 const simulatorUrl = 'http://localhost:10000/gpio'
@@ -29,9 +31,12 @@ class GpioSimulator {
     return this
   }
 
-  setCarPosition(posX: number, posY: number, orientation: number): void {
+  setCarPosition(pos: Position, orientation: Orientation): void {
     const headers = { 'content-type': 'application/json' }
-    fetch(`${simulatorUrl}/car/position`, { method: 'POST', headers, body: JSON.stringify({ posX, posY, orientation }) })
+    const coords = pos.metricCoordinates()
+    const angle = orientation.degreeAngle().toFixed(2)
+    // console.debug(`Current position: ${coords.x.toFixed(2)}, ${coords.y.toFixed(2)}, ${angle}°`)
+    fetch(`${simulatorUrl}/car/position`, { method: 'POST', headers, body: JSON.stringify({ posX: coords.x, posY: coords.y, orientation: angle }) })
   }
 }
 

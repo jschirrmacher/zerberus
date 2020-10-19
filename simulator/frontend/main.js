@@ -8,7 +8,7 @@
   ctx.lineTo(canvas.width / 2 - 1, canvas.height / 2 - 1)
   ctx.stroke()
 
-  let lastPos = { x: canvas.width / 2 - 1, y: canvas.height / 2 - 1 }
+  let lastPos = { x: 0, y: 0 }
   
   const socket = io()
 
@@ -49,10 +49,10 @@
 
   socket.on('car-position', msg => {
     ctx.beginPath()
-    ctx.moveTo(lastPos.x, lastPos.y)
-    lastPos.x = msg.posX + canvas.width / 2
-    lastPos.y = msg.posY + canvas.height / 2
-    ctx.lineTo(lastPos.x, lastPos.y)
+    ctx.moveTo(lastPos.x * 150 + canvas.width / 2, canvas.height / 2 - lastPos.y * 150)
+    lastPos.x = msg.posX
+    lastPos.y = msg.posY
+    ctx.lineTo(lastPos.x * 150 + canvas.width / 2, canvas.height / 2 - lastPos.y * 150)
     ctx.stroke()
     console.log(msg)
   })

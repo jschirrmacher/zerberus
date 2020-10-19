@@ -53,7 +53,7 @@ export default function (pin_a: number, pin_b: number): Encoder {
       if (lastTick) {
         encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
       }
-      console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
+      // console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
       lastTick = time
       listeners.call(encoder.currentPosition, encoder.currentSpeed)
     },

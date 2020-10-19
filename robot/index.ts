@@ -2,6 +2,7 @@ import Motor from './Motor'
 import Car, { Direction } from './Car'
 import { basename } from 'path'
 import Encoder from './Encoder'
+import { create as createPosition, meters } from './Position'
 
 const CPR = 544
 
@@ -39,14 +40,14 @@ const commands = {
 
   async triangle() {
     await car.go(500, 40)
-    await car.turn(60, Direction.right, 100, true)
+    await car.turn(120, Direction.right, 100, true)
     await car.go(500, 60)
-    await car.turn(60, Direction.right, 100, true)
+    await car.turn(120, Direction.right, 100, true)
     await car.go(500, 80)
   },
 
   async star() {
-    for (let i=0; i < 10; i++) {
+    for (let i=0; i < 8; i++) {
       await car.go(500, 40)
       // take photo
       await car.go(500, -40)
@@ -62,11 +63,11 @@ const commands = {
   },
 
   async square() {
-    await car.goto(-200, -200, 50)
-    await car.goto(200, -200, 50)
-    await car.goto(200, 200, 50)
-    await car.goto(-200, 200, 50)
-    await car.goto(-200, -200, 50)
+    await car.goto(createPosition(meters(-.5), meters(.5)), 50)
+    await car.goto(createPosition(meters(.5), meters(.5)), 50)
+    await car.goto(createPosition(meters(.5), meters(-.5)), 50)
+    await car.goto(createPosition(meters(-.5), meters(-.5)), 50)
+    await car.goto(createPosition(meters(-.5), meters(.5)), 50)
   },
 }
 
@@ -88,8 +89,8 @@ process.on('SIGINT', function() {
   } catch (error) {
     console.error(error)
   } finally {
-    console.log('Pos: ' + car.positionX + ', ' + car.positionY)
-    console.log('Ori: ' + car.orientation)
+    console.log('Pos: ' + car.position.metricCoordinates().x + ', ' + car.position.metricCoordinates().y)
+    console.log('Ori: ' + car.orientation.degreeAngle())
     car.destruct()
   }
 })()
