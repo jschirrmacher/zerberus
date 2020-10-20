@@ -14,10 +14,12 @@ const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const commands = {
   async loop() {
-    await car.turn(45, Direction.left, 50)
-    await car.turn(270, Direction.right, 50)
-    await car.turn(45, Direction.left, 50)
-    await car.turn(180, Direction.left, 50, true)
+    for (let i=0; i < 10; i++) {
+      await car.turn(45, Direction.left, 50)
+      await car.turn(270, Direction.right, 50)
+      await car.turn(45, Direction.left, 50)
+      await car.turn(180, Direction.left, 50, true)
+    }
   },
 
   async turn() {
