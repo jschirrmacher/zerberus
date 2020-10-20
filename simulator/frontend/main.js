@@ -41,7 +41,7 @@
   })
 
   function setCarPosition(msg) {
-    car.setAttribute('style', `transform: translate(${msg.posX * 150 + center.x}px, ${center.y - msg.posY * 150}px) rotate(${-msg.orientation}deg)`)
+    car.setAttribute('style', `transform: translate(${msg.posX * 150 + center.x}px, ${center.y - msg.posY * 150}px) rotate(${-msg.orientation}deg) scale(.5)`)
   }
 
   socket.on('car-position', setCarPosition)

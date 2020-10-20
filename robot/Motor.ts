@@ -8,7 +8,7 @@ export const PERIMETER = DIAMETER * Math.PI
 export const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
 
 const MAX_ACCELERATION = 40
-const SAMPLE_DURATION_MS = 10
+const SAMPLE_DURATION_MS = 3
 
 export type Motor = {
   no: number,
