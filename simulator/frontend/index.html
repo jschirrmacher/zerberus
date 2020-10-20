@@ -52,9 +52,19 @@
       </div>
 
       <div class="unit">
-        <div id="car-area">
-          <canvas width="500" height="500"></canvas>
-        </div>
+        <svg id="car-area">
+          <g id="car">
+            <rect x="-25" width="50" y="-15" height="30" />
+
+            <line x1="-15" x2="-15" y1="-20" y2="20" class="axis" />
+            <rect x="-25" y="-29" class="wheel" />
+            <rect x="-25" y="19" class="wheel" />
+
+            <line x1="15" x2="15" y1="-20" y2="20" class="axis" />
+            <rect x="5" y="-29" class="wheel" />
+            <rect x="5" y="19" class="wheel" />
+          </g>
+        </svg>
       </div>
 
     </div>

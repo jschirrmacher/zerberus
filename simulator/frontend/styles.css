@@ -88,6 +88,17 @@
   background-repeat: no-repeat;
 }
 
-#car-area canvas {
+#car-area {
+  width: 500px;
+  height: 500px;
   border: 1px solid #aaaaaa;
+}
+
+.axis {
+  stroke: black;
+}
+
+.wheel {
+  width: 20px;
+  height: 10px;
 }

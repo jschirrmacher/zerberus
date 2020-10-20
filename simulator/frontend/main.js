@@ -1,15 +1,8 @@
 (function () {
-  const canvas = document.querySelector('#car-area canvas')
-  const ctx = canvas.getContext('2d')
-  ctx.strokeStyle = 'red'
-  ctx.lineWidth = 3
-  ctx.beginPath()
-  ctx.moveTo(canvas.width / 2, canvas.height / 2)
-  ctx.lineTo(canvas.width / 2 - 1, canvas.height / 2 - 1)
-  ctx.stroke()
+  const canvas = document.querySelector('#car-area')
+  const car = document.querySelector('#car')
+  const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
 
-  let lastPos = { x: 0, y: 0 }
-  
   const socket = io()
 
   socket.on('hi', msg => {
@@ -47,18 +40,15 @@
     }
   })
 
-  socket.on('car-position', msg => {
-    ctx.beginPath()
-    ctx.moveTo(lastPos.x * 150 + canvas.width / 2, canvas.height / 2 - lastPos.y * 150)
-    lastPos.x = msg.posX
-    lastPos.y = msg.posY
-    ctx.lineTo(lastPos.x * 150 + canvas.width / 2, canvas.height / 2 - lastPos.y * 150)
-    ctx.stroke()
-    console.log(msg)
-  })
+  function setCarPosition(msg) {
+    car.setAttribute('style', `transform: translate(${msg.posX * 150 + center.x}px, ${center.y - msg.posY * 150}px) rotate(${-msg.orientation}deg)`)
+  }
+
+  socket.on('car-position', setCarPosition)
 
   connectLEDs()
   connectMotors()
+  setCarPosition({ posX: 0, posY: 0, orientation: 0 })
 
   function connectLEDs() {
     document.querySelectorAll('.led').forEach(led => {
