@@ -13,6 +13,7 @@ import atexit
 import cv2
 from pathlib import Path
 import socketio
+from time import time
 
 sio = socketio.Client()
 
@@ -28,8 +29,8 @@ def my_message(data):
 def disconnect():
     print('disconnected from server')
 
-sio.connect('http://localhost:2001')
-sio.wait()
+sio.connect('ws://localhost:2001')
+print("Initialised websocket connection")
 
 NET = '../class_net.pth'
 images = "./pictures/all_images/"
@@ -55,15 +56,14 @@ print("Loaded net")
 
 
 if __name__ == "__main__":
-    print("Initialised websocket connection")
     counter = 0
     while True:
         tstep = time()
         ret, frame = cap.read()
         frame = cv2.flip(frame, 0)
         frame = cv2.flip(frame, 1)
-        cv2.imwrite(root_dir + str(counter) + '.png', frame)
-        img = io.imread(root_dir + str(counter) + '.png')
+        cv2.imwrite(images + str(counter) + '.png', frame)
+        img = io.imread(images + str(counter) + '.png')
         counter += 1
         img = transform.resize(img, (72, 128))
         img = t(img).float()
