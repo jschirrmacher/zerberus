@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import torch
 import torchvision
 import torchvision.transforms as transforms
@@ -7,6 +9,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from classifier_net import Net
+import asyncio
+import websockets
 
 NET = '../class_net.pth'
 images = "./pictures/all_images/"
@@ -30,21 +34,27 @@ t = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0
 
 print("Loaded net")
 
+
 if __name__ == "__main__":
-    counter = 0
-    while True:
-        tstep = time()
-        ret, frame = cap.read()
-        frame = cv2.flip(frame, 0)
-        frame = cv2.flip(frame, 1)
-        cv2.imwrite(root_dir + str(counter) + '.png', frame)
-        img = io.imread(root_dir + str(counter) + '.png')
-        counter += 1
-        img = transform.resize(img, (72, 128))
-        img = t(img).float()
-        print("Got picture in " + str(time() - tstep))
-        tstep = time()
-        output = net.forward(img.unsqueeze(0))
-        print(output)
-        print("Analysed picture in " + str(time() - tstep))
-        tstep = time()
+    asyncio.get_event_loop().run_until_complete(
+        communication('ws://localhost:80'))
+
+async def main_loop(uri):
+    async with websockets.connect(uri) as websocket:
+        print("Initialised websocket connection")
+        counter = 0
+        while True:
+            tstep = time()
+            ret, frame = cap.read()
+            frame = cv2.flip(frame, 0)
+            frame = cv2.flip(frame, 1)
+            cv2.imwrite(root_dir + str(counter) + '.png', frame)
+            img = io.imread(root_dir + str(counter) + '.png')
+            counter += 1
+            img = transform.resize(img, (72, 128))
+            img = t(img).float()
+            output = net.forward(img.unsqueeze(0))[0][0]
+            async websocket.send(str(output > 0.9))
+            print(output)
+            print("Took: " + str(time() - tstep))
+            tstep = time()
