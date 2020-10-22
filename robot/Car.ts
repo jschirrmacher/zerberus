@@ -108,7 +108,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       Turn car to the given destination angle.
     */
     async turnTo(destination: Orientation): Promise<void> {
-      console.log(`turn to ${destination.degreeAngle()}°`)
+      console.log(`turn to ${destination}`)
       const turnAngle = car.orientation.differenceTo(destination)
       if (Math.abs(turnAngle) > epsilon) {
         const direction = turnAngle < Math.PI ? Direction.left : Direction.right
@@ -126,7 +126,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       After reaching the position, the car is switched to floating mode.
     */
     async goto(position: Position): Promise<void> {
-      console.debug(`car.goto(${position.x}, ${position.y}), currentPos=(${this.position.x}, ${this.position.y})`)
+      console.debug(`car.goto${position}, currentPos=${this.position} ${this.orientation}`)
       const angle = this.position.angleTo(position)
       await this.turnTo(createOrientation(angle))
       const distance = this.position.distanceTo(position)
