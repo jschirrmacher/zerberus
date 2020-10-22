@@ -64,7 +64,7 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
       }
     }
 
-    const pwmValue = Math.round(Math.abs(speed * 2.55))
+    const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(speed * 2.55))))
     const time = Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100
     motor.speed = speed
     ena.pwmWrite(pwmValue)
