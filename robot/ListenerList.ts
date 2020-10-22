@@ -10,27 +10,33 @@ export type ListenerList = {
   call: (...args: unknown[]) => void,
 }
 
+let listenerId = 0
+
 export default function (): ListenerList {
-  let listenerId = 0
   const list = {} as Record<number, Listener>
 
   return {    
     add(func: Listener): Trigger {
       const id = ++listenerId
 
+      console.debug(`Creating listener #${id}`)
       return {
         promise: new Promise(resolve => {
           list[id] = (...args: unknown[]) => {
             const condition = func(...args)
             if (condition) {
-              console.debug(`Listener #${id} triggered`, args)
+              console.debug(`Listener #${id} triggered`, args.map(a => '' + a))
               delete list[id]
               resolve()
             }
             return condition
           }
         }),
-        cancel: () => delete list[id]
+
+        cancel: () => {
+          console.debug(`Listener #${id} cancelled`)
+          delete list[id]
+        }
       }    
     },
 

@@ -128,13 +128,15 @@ export default function (motors: {left: Motor, right: Motor}) {
       console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
       assertValidSpeed(speed)
       await this.turnTo(createOrientation(this.position.angleTo(position)), speed)
-      console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
+      // console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
       const distance = this.position.distanceTo(position)
-      console.debug(`car.goto(${position.x}, ${position.y}, ${speed}) -> distance=${distance}`)
-      await Promise.all([
+      // console.debug(`car.goto(${position.x}, ${position.y}, ${speed}) -> distance=${distance}`)
+      const trigger = [
         motors.left.go(distance, speed),
         motors.right.go(distance, speed)
-      ])
+      ]
+      await Promise.race(trigger.map(t => t.promise))
+      trigger.forEach(t => t.cancel())
       car.float()
     },
 

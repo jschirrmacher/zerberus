@@ -41,11 +41,10 @@ const commands = {
   },
 
   async triangle() {
-    await car.go(500, 40)
-    await car.turn(120, Direction.right, 100, true)
-    await car.go(500, 60)
-    await car.turn(120, Direction.right, 100, true)
-    await car.go(500, 80)
+    await car.goto(createPosition(meters(.5), meters(0)), 100)
+    await car.goto(createPosition(meters(0), meters(1)), 100)
+    await car.goto(createPosition(meters(-.5), meters(0)), 100)
+    await car.goto(createPosition(meters(0), meters(0)), 100)
   },
 
   async star() {

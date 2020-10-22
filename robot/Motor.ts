@@ -1,4 +1,5 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
+import { Trigger } from "./ListenerList"
 import wait from "./wait"
 
 const Gpio = require('../gpio')
@@ -15,7 +16,7 @@ export type Motor = {
   speed: number,
   mode: MotorMode,
   accelerate: (speed: number) => Promise<void>,
-  go(distance: number, speed: number): Promise<void>,
+  go(distance: number, speed: number): Trigger,
   stop: () => void,
   float: () => void,
   getPosition: () => number,
@@ -93,11 +94,11 @@ export default function (pin_in1: number, pin_in2: number, pin_ena: number, enco
       }
     },
 
-    async go(distance: number, speed: number): Promise<void> {
-      console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed})`)
+    go(distance: number, speed: number): Trigger {
+      console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
       const trigger = encoder.position(encoder.currentPosition + distance * Math.sign(speed))
-      await this.accelerate(speed)
-      await trigger.promise
+      this.accelerate(speed)
+      return trigger
     },
     
     stop(): void {
