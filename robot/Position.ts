@@ -16,6 +16,7 @@ export type Position = {
   metricCoordinates(): MetricCoordinates,
   angleTo(position: Position): RadianAngle,
   distanceTo(position: Position): Ticks,
+  toString(): string,
 }
 
 export function create(x: Ticks, y: Ticks): Position {
@@ -45,7 +46,11 @@ export function create(x: Ticks, y: Ticks): Position {
       const dX = position.x - this.x
       const dY = position.y - this.y
       return Math.sqrt(dX * dX + dY * dY)
-    }
+    },
+
+    toString(): string {
+      return `(${this.x}, ${this.y})`
+    },
   }
 }
 

@@ -6,6 +6,10 @@ import * as Position from './Position'
 describe('Position', () => {
   const origin = Position.create(0, 0)
 
+  it('can be concatenated with a string', () => {
+    ('' + Position.create(4, 4)).should.equal('(4, 4)')
+  })
+
   it('should compute ticks from meters, with 1 revoltion of a 12cm wheel is 544 ticks', () => {
     const pos = Position.meters(.12 * Math.PI)
     pos.should.equal(544)
