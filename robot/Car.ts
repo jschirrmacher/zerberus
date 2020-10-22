@@ -1,14 +1,13 @@
 import { Motor, TICKS_PER_MM } from './Motor'
 import { Position, create as createPosition } from './Position'
-import { create as createOrientation, DegreeAngle, Orientation, radians } from './Orientation'
+import { create as createOrientation, DegreeAngle, Orientation } from './Orientation'
 import ListenerList from './ListenerList'
 const Gpio = require('../gpio')
 
 export const WIDTH_OF_AXIS = 270 // mm
 const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
-const RAD_PER_TICKDIFF = 1 / AXIS_WIDTH_IN_TICKS
 
-const epsilon = 0.1
+const epsilon = 0.01
 const twoPi = 2 * Math.PI
 
 export enum Direction {
@@ -98,7 +97,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       After reaching the position, the car is switched to floating mode.
     */
     async go(distance: number, speed: number): Promise<void> {
-      await Promise.all([
+      await Promise.race([
         motors.left.go(distance, speed),
         motors.right.go(distance, speed)
       ])
@@ -108,36 +107,39 @@ export default function (motors: {left: Motor, right: Motor}) {
     /*
       Turn car to the given destination angle.
     */
-    async turnTo(destination: Orientation, speed: number): Promise<void> {
-      assertValidSpeed(speed)
+    async turnTo(destination: Orientation): Promise<void> {
       console.log(`turn to ${destination.degreeAngle()}°`)
-      const direction = normalizeAngle(destination.angle - this.orientation.angle) < Math.PI ? Direction.left : Direction.right
-      const trigger = listeners.add((pos: Position, orientation: Orientation) => normalizeAngle(Math.abs(orientation.angle - destination.angle)) < epsilon)
-      motors[otherDirection(direction)].accelerate(-speed)
-      motors[direction].accelerate(speed)
-      await trigger.promise
-      car.float()
+      const turnAngle = car.orientation.differenceTo(destination)
+      if (Math.abs(turnAngle) > epsilon) {
+        const direction = turnAngle < Math.PI ? Direction.left : Direction.right
+        const trigger = listeners.add((pos: Position, orientation: Orientation) => Math.abs(car.orientation.differenceTo(destination)) < epsilon)
+        const speed = Math.abs(destination.angle) / Math.PI * 100
+        motors[otherDirection(direction)].accelerate(-speed)
+        motors[direction].accelerate(speed)
+        await trigger.promise
+        car.float()
+      }
     },
 
     /*
       Move car to the given position with the specified speed.
       After reaching the position, the car is switched to floating mode.
-      The speed is a percentage, with 100% being the maximal capacity of the motors.
     */
-    async goto(position: Position, speed: number): Promise<void> {
-      console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
-      assertValidSpeed(speed)
-      await this.turnTo(createOrientation(this.position.angleTo(position)), speed)
-      // console.debug(`car.goto(${position.x}, ${position.y}, ${speed}), currentPos=(${this.position.x}, ${this.position.y})`)
+    async goto(position: Position): Promise<void> {
+      console.debug(`car.goto(${position.x}, ${position.y}), currentPos=(${this.position.x}, ${this.position.y})`)
+      const angle = this.position.angleTo(position)
+      await this.turnTo(createOrientation(angle))
       const distance = this.position.distanceTo(position)
-      // console.debug(`car.goto(${position.x}, ${position.y}, ${speed}) -> distance=${distance}`)
-      const trigger = [
-        motors.left.go(distance, speed),
-        motors.right.go(distance, speed)
-      ]
-      await Promise.race(trigger.map(t => t.promise))
-      trigger.forEach(t => t.cancel())
-      car.float()
+      if (distance > 0) {
+        const speed = 100 - 1 / distance
+        const trigger = [
+          motors.left.go(distance, distance ),
+          motors.right.go(distance, speed)
+        ]
+        await Promise.race(trigger.map(t => t.promise))
+        trigger.forEach(t => t.cancel())
+        car.float()
+      }
     },
 
     async destruct() {

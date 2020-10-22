@@ -1,5 +1,3 @@
-import { idText } from "typescript"
-
 import 'should'
 import * as Position from './Position'
 

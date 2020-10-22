@@ -41,10 +41,10 @@ const commands = {
   },
 
   async triangle() {
-    await car.goto(createPosition(meters(.5), meters(0)), 100)
-    await car.goto(createPosition(meters(0), meters(1)), 100)
-    await car.goto(createPosition(meters(-.5), meters(0)), 100)
-    await car.goto(createPosition(meters(0), meters(0)), 100)
+    await car.goto(createPosition(meters(.5), meters(0)))
+    await car.goto(createPosition(meters(0), meters(1)))
+    await car.goto(createPosition(meters(-.5), meters(0)))
+    await car.goto(createPosition(meters(0), meters(0)))
   },
 
   async star() {
@@ -64,11 +64,11 @@ const commands = {
   },
 
   async square() {
-    await car.goto(createPosition(meters(-.5), meters(.5)), 50)
-    await car.goto(createPosition(meters(.5), meters(.5)), 50)
-    await car.goto(createPosition(meters(.5), meters(-.5)), 50)
-    await car.goto(createPosition(meters(-.5), meters(-.5)), 50)
-    await car.goto(createPosition(meters(-.5), meters(.5)), 50)
+    await car.goto(createPosition(meters(-.5), meters(.5)))
+    await car.goto(createPosition(meters(.5), meters(.5)))
+    await car.goto(createPosition(meters(.5), meters(-.5)))
+    await car.goto(createPosition(meters(-.5), meters(-.5)))
+    await car.goto(createPosition(meters(-.5), meters(.5)))
   },
 }
 
