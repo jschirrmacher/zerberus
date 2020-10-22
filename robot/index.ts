@@ -15,13 +15,14 @@ const car = Car({ left: leftMotorSet, right: rightMotorSet })
 
 const server = require('http').createServer()
 const io = IO(server)
+console.log('Car controller is running and waits for a connection')
 io.on('connection', client => {
   console.log('connected eyes - starting script')
   client.on('event', data => console.log('Eyes:', data))
   client.on('disconnect', () => console.log('disconnected eyes'))
   run()
 })
-server.listen(80)
+server.listen(80, '0.0.0.0')
 
 const commands = {
   async loop() {
