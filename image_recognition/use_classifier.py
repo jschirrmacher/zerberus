@@ -37,11 +37,6 @@ t = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0
 
 print("Loaded net")
 
-
-if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(
-        main_loop('ws://localhost:80'))
-
 async def main_loop(uri):
     async with websockets.connect(uri) as websocket:
         print("Initialised websocket connection")
@@ -61,3 +56,7 @@ async def main_loop(uri):
             print(output)
             print("Took: " + str(time() - tstep))
             tstep = time()
+
+if __name__ == "__main__":
+    asyncio.get_event_loop().run_until_complete(
+        main_loop('ws://localhost:80'))
