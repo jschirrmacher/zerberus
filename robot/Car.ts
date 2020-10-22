@@ -29,6 +29,12 @@ function assertValidSpeed(speed: number): void {
   }
 }
 
+function clamp(min: number, max: number) {
+  return (value: number) => Math.min(max, Math.max(min, value))
+}
+
+const clampSpeed = clamp(50, 100)
+
 export default function (motors: {left: Motor, right: Motor}) {
   let interval: NodeJS.Timer
   const listeners = ListenerList()
@@ -113,7 +119,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       if (Math.abs(turnAngle) > epsilon) {
         const direction = turnAngle < 0 ? Direction.left : Direction.right
         const trigger = listeners.add((pos: Position, orientation: Orientation) => Math.abs(car.orientation.differenceTo(destination)) < epsilon)
-        const speed = Math.abs(destination.angle) / Math.PI * 50
+        const speed = clampSpeed(Math.abs(destination.angle) / Math.PI * 50)
         motors[otherDirection(direction)].accelerate(-speed)
         motors[direction].accelerate(speed)
         await trigger.promise
@@ -131,7 +137,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       await this.turnTo(createOrientation(angle))
       const distance = this.position.distanceTo(position)
       if (distance > 0) {
-        const speed = Math.max(50, Math.min(100, distance / 16))
+        const speed = clampSpeed(distance / 16)
         const trigger = [
           motors.left.go(distance, speed),
           motors.right.go(distance, speed)
