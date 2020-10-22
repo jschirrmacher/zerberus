@@ -16,9 +16,10 @@ const car = Car({ left: leftMotorSet, right: rightMotorSet })
 const server = require('http').createServer()
 const io = IO(server)
 io.on('connection', client => {
-  console.log('connected eyes')
+  console.log('connected eyes - starting script')
   client.on('event', data => console.log('Eyes:', data))
   client.on('disconnect', () => console.log('disconnected eyes'))
+  run()
 })
 server.listen(80)
 
@@ -88,7 +89,7 @@ process.on('SIGINT', function() {
   process.exit()
 })
 
-;(async function () {
+async function run() {
   try {
     if (!process.argv[2] || !commands[process.argv[2]]) {
       const programCall = basename(process.argv.join(' ')) + ' <command>\n'
@@ -104,4 +105,4 @@ process.on('SIGINT', function() {
     console.log('Ori: ' + car.orientation.degreeAngle())
     car.destruct()
   }
-})()
+}
