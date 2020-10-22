@@ -22,7 +22,7 @@ io.on('connection', client => {
   client.on('disconnect', () => console.log('disconnected eyes'))
   run()
 })
-server.listen(80, '0.0.0.0')
+server.listen(2001, '0.0.0.0')
 
 const commands = {
   async loop() {
