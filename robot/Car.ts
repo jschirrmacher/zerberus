@@ -111,7 +111,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       console.log(`turn to ${destination}`)
       const turnAngle = car.orientation.differenceTo(destination)
       if (Math.abs(turnAngle) > epsilon) {
-        const direction = turnAngle < Math.PI ? Direction.left : Direction.right
+        const direction = turnAngle < 0 ? Direction.left : Direction.right
         const trigger = listeners.add((pos: Position, orientation: Orientation) => Math.abs(car.orientation.differenceTo(destination)) < epsilon)
         const speed = Math.abs(destination.angle) / Math.PI * 50
         motors[otherDirection(direction)].accelerate(-speed)
@@ -131,9 +131,9 @@ export default function (motors: {left: Motor, right: Motor}) {
       await this.turnTo(createOrientation(angle))
       const distance = this.position.distanceTo(position)
       if (distance > 0) {
-        const speed = 100 - 1 / distance
+        const speed = Math.max(50, Math.min(100, distance / 16))
         const trigger = [
-          motors.left.go(distance, distance ),
+          motors.left.go(distance, speed),
           motors.right.go(distance, speed)
         ]
         await Promise.race(trigger.map(t => t.promise))

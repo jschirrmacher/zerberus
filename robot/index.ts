@@ -41,9 +41,9 @@ const commands = {
   },
 
   async triangle() {
-    await car.goto(createPosition(meters(.5), meters(0)))
-    await car.goto(createPosition(meters(0), meters(1)))
-    await car.goto(createPosition(meters(-.5), meters(0)))
+    await car.goto(createPosition(meters(.3), meters(0)))
+    await car.goto(createPosition(meters(0), meters(.6)))
+    await car.goto(createPosition(meters(-.3), meters(0)))
     await car.goto(createPosition(meters(0), meters(0)))
   },
 
