@@ -3,6 +3,7 @@ import Car, { Direction } from './Car'
 import { basename } from 'path'
 import Encoder from './Encoder'
 import { create as createPosition, meters } from './Position'
+import IO from 'socket.io'
 
 const CPR = 544
 
@@ -11,6 +12,15 @@ const rightEncoder = Encoder(19, 26)
 const leftMotorSet = Motor(27, 17, 22, rightEncoder)
 const rightMotorSet = Motor(3, 2, 4, leftEncoder)
 const car = Car({ left: leftMotorSet, right: rightMotorSet })
+
+const server = require('http').createServer()
+const io = IO(server)
+io.on('connection', client => {
+  console.log('connected eyes')
+  client.on('event', data => console.log('Eyes:', data))
+  client.on('disconnect', () => console.log('disconnected eyes'))
+})
+server.listen(80)
 
 const commands = {
   async loop() {
