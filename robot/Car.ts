@@ -7,7 +7,7 @@ const Gpio = require('../gpio')
 export const WIDTH_OF_AXIS = 270 // mm
 const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
 
-const epsilon = 0.01
+const epsilon = 0.03
 const twoPi = 2 * Math.PI
 
 export enum Direction {
@@ -113,7 +113,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       if (Math.abs(turnAngle) > epsilon) {
         const direction = turnAngle < Math.PI ? Direction.left : Direction.right
         const trigger = listeners.add((pos: Position, orientation: Orientation) => Math.abs(car.orientation.differenceTo(destination)) < epsilon)
-        const speed = Math.abs(destination.angle) / Math.PI * 100
+        const speed = Math.abs(destination.angle) / Math.PI * 50
         motors[otherDirection(direction)].accelerate(-speed)
         motors[direction].accelerate(speed)
         await trigger.promise
