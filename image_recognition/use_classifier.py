@@ -11,6 +11,9 @@ import torch.optim as optim
 from classifier_net import Net
 import asyncio
 import websockets
+import atexit
+import cv2
+from pathlib import Path
 
 NET = '../class_net.pth'
 images = "./pictures/all_images/"
@@ -54,7 +57,7 @@ async def main_loop(uri):
             img = transform.resize(img, (72, 128))
             img = t(img).float()
             output = net.forward(img.unsqueeze(0))[0][0]
-            async websocket.send(str(output > 0.9))
+            await websocket.send(str(output > 0.9))
             print(output)
             print("Took: " + str(time() - tstep))
             tstep = time()
