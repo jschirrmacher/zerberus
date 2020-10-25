@@ -51,7 +51,7 @@ io.on('connection', client => {
   })
 
   client.on('camera', (info) => {
-    console.log(`Camery says`, info)
+    console.log(`Camera says`, info)
   })
 
   client.on('disconnect', () => {
