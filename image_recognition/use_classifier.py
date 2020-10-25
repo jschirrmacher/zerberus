@@ -15,6 +15,16 @@ from pathlib import Path
 import socketio
 from time import time
 
+def exit_handler():
+    cap.release()
+
+atexit.register(exit_handler)
+
+sio = socketio.Client()
+
+sio.connect('ws://localhost:10000')
+print("Initialised websocket connection")
+
 @sio.event
 def connect():
     print('connection established')
@@ -59,14 +69,3 @@ def my_message(data):
 @sio.event
 def disconnect():
     print('disconnected from server')
-
-if __name__ == "__main__":
-    def exit_handler():
-        cap.release()
-
-    atexit.register(exit_handler)
-
-    sio = socketio.Client()
-
-    sio.connect('ws://localhost:10000')
-    print("Initialised websocket connection")
