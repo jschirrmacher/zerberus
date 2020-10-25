@@ -1,6 +1,7 @@
+import { INPUT } from './gpio'
 import ListenerList, { Trigger } from './ListenerList'
 
-const Gpio = require('../gpio')
+const Gpio = require('./gpio')
 
 export const TICKS_PER_REV = 544
 
@@ -27,15 +28,15 @@ const QEM = [
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
 */
-export default function (pin_a: number, pin_b: number): Encoder {
+export default function (gpio, pin_a: number, pin_b: number): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
-  const stream = new Gpio.Notifier({ bits: 1 << pin_a | 1 << pin_b })
+  const notifier = gpio.createNotifier([pin_a, pin_b])
   let listeners = ListenerList()
 
   const encoder = {
     no: encoderNo++,
-    simulated: stream.simulated,
+    simulated: notifier.simulated,
     currentPosition: 0,
 
     /*
@@ -88,9 +89,9 @@ export default function (pin_a: number, pin_b: number): Encoder {
     chunk.length > 12 && handleChunk(chunk.slice(12))
   }
 
-  new Gpio(pin_a, { mode: Gpio.INPUT })
-  new Gpio(pin_b, { mode: Gpio.INPUT })
-  stream.stream().on('data', handleChunk)
+  gpio.create(pin_a, { mode: INPUT })
+  gpio.create(pin_b, { mode: INPUT })
+  notifier.stream().on('data', handleChunk)
 
   return encoder
 }

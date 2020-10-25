@@ -2,15 +2,14 @@
 
 Software for a robot, which chases racoons out of your garden.
 
-It is build using the 4WD Wild Thumper Chassis with 34:1 and a Raspberry Pi 4B.
-
-For easier development of the software without burning the motors (and load the Respi every time), we created a simple simulator.
+It is build using the 4WD Wild Thumper Chassis with 34:1 gear and a Raspberry Pi 4B.
 
 The software consists of several parts:
 
-1. A gpio.ts module in the root folder, which provides the Gpio class in production mode (NODE_ENV=production), and a simulator class in all other environments, which communicates with the http server. The simulator class can also be found in this module.
-2. The simulator in `/simulator` folder, containing a http server, which sends received information to a frontend via web sockets and receives simulated sensor data in the same way from the frontend.
-3. The actual robot control program, using gpio.ts, is located in `/robot`.
+1. The motor control program which runs the motors is located in `/robot`.
+2. A viewer in `/viewer` folder, containing a http server, which sends received information to a frontend via web sockets and receives simulated sensor data in the same way from the frontend.
+3. An image recognition software located in `/image_recognition`.
+4. A CLI client to send commands to the robot controller
 
 The robot control program is implmented in TypeScript (for motor control) and Python (for image recognition).
 
@@ -22,15 +21,11 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - Follow https://mathinf.eu/pytorch/arm64/
 - Configure https://www.piwheels.org/
 - Enable camera using `sudo raspi-config`
-- sudo apt-get install libssl-dev
+- curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+- sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev nodejs
 - sudo pip3 install scikit-build
 - sudo pip3 install opencv-python
-- sudo apt-get install caca-utils
-- sudo apt-get install -y gfortran
-- sudo apt-get -y install liblapack-dev libblas-dev
 - sudo pip3 install scikit-image
-- curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-- sudo apt-get install -y nodejs
 
 ### Install robot software
 
@@ -40,36 +35,44 @@ Then, install the robot software:
     cd coon-chaser
     npm i  // for production (on a Rasperry Pi), add `--production`
 
-## Start actual robot
+## Start
 
-To run the production version which doesn't use the simulator, but the actual GPIO run:
+If you just want to test the motor control software on your local computer without actual motors connected, you can call
 
-    sudo npm start <sequence-name>
+    npm run simulator
 
-Running `npm start` without a sequence name prints a list of currently available sequences.
+To run the production version which uses the actual GPIO of the Raspi, run:
 
-## Start in simulator
+    sudo npm start
 
-To run the simulator software type this command:
+You need 'sudo' here to make sure that the program has access to the hardware.
 
-    sudo npm run simulator:start
+### Start the viewer
 
-Then, start a browser and open http://localhost:10000
+To view the current state of the car, open http://localhost:10000 or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
 
-You can then run the robot software by calling
+### Remote control
 
-    npm run simulator:robot <sequence-name>
+You can control, what the car should do, by calling node, import a CLI module named 'client' and execute commands for the car like in this example:
 
-### Try simulator via http client
+    $ node
+    > const client = require('./client')
+    undefined
+    > client.send('curve')
+    undefined
+    > client.send('getPos')
+    undefined
+    > {
+    type: 'currentPosition',
+    pos: { x: 525.991644547528, y: 5.229563255253986 },
+    orientation: { angle: 0 }
+    }
 
-You can try the simulator by calling it's REST API. You can do this, for example, with 'curl':
+## Parts list
 
-    curl -X POST http://localhost:10000/gpio/RXD/1
-    curl -X POST http://localhost:10000/gpio/RXD/0
-
-If you use Visual Studio code, you can open the file 'tests.http' and click some of the "Send request" links. Try some more, if you like.
-
-### functions supported by the simulator
-
-- Mode: `POST http://localhost:10000/gpio/mode/:pin/:mode` - currently only "IN", "OUT" and "PWM" are supported. This will be shown in the simulator by a greater, less than or tilde sign right beside the pin.
-- Write: `POST http://localhost:10000/gpio/:pin/:value` - values can be "0" or "1"
+- Wild Thumper (Chassis and Motors)
+- Raspberry PI 4B
+- Motor Driver
+- Accumulator for Motors
+- Accumulator for Raspi
+- Night Vision Camera

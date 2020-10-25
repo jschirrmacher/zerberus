@@ -1,8 +1,7 @@
 import { Motor, TICKS_PER_MM } from './Motor'
 import { Position, create as createPosition } from './Position'
 import { create as createOrientation, DegreeAngle, Orientation } from './Orientation'
-import ListenerList from './ListenerList'
-const Gpio = require('../gpio')
+import ListenerList, { Listener } from './ListenerList'
 
 export const WIDTH_OF_AXIS = 270 // mm
 const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
@@ -148,6 +147,10 @@ export default function (motors: {left: Motor, right: Motor}) {
       }
     },
 
+    setPositionListener(listener: Listener): void {
+      listeners.add(listener)
+    },
+
     async destruct() {
       await car.stop()
       motors.left.destruct()
@@ -158,7 +161,6 @@ export default function (motors: {left: Motor, right: Motor}) {
 
   let oldLeftPos = motors.left.getPosition()
   let oldRightPos = motors.right.getPosition()
-  const gpio = new Gpio()
 
   function updatePosition() {
     const leftPos = motors.left.getPosition()
@@ -185,10 +187,6 @@ export default function (motors: {left: Motor, right: Motor}) {
   }
 
   interval = setInterval(updatePosition, 50)
-
-  if (gpio.setCarPosition) {
-    listeners.add(gpio.setCarPosition)
-  }
 
   return car
 }

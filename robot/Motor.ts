@@ -1,8 +1,7 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
 import { Trigger } from "./ListenerList"
 import wait from "./wait"
-
-const Gpio = require('../gpio')
+import { OUTPUT, PWM } from './gpio'
 
 export const DIAMETER = 120 // mm
 export const PERIMETER = DIAMETER * Math.PI
@@ -33,10 +32,10 @@ enum MotorMode {
 
 let motorNo = 1
 
-export default function (pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder): Motor {
-  const in1 = new Gpio(pin_in1, { mode: Gpio.OUTPUT })
-  const in2 = new Gpio(pin_in2, { mode: Gpio.OUTPUT })
-  const ena = new Gpio(pin_ena, { mode: Gpio.PWM })
+export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder): Motor {
+  const in1 = gpio.create(pin_in1, { mode: OUTPUT })
+  const in2 = gpio.create(pin_in2, { mode: OUTPUT })
+  const ena = gpio.create(pin_ena, { mode: PWM })
   
   let encoderTimer: NodeJS.Timeout
   let simTime = 0
