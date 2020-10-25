@@ -1,4 +1,4 @@
-import { INPUT } from './gpio'
+import { INPUT, PI_NTFY_FLAGS_ALIVE } from './gpio'
 import ListenerList, { Trigger } from './ListenerList'
 
 const Gpio = require('./gpio')
@@ -76,7 +76,7 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
   }
 
   function handleChunk(chunk: Buffer) {
-    if (!(chunk.readUInt16LE(2) & Gpio.Notifier.PI_NTFY_FLAGS_ALIVE)) {
+    if (!(chunk.readUInt16LE(2) & PI_NTFY_FLAGS_ALIVE)) {
       const level = chunk.readUInt32LE(8)
       const newVal = ((level >>> pin_a) & 1) << 1 | ((level >>> pin_b) & 1)
       const diff = QEM[oldVal][newVal]
