@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import io
+from skimage import io, transform
 import torch
 import torchvision
 import torchvision.transforms as transforms
