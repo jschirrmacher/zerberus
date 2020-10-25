@@ -15,6 +15,10 @@ from pathlib import Path
 import socketio
 from time import time
 
+cap = cv2.VideoCapture(0)
+
+print("Initialised camera")
+
 def exit_handler():
     cap.release()
 
@@ -34,10 +38,6 @@ def connect():
     Path(images).mkdir(parents=True, exist_ok=True)
 
     print("Setup file structure")
-
-    cap = cv2.VideoCapture(0)
-
-    print("Initialised camera")
 
     net = Net()
     net.load_state_dict(torch.load(NET))
