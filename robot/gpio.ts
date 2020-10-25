@@ -68,13 +68,13 @@ export default function () {
 
       return {
         digitalWrite(value: number): void {
-          pigpioObj && pigpio.digitalWrite(value)
+          pigpioObj && pigpioObj.digitalWrite(value)
           broadcast('gpio-write', { pin: actualPin, value })
         },
 
         pwmWrite(dutyCycle: number): void {
           const value = Math.min(255, Math.max(0, dutyCycle))
-          pigpioObj && pigpio.pwmWrite(value)
+          pigpioObj && pigpioObj.pwmWrite(value)
           broadcast('gpio-pwm', { pin: actualPin, value })
         },
       }
