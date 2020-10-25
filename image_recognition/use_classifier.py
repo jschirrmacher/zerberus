@@ -29,38 +29,34 @@ sio = socketio.Client()
 sio.connect('ws://localhost:10000')
 print("Initialised websocket connection")
 
-@sio.event
-def connect():
-    print('connection established')
+NET = '../class_net.pth'
+images = "./pictures/all_images/"
+Path(images).mkdir(parents=True, exist_ok=True)
 
-    NET = '../class_net.pth'
-    images = "./pictures/all_images/"
-    Path(images).mkdir(parents=True, exist_ok=True)
+print("Setup file structure")
 
-    print("Setup file structure")
+net = Net()
+net.load_state_dict(torch.load(NET))
 
-    net = Net()
-    net.load_state_dict(torch.load(NET))
+t = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    t = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
-    print("Loaded net")
-    counter = 0
-    while True:
-        tstep = time()
-        ret, frame = cap.read()
-        frame = cv2.flip(frame, 0)
-        frame = cv2.flip(frame, 1)
-        cv2.imwrite(images + str(counter) + '.png', frame)
-        img = io.imread(images + str(counter) + '.png')
-        counter += 1
-        img = transform.resize(img, (72, 128))
-        img = t(img).float()
-        output = net.forward(img.unsqueeze(0))[0][0]
-        sio.emit('camera', {'obstacle': str(output > 0.9)})
-        print(output)
-        print("Took: " + str(time() - tstep))
-        tstep = time()
+print("Loaded net")
+counter = 0
+while True:
+    tstep = time()
+    ret, frame = cap.read()
+    frame = cv2.flip(frame, 0)
+    frame = cv2.flip(frame, 1)
+    cv2.imwrite(images + str(counter) + '.png', frame)
+    img = io.imread(images + str(counter) + '.png')
+    counter += 1
+    img = transform.resize(img, (72, 128))
+    img = t(img).float()
+    output = net.forward(img.unsqueeze(0))[0][0]
+    sio.emit('camera', {'obstacle': str(output > 0.9)})
+    print(output)
+    print("Took: " + str(time() - tstep))
+    tstep = time()
 
 @sio.event
 def my_message(data):
