@@ -50,6 +50,10 @@ io.on('connection', client => {
     }
   })
 
+  client.on('camera', (info) => {
+    console.log(`Camery says`, info)
+  })
+
   client.on('disconnect', () => {
     gpio.removeListener(listenerId)
     console.log('Client disconnected')
