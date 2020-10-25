@@ -29,7 +29,7 @@ def my_message(data):
 def disconnect():
     print('disconnected from server')
 
-sio.connect('ws://localhost:2001')
+sio.connect('ws://localhost:10000')
 print("Initialised websocket connection")
 
 NET = '../class_net.pth'
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         img = transform.resize(img, (72, 128))
         img = t(img).float()
         output = net.forward(img.unsqueeze(0))[0][0]
-        sio.emit(str(output > 0.9))
+        sio.emit('camera', {'obstacle': str(output > 0.9)})
         print(output)
         print("Took: " + str(time() - tstep))
         tstep = time()
