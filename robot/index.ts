@@ -22,11 +22,12 @@ const app = express()
 const server = require('http').createServer(app)
 const io = IO(server)
 server.listen(10000)
-app.use('/', express.static(path.resolve(__dirname, '..', 'viewer')))
+app.use('/', express.static(path.resolve(__dirname, '..', 'frontend')))
 
 console.log('Car controller is running and waits for connections')
 io.on('connection', client => {
   console.log('Client connected')
+  client.emit('hi', 'Robot Simulator')
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
@@ -38,11 +39,10 @@ io.on('connection', client => {
   client.on('command', async (command) => {
     console.debug('Received command ' + command.name)
     if (command.name === 'list-commands') {
-      client.emit('result', { type: 'commandList', list: Object.keys(commands) })
+      client.emit('command-list', Object.keys(commands))
     } else {
       try {
         await commands[command.name](command.args)
-        client.emit('result', { type: 'currentPosition', pos: car.position, orientation: car.orientation })
       } catch (error) {
         console.error(error)
         client.emit('error', error)

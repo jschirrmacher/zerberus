@@ -7,5 +7,5 @@
     "sourceMap": true,
     "downlevelIteration": true,
   },
-  "include": ["viewer/server/**/*.ts", "robot/**/*.ts"],
+  "include": ["frontend/server/**/*.ts", "robot/**/*.ts"],
 }

@@ -7,9 +7,8 @@ It is build using the 4WD Wild Thumper Chassis with 34:1 gear and a Raspberry Pi
 The software consists of several parts:
 
 1. The motor control program which runs the motors is located in `/robot`.
-2. A viewer in `/viewer` folder, containing a http server, which sends received information to a frontend via web sockets and receives simulated sensor data in the same way from the frontend.
+2. A viewer/controller in `/frontend` folder.
 3. An image recognition software located in `/image_recognition`.
-4. A CLI client to send commands to the robot controller
 
 The robot control program is implmented in TypeScript (for motor control) and Python (for image recognition).
 
@@ -47,26 +46,10 @@ To run the production version which uses the actual GPIO of the Raspi, run:
 
 You need 'sudo' here to make sure that the program has access to the hardware.
 
-### Start the viewer
+### Start the viewer / controller
 
 To view the current state of the car, open http://localhost:10000 or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
-
-### Remote control
-
-You can control, what the car should do, by calling node, import a CLI module named 'client' and execute commands for the car like in this example:
-
-    $ node
-    > const client = require('./client')
-    undefined
-    > client.send('curve')
-    undefined
-    > client.send('getPos')
-    undefined
-    > {
-    type: 'currentPosition',
-    pos: { x: 525.991644547528, y: 5.229563255253986 },
-    orientation: { angle: 0 }
-    }
+To send commands to the car, press the buttons displayed right of the car visualization area.
 
 ## Parts list
 

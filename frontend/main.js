@@ -40,10 +40,15 @@
     }
   })
 
+  socket.on('command-list', commands => {
+    connectController(commands)
+  })
+
   function setCarPosition(msg) {
     car.setAttribute('style', `transform: translate(${msg.posX * 150 + center.x}px, ${center.y - msg.posY * 150}px) rotate(${-msg.orientation}deg) scale(.5)`)
   }
 
+  socket.on('connect', () => socket.emit('command', {name: 'list-commands'}))
   socket.on('car-position', setCarPosition)
 
   connectLEDs()
@@ -89,5 +94,15 @@
       document.querySelector('#' + in2).onValue = setValueHandler('in2')
       document.querySelector('#' + ena).onValue = setValueHandler('ena')
     })
+  }
+
+  function connectController(commands) {
+    const controller = document.querySelector('#command-controller')
+    commands.forEach(name => {
+      const button = document.createElement('button')
+      button.innerText = name
+      button.onclick = () => socket.emit('command', { name })
+      controller.appendChild(button)
+      })
   }
 })()
