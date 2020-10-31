@@ -17,6 +17,7 @@ import eventlet
 from time import time
 from threading import Thread 
 import base64
+from io import BytesIO
 
 cap = cv2.VideoCapture(0)
 
@@ -67,15 +68,15 @@ while True:
     frame = cv2.flip(frame, 1)
     cv2.imwrite(images + str(counter) + '.png', frame)
     img = io.imread(images + str(counter) + '.png')
+    im_file = BytesIO()
+    img.save(im_file, format="JPEG")
+    im_bytes = im_file.getvalue()  # im_bytes: image in binary format.
+    im_b64 = base64.b64encode(im_bytes)
     counter += 1
     img = transform.resize(img, (72, 128))
     img = t(img).float()
     output = net.forward(img.unsqueeze(0))[0][0]
     sio.emit('camera', {'obstacle': str(output > 0.9)})
-    im_file = BytestIO()
-    img.save(im_file, format="JPEG")
-    im_bytes = im_file.getvalue()  # im_bytes: image in binary format.
-    im_b64 = base64.b64encode(im_bytes)
     server.emit('img', {'img':im_b64})
     print(output)
     print("Took: " + str(time() - tstep))
