@@ -13,6 +13,7 @@ import atexit
 import cv2
 from pathlib import Path
 import socketio
+import eventlet
 from time import time
 
 cap = cv2.VideoCapture(0)
@@ -28,6 +29,22 @@ sio = socketio.Client()
 
 sio.connect('ws://localhost:10000')
 print("Initialised websocket connection")
+
+server = socketio.Server()
+app = socketio.WSGIApp(server)
+
+@server.event
+def connect(sid, environ):
+    print('connect ', sid)
+
+@server.event
+def disconnect(sid):
+    print('disconnect ', sid)
+
+if __name__ == '__main__':
+    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+
+print("Setup server")
 
 NET = '../class_net.pth'
 images = "./pictures/all_images/"
@@ -53,6 +70,9 @@ while True:
     img = t(img).float()
     output = net.forward(img.unsqueeze(0))[0][0]
     sio.emit('camera', {'obstacle': str(output > 0.9)})
+    cnt = cv2.imencode('.png',frame)[1]
+    b64 = base64.encodestring(cnt)
+    server.emit('img', {'img':b64})
     print(output)
     print("Took: " + str(time() - tstep))
     tstep = time()

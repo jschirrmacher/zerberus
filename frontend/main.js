@@ -51,6 +51,10 @@
   socket.on('connect', () => socket.emit('command', {name: 'list-commands'}))
   socket.on('car-position', setCarPosition)
 
+  const camera_socket = io()
+
+  socket.on('img', data => document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img'])
+
   connectLEDs()
   connectMotors()
   setCarPosition({ posX: 0, posY: 0, orientation: 0 })
