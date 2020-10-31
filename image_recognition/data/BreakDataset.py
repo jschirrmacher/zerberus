@@ -29,11 +29,11 @@ class BreakDataset(Dataset):
             sample = {'image': io.imread(self.basedir + "break/" + name ), 'break': 1}
         else:
             name =  self.cont_images[idx % len(self.cont_images)]
-            sample = {'image': io.imread(self.basedir + "continue/" + name), 'break': 0}
+            sample = {'image': io.imread(self.basedir + "continue/" + name), 'break': -1}
 
         sample['image'] = transform.resize(sample['image'], (72, 128))
         sample['image'] = self._transform()(sample['image']).float()
-        return [sample['image'], torch.Tensor([float(sample['break'])]).float(), name]
+        return [sample['image'], torch.Tensor([sample['break']]).float(), name]
 
 if __name__ == "__main__":
     dataset = BreakDataset()

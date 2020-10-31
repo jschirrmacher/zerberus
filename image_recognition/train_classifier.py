@@ -9,14 +9,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 from classifier_net import Net
 
-trainset = BreakDataset.BreakDataset("./image_recognition/data/")
+trainset = BreakDataset.BreakDataset("./data/") # ./image_recognition/data/ 
 
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=1, #todo: suceed with larger batch size
                                           shuffle=True, num_workers=2)
-
-
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=1,
-                                          shuffle=True, num_workers=0)
 
 testloader = torch.utils.data.DataLoader(trainset, batch_size=1, # todo: in future use different data
                                          shuffle=False, num_workers=0)
@@ -41,10 +37,10 @@ if False:
     print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
 
 net = Net()
-criterion = nn.BCELoss()
+criterion = nn.HingeEmbeddingLoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-for epoch in range(8):  # loop over the dataset multiple times
+for epoch in range(1):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
@@ -91,12 +87,12 @@ with torch.no_grad():
                 if worst[i]["error"] < error:
                     continue
                 elif i != 0:
-                    worst.remove(i - 1)
+                    del worst[i - 1]
                     worst.insert(i - 1, {"img": name, "error" : abs(predicted - label)})
                 else:
                     break
             else:
-                    worst.remove(9)
+                    del worst[9]
                     worst.insert(9, {"img": name, "error" : abs(predicted - label)})
 
 print('Accuracy of the network on the all test images: %d %%' % (
