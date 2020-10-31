@@ -15,6 +15,7 @@ from pathlib import Path
 import socketio
 import eventlet
 from time import time
+from threading import Thread 
 
 cap = cv2.VideoCapture(0)
 
@@ -41,8 +42,8 @@ def connect(sid, environ):
 def disconnect(sid):
     print('disconnect ', sid)
 
-if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+t = Thread(target = lambda: eventlet.wsgi.server(eventlet.listen(('', 5000)), app))
+t.start()
 
 print("Setup server")
 

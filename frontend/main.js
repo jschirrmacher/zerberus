@@ -51,9 +51,10 @@
   socket.on('connect', () => socket.emit('command', {name: 'list-commands'}))
   socket.on('car-position', setCarPosition)
 
-  const camera_socket = io()
+  const camera_socket = io('http://192.168.178.78:5000/')
 
-  socket.on('img', data => document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img'])
+  camera_socket.on('img', data => document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img'])
+
 
   connectLEDs()
   connectMotors()
