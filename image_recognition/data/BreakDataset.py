@@ -23,15 +23,17 @@ class BreakDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-
+        name = ""
         if idx < max(len(self.break_images),len(self.cont_images)):
-            sample = {'image': io.imread(self.basedir + "break/" + self.break_images[idx % len(self.break_images)]), 'break': 1}
+            name =  self.break_images[idx % len(self.break_images)]
+            sample = {'image': io.imread(self.basedir + "break/" + name ), 'break': 1}
         else:
-            sample = {'image': io.imread(self.basedir + "continue/" + self.cont_images[idx % len(self.cont_images)]), 'break': 0}
+            name =  self.cont_images[idx % len(self.cont_images)]
+            sample = {'image': io.imread(self.basedir + "continue/" + name), 'break': 0}
 
         sample['image'] = transform.resize(sample['image'], (72, 128))
         sample['image'] = self._transform()(sample['image']).float()
-        return [sample['image'], torch.Tensor([float(sample['break'])]).float()]
+        return [sample['image'], torch.Tensor([float(sample['break'])]).float(), name]
 
 if __name__ == "__main__":
     dataset = BreakDataset()

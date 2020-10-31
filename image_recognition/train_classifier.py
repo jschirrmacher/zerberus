@@ -44,11 +44,11 @@ net = Net()
 criterion = nn.BCELoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-for epoch in range(5):  # loop over the dataset multiple times
+for epoch in range(8):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data
+        inputs, labels, _ = data
         # zero the parameter gradients
         optimizer.zero_grad()
 
@@ -60,6 +60,9 @@ for epoch in range(5):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
+        if i % 100 == 0:
+            print('[%d, %5d] loss: %.3f' %
+                    (epoch + 1, i + 1, running_loss))
     
     print('[%d, %5d] loss: %.3f' %
             (epoch + 1, i + 1, running_loss))
@@ -67,20 +70,37 @@ for epoch in range(5):  # loop over the dataset multiple times
 
 print('Finished Training')
 PATH = './class_net.pth'
-torch.save(net.state_dict(), PATH)
+torch.save(net, PATH)
 print('Saved')
-dataiter = iter(testloader)
-images, labels = dataiter.next()
 
 correct = 0
 total = 0
+worst = []
 with torch.no_grad():
     for data in testloader:
-        images, labels = data
+        images, label, name = data
         outputs = net(images)
         predicted = torch.round(outputs.data)
         total += labels.size(0)
-        correct += (predicted == labels).sum().item()
+        correct += (predicted == label).sum().item()
+        if len(worst) < 10:
+            worst.append({"img": name, "error" : abs(predicted - label)})
+        else:
+            error = abs(predicted - label)
+            for i in range(10):
+                if worst[i]["error"] < error:
+                    continue
+                elif i != 0:
+                    worst.remove(i - 1)
+                    worst.insert(i - 1, {"img": name, "error" : abs(predicted - label)})
+                else:
+                    break
+            else:
+                    worst.remove(9)
+                    worst.insert(9, {"img": name, "error" : abs(predicted - label)})
 
 print('Accuracy of the network on the all test images: %d %%' % (
     100 * correct / total))
+
+for bad in worst:
+    print("Worst:" + bad["img"] + " Error " + str(bad["error"]))

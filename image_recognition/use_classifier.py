@@ -36,8 +36,8 @@ Path(images).mkdir(parents=True, exist_ok=True)
 print("Setup file structure")
 
 net = Net()
-net.load_state_dict(torch.load(NET))
-
+net.load(NET)
+net.eval() # Set dropout + batch normalization layers
 t = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 print("Loaded net")
