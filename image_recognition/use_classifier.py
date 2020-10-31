@@ -72,9 +72,11 @@ while True:
     img = t(img).float()
     output = net.forward(img.unsqueeze(0))[0][0]
     sio.emit('camera', {'obstacle': str(output > 0.9)})
-    cnt = cv2.imencode('.png',frame)[1]
-    b64 = base64.encodestring(cnt)
-    server.emit('img', {'img':b64})
+    im_file = BytestIO()
+    img.save(im_file, format="JPEG")
+    im_bytes = im_file.getvalue()  # im_bytes: image in binary format.
+    im_b64 = base64.b64encode(im_bytes)
+    server.emit('img', {'img':im_b64})
     print(output)
     print("Took: " + str(time() - tstep))
     tstep = time()
