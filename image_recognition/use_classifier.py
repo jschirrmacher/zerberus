@@ -13,7 +13,7 @@ import atexit
 import cv2
 from pathlib import Path
 import socketio
-from gevent import pywsgi
+import eventlet
 from time import time
 from threading import Thread 
 import base64
@@ -33,7 +33,7 @@ sio = socketio.Client()
 sio.connect('ws://localhost:10000')
 print("Initialised websocket connection")
 
-server = socketio.Server(async_mode='gevent')
+server = socketio.Server(cors_allowed_origins='*')
 app = socketio.WSGIApp(server)
 
 @server.event
@@ -44,7 +44,7 @@ def connect(sid, environ):
 def disconnect(sid):
     print('disconnect ', sid)
 
-t = Thread(target = lambda: pywsgi.WSGIServer(('', 5000), app).serve_forever())
+t = Thread(target = lambda: eventlet.wsgi.server(eventlet.listen(('', 5000)), app))
 t.start()
 
 print("Setup server")
