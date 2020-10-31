@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from skimage import io, transform
 import torch
 import torchvision
@@ -13,7 +13,7 @@ import atexit
 import cv2
 from pathlib import Path
 import socketio
-import eventlet
+from gevent import pywsgi
 from time import time
 from threading import Thread 
 import base64
@@ -33,7 +33,7 @@ sio = socketio.Client()
 sio.connect('ws://localhost:10000')
 print("Initialised websocket connection")
 
-server = socketio.Server()
+server = socketio.Server(async_mode='gevent')
 app = socketio.WSGIApp(server)
 
 @server.event
@@ -44,7 +44,7 @@ def connect(sid, environ):
 def disconnect(sid):
     print('disconnect ', sid)
 
-t = Thread(target = lambda: eventlet.wsgi.server(eventlet.listen(('', 5000)), app))
+t = Thread(target = lambda: pywsgi.WSGIServer(('', 5000), app).serve_forever())
 t.start()
 
 print("Setup server")
@@ -68,10 +68,7 @@ while True:
     frame = cv2.flip(frame, 1)
     cv2.imwrite(images + str(counter) + '.png', frame)
     img = io.imread(images + str(counter) + '.png')
-    im_file = BytesIO()
-    img.save(im_file, format="JPEG")
-    im_bytes = im_file.getvalue()  # im_bytes: image in binary format.
-    im_b64 = base64.b64encode(im_bytes)
+    im_b64 = base64.b64encode(frame)
     counter += 1
     img = transform.resize(img, (72, 128))
     img = t(img).float()

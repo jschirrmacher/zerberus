@@ -53,7 +53,10 @@
 
   const camera_socket = io('http://192.168.178.78:5000/')
 
-  camera_socket.on('img', data => document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img'])
+  camera_socket.on('img', data => {
+    console.log(data)
+    document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img']
+  } )
 
 
   connectLEDs()
