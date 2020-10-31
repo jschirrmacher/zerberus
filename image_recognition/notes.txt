@@ -1,1 +1,1 @@
-scp -r cc:/home/pi/coon-chaser/image_recognition/pictures/all_images .\image_recognition\data\all_images
+scp -r cc:/home/pi/coon-chaser/image_recognition/pictures/all_images .\image_recognition\data\

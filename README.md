@@ -51,6 +51,10 @@ You need 'sudo' here to make sure that the program has access to the hardware.
 To view the current state of the car, open http://localhost:10000 or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
 To send commands to the car, press the buttons displayed right of the car visualization area.
 
+### Start the edge detection
+
+On the raspberry pi to start the python script to prevent the robot from running into walls, run `python3 use_classifier.py` in the coon_chaser directory on the raspberry pi. 
+
 ## Parts list
 
 - Wild Thumper (Chassis and Motors)
