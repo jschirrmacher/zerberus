@@ -16,6 +16,7 @@ import socketio
 import eventlet
 from time import time
 from threading import Thread 
+import base64
 
 cap = cv2.VideoCapture(0)
 
