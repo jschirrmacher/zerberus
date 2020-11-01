@@ -106,11 +106,12 @@
 
   function connectController(commands) {
     const controller = document.querySelector('#command-controller')
+    controller.innerHTML = ''
     commands.forEach(name => {
       const button = document.createElement('button')
       button.innerText = name
       button.onclick = () => socket.emit('command', { name })
       controller.appendChild(button)
-      })
+    })
   }
 })()
