@@ -1,5 +1,5 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
-import { Trigger } from "./ListenerList"
+import { emptyTrigger, NonCancellableTrigger, Trigger } from "./ListenerList"
 import wait from "./wait"
 import { OUTPUT, PWM } from './gpio'
 
@@ -14,10 +14,10 @@ export type Motor = {
   no: number,
   speed: number,
   mode: MotorMode,
-  accelerate: (speed: number) => Promise<void>,
+  accelerate: (speed: number) => Trigger,
   go(distance: number, speed: number): Trigger,
-  stop: () => void,
-  float: () => void,
+  stop: () => Trigger,
+  float: () => Trigger,
   getPosition: () => number,
   on(position: number): Promise<void>,
   destruct(): void,
@@ -84,13 +84,15 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
     speed: 0,
     mode: MotorMode.FLOAT,
 
-    async accelerate(speed: number): Promise<void> {
-      console.debug(`Motor #${this.no}: accelerate(from=${this.speed}% to ${speed}%)`)
-      while (speed !== this.speed) {
-        const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
-        const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
-        await sendSpeed(this, newSpeed)
-      }
+    accelerate(speed: number): Trigger {
+      return NonCancellableTrigger(async () => {
+        console.debug(`Motor #${this.no}: accelerate(from=${this.speed}% to ${speed}%)`)
+        while (speed !== this.speed) {
+          const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
+          const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
+          await sendSpeed(this, newSpeed)
+        }
+      })
     },
 
     go(distance: number, speed: number): Trigger {
@@ -100,12 +102,14 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
       return trigger
     },
     
-    stop(): void {
+    stop(): Trigger {
       halt(this, MotorMode.BREAK)
+      return emptyTrigger
     },
     
-    float(): void {
+    float(): Trigger {
       halt(this, MotorMode.FLOAT)
+      return emptyTrigger
     },
 
     getPosition(): number {

@@ -47,6 +47,7 @@ io.on('connection', client => {
         console.error(error)
         client.emit('error', error)
       }
+      await car.stop()
     }
   })
 

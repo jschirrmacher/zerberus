@@ -1,7 +1,7 @@
 import { Motor, TICKS_PER_MM } from './Motor'
 import { Position, create as createPosition } from './Position'
 import { create as createOrientation, DegreeAngle, Orientation } from './Orientation'
-import ListenerList, { Listener } from './ListenerList'
+import ListenerList, { emptyTrigger, Listener, Trigger } from './ListenerList'
 
 export const WIDTH_OF_AXIS = 270 // mm
 const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
@@ -34,11 +34,42 @@ function clamp(min: number, max: number) {
 
 const clampSpeed = clamp(50, 100)
 
-export default function (motors: {left: Motor, right: Motor}) {
+export type Car = {
+  position: Position,
+  orientation: Orientation,
+  accelerate(speed: number): Promise<void>,
+  stop(): Promise<void>,
+  float(): void,
+  turn(degrees: DegreeAngle, direction: Direction, speed: number): Promise<void>,
+  turn(degrees: DegreeAngle, direction: Direction, speed: number, onTheSpot: boolean): Promise<void>,
+  go(distance: number, speed: number): Promise<void>,
+  turnTo(destination: Orientation): Promise<void>,
+  goto(position: Position): Promise<void>,
+  setPositionListener(listener: Listener): void,
+  destruct(): Promise<void>,
+}
+
+async function setMotors(left: () => Trigger, right: () => Trigger) {
+  const trigger = [ left(), right() ]
+  await Promise.race(trigger.map(t => t.promise))
+  trigger.forEach(t => t.cancel())
+}
+
+export default function (motors: {left: Motor, right: Motor}): Car {
   let interval: NodeJS.Timer
   const listeners = ListenerList()
 
-  const car = {
+  function createTrigger(getDiff: (pos: Position, orientation: Orientation) => number) {
+    let prevDiff: number
+    return listeners.add((pos: Position, orientation: Orientation) => {
+      const diff = Math.abs(getDiff(pos, orientation))
+      const stop = diff < epsilon || (prevDiff && diff > prevDiff)
+      prevDiff = diff
+      return stop
+    })
+  }
+  
+  const car: Car = {
     position: createPosition(0, 0),
     orientation: createOrientation(0),
 
@@ -49,29 +80,24 @@ export default function (motors: {left: Motor, right: Motor}) {
       The car only accelerated in a way, that battery and controller health is preserved.
     */
     async accelerate(speed: number): Promise<void> {
-      await Promise.all([
-        motors.left.accelerate(speed),
-        motors.right.accelerate(speed)
-      ])
+      await setMotors(
+        () => motors.left.accelerate(speed),
+        () => motors.right.accelerate(speed)
+      )
     },
 
     /*
       Stop the car by using the motor brake
     */
     async stop(): Promise<void> {
-      await Promise.all([
-        motors.left.stop(),
-        motors.right.stop()
-      ])
-      car.float()
+      await setMotors(() => motors.left.stop(), () => motors.right.stop())
     },
 
     /*
       Let the motors float, thus, no further acceleration, but no braking
     */
-    float(): void {
-      motors.left.float()
-      motors.right.float()
+    async float(): Promise<void> {
+      await setMotors(() => motors.left.float(), () => motors.right.float())
     },
 
     /*
@@ -88,10 +114,10 @@ export default function (motors: {left: Motor, right: Motor}) {
       const angle = normalizeAngle(degrees / 180 * Math.PI)
       if (onTheSpot) {
         const distance = WIDTH_OF_AXIS / 2 * angle * TICKS_PER_MM
-        await Promise.all([motor.go(distance, -speed), other.go(distance, speed)])
+        await setMotors(() => motor.go(distance, -speed), () => other.go(distance, speed))
       } else {
         const distance = WIDTH_OF_AXIS * angle * TICKS_PER_MM
-        await Promise.all([motor.float(), other.go(distance, speed)])
+        await setMotors(() => motor.float(), () => other.go(distance, speed))
       }
       car.float()
     },
@@ -102,11 +128,11 @@ export default function (motors: {left: Motor, right: Motor}) {
       After reaching the position, the car is switched to floating mode.
     */
     async go(distance: number, speed: number): Promise<void> {
-      await Promise.race([
-        motors.left.go(distance, speed),
-        motors.right.go(distance, speed)
-      ])
-      this.float()
+      await setMotors(
+        () => motors.left.go(distance, speed),
+        () => motors.right.go(distance, speed)
+      )
+      this.stop()
     },
 
     /*
@@ -117,7 +143,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       const turnAngle = car.orientation.differenceTo(destination)
       if (Math.abs(turnAngle) > epsilon) {
         const direction = turnAngle < 0 ? Direction.left : Direction.right
-        const trigger = listeners.add((pos: Position, orientation: Orientation) => Math.abs(car.orientation.differenceTo(destination)) < epsilon)
+        const trigger = createTrigger((pos: Position, orientation: Orientation) => orientation.differenceTo(destination))
         const speed = clampSpeed(Math.abs(destination.angle) / Math.PI * 50)
         motors[otherDirection(direction)].accelerate(-speed)
         motors[direction].accelerate(speed)
@@ -151,7 +177,7 @@ export default function (motors: {left: Motor, right: Motor}) {
       listeners.add(listener)
     },
 
-    async destruct() {
+    async destruct(): Promise<void> {
       await car.stop()
       motors.left.destruct()
       motors.right.destruct()

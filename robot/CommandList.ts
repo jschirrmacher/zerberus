@@ -1,7 +1,7 @@
-import { Direction } from "./Car";
+import { Car, Direction } from "./Car";
 import { create as createPosition, meters } from './Position'
 
-export default function (car) {
+export default function (car: Car) {
   return {
     async loop() {
       for (let i=0; i < 10; i++) {
@@ -14,20 +14,18 @@ export default function (car) {
   
     async turn() {
       await car.turn(90, Direction.right, 70)
-      await car.turn(90, Direction.left, 70)
     },
     
     async turnOnSpot() {
-      await car.turn(360, Direction.left, 100, true)
+      await car.turn(90, Direction.left, 100, true)
     },
     
     async forward() {
       await car.go(200, 50)
-      await car.stop()
     },
     
     async back() {
-      await car.go(1000, -50)
+      await car.go(200, -50)
     },
   
     async triangle() {

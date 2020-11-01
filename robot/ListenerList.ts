@@ -3,6 +3,21 @@ export type Trigger = {
   cancel: () => void,
 }
 
+export const emptyTrigger = {
+  promise: new Promise(() => {}) as Promise<void>,
+  cancel: () => {}
+}
+
+export function NonCancellableTrigger(func: () => unknown): Trigger {
+  return {
+    promise: new Promise(async resolve => {
+      await func()
+      resolve()
+    }),
+    cancel: () => {}
+  }
+}
+
 export type Listener = (...args: unknown[]) => boolean
 
 export type ListenerList = {

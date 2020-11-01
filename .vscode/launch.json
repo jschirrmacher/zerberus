@@ -21,23 +21,6 @@
       "type": "pwa-node"
     },
     {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Server",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/simulator/server/index.ts",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
-      ]
-    },
-    {
       "name": "Run Robot",
       "program": "${workspaceFolder}/robot/index.ts",
       "request": "launch",
