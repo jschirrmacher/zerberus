@@ -19,7 +19,7 @@ export function create(angle: RadianAngle): Orientation {
     },
 
     differenceTo(other: Orientation): RadianAngle {
-      const diff = this.angle - other.angle
+      const diff = other.angle - this.angle
       return diff - twoPi * Math.floor((diff + Math.PI) / twoPi)
     },
 

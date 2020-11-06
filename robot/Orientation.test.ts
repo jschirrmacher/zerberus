@@ -6,7 +6,7 @@ const threeQuartersPI = 3 / 4 * Math.PI
 
 describe('Orientation', () => {
   it('should calculate a difference', () => {
-    Orientation.create(0).differenceTo(Orientation.create(halfPi)).should.equal(-halfPi)
+    Orientation.create(0).differenceTo(Orientation.create(halfPi)).should.equal(halfPi)
   })
 
   it('should return 0 if angles are the same', () => {
@@ -14,6 +14,6 @@ describe('Orientation', () => {
   })
 
   it('should return swap around after substracting from a negative angle', () => {
-    Orientation.create(-threeQuartersPI).differenceTo(Orientation.create(halfPi)).should.equal(threeQuartersPI)
+    Orientation.create(-threeQuartersPI).differenceTo(Orientation.create(halfPi)).should.equal(-threeQuartersPI)
   })
 })
