@@ -34,12 +34,7 @@ export function create(x: Ticks, y: Ticks): Position {
     angleTo(position: Position): RadianAngle {
       const dX = position.x - this.x
       const dY = position.y - this.y
-      if (dY === 0) {
-        return dX < 0 ? Math.PI : 0
-      } else if (dX < 0) {
-        return -Math.atan(dY / dX) - Math.sign(dY) * Math.PI
-      }
-      return -Math.atan(dY / dX)
+      return -Math.atan2(dY, dX)
     },
 
     distanceTo(position: Position): Ticks {

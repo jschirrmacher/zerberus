@@ -35,8 +35,8 @@ describe('Position', () => {
       origin.angleTo(Position.create(4, 0)).should.equal(0)
     })
 
-    it('should return PI when going left', () => {
-      origin.angleTo(Position.create(-4, 0)).should.equal(Math.PI)
+    it('should return -PI when going left', () => {
+      origin.angleTo(Position.create(-4, 0)).should.equal(-Math.PI)
     })
 
     it('should return 0 when point is at origin', () => {
