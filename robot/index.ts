@@ -24,17 +24,20 @@ const io = IO(server)
 server.listen(10000)
 app.use('/', express.static(path.resolve(__dirname, '..', 'frontend')))
 
+function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation): boolean {
+  client.emit('car-position', { posX: pos.metricCoordinates().x, posY: pos.metricCoordinates().y, orientation: orientation.degreeAngle() })
+  return false
+}
+
 console.log('Car controller is running and waits for connections')
 io.on('connection', client => {
   console.log('Client connected')
   client.emit('hi', 'Robot Simulator')
+  sendPosition(client, car.position, car.orientation)
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
-  car.setPositionListener((pos: Position, orientation: Orientation) => {
-    client.emit('car-position', { posX: pos.metricCoordinates().x, posY: pos.metricCoordinates().y, orientation: orientation.degreeAngle() })
-    return false
-  })
+  car.setPositionListener((pos: Position, orientation: Orientation) => sendPosition(client, pos, orientation))
 
   client.on('command', async (command) => {
     console.debug('Received command ' + command.name)
