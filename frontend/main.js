@@ -73,16 +73,11 @@
 
   function connectMotors() {
     document.querySelectorAll('.motor').forEach(motor => {
-      function resetInterval() {
-        motor.interval && clearInterval(motor.interval)
+      function updateWheel() {
         if (motor.control.in1 !== motor.control.in2) {
-          const direction = motor.control.in1 ? -1 : 1
-          const value = direction * motor.control.ena / 10
-          motor.interval = setInterval(() => {
-            motor.angle = (motor.angle + value) % 360
-            motor.wheel.style.transform = `rotate(${motor.angle}deg)`
-          }, 50)
-          motor.speedo.innerText = direction * Math.round(motor.control.ena / 2.55) + '%'
+          const direction = motor.control.in1 ? 'reverse' : 'normal'
+          motor.wheel.style.animation = `${motor.control.ena / 255}s linear infinite rotation ${direction}`
+          motor.speedo.innerText = (motor.control.in1 ? -1 : 1) * Math.round(motor.control.ena / 2.55) + '%'
         } else {
           motor.speedo.innerText = 'STOPPED'
         }
@@ -92,7 +87,7 @@
         return function (value) {
           if (motor.control[name] !== value) {
             motor.control[name] = value
-            resetInterval()
+            updateWheel()
           }
         }
       }
@@ -105,6 +100,7 @@
       document.querySelector('#' + in1).onValue = setValueHandler('in1')
       document.querySelector('#' + in2).onValue = setValueHandler('in2')
       document.querySelector('#' + ena).onValue = setValueHandler('ena')
+      updateWheel()
     })
   }
 

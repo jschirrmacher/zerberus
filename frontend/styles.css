@@ -79,11 +79,23 @@
   height: 100%;
   background: lightgrey;
 }
+
 .motor img {
   width: 100px;
+  animation: rotation;
 }
 .motor .speed {
   text-align: center;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(45deg);
+  }
 }
 
 #car-area {
