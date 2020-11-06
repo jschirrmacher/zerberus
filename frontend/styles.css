@@ -82,6 +82,9 @@
 .motor img {
   width: 100px;
 }
+.motor .speed {
+  text-align: center;
+}
 
 #car-area {
   background-size: contain;

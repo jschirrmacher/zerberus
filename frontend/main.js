@@ -76,12 +76,15 @@
       function resetInterval() {
         motor.interval && clearInterval(motor.interval)
         if (motor.control.in1 !== motor.control.in2) {
-          const direction = motor.control.in1 ? 1 : -1
+          const direction = motor.control.in1 ? -1 : 1
           const value = direction * motor.control.ena / 10
           motor.interval = setInterval(() => {
             motor.angle = (motor.angle + value) % 360
             motor.wheel.style.transform = `rotate(${motor.angle}deg)`
           }, 50)
+          motor.speedo.innerText = direction * Math.round(motor.control.ena / 2.55) + '%'
+        } else {
+          motor.speedo.innerText = 'STOPPED'
         }
       }
   
@@ -97,6 +100,7 @@
       motor.control = { in1: false, in2: false, ena: false }
       motor.angle = 0
       motor.wheel = motor.querySelector('img')
+      motor.speedo = motor.querySelector('.speed')
       const [ in1, in2, ena ] = motor.dataset.connected.split(',')
       document.querySelector('#' + in1).onValue = setValueHandler('in1')
       document.querySelector('#' + in2).onValue = setValueHandler('in2')
