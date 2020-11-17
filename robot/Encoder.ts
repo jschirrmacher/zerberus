@@ -63,13 +63,13 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
       Returns a trigger that waits for a position to be reached.
     */
     position(desiredPosition: number): Trigger {
-      console.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
+      // console.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
       const direction = Math.sign(desiredPosition - encoder.currentPosition)
       return listeners.add((pos: number, speed: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
     },
 
     speed(desiredSpeed: number): Trigger {
-      console.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
+      // console.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
       const direction = Math.sign(desiredSpeed - encoder.currentSpeed)
       return listeners.add((pos: number, speed: number) => direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed)
     }

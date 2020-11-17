@@ -11,8 +11,13 @@ export type Orientation = {
 }
 
 export function create(angle: RadianAngle): Orientation {
+  function normalizeAngle(angle: number): number {
+    const normalize = angle - twoPi * Math.floor(angle / twoPi)
+    return normalize > Math.PI ? normalize - twoPi : normalize
+  }
+  
   return {
-    angle,
+    angle: normalizeAngle(angle),
 
     degreeAngle(): DegreeAngle {
       return this.angle / Math.PI * 180
@@ -24,7 +29,7 @@ export function create(angle: RadianAngle): Orientation {
     },
 
     toString(): string {
-      return `${this.degreeAngle()}°`
+      return `${this.degreeAngle().toFixed(1)}°`
     },
   }
 }

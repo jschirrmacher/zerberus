@@ -1,23 +1,24 @@
-import { Car, Direction } from "./Car";
-import { create as createPosition, meters } from './Position'
+import { Car } from "./Car";
+import { create as createPosition } from './Position'
+import { radians, create as createOrientation } from './Orientation'
 
 export default function (car: Car) {
   return {
     async loop() {
       for (let i=0; i < 10; i++) {
-        await car.turn(45, Direction.left, 50)
-        await car.turn(270, Direction.right, 50)
-        await car.turn(45, Direction.left, 50)
-        await car.turn(180, Direction.left, 50, true)
+        await car.turn(createOrientation(radians(-45)))
+        await car.turn(createOrientation(radians(270)))
+        await car.turn(createOrientation(radians(-45)))
+        await car.turn(createOrientation(radians(180)), true)
       }
     },
   
     async turn() {
-      await car.turn(90, Direction.right, 70)
+      await car.turn(createOrientation(radians(90)))
     },
     
     async turnOnSpot() {
-      await car.turn(90, Direction.left, 100, true)
+      await car.turn(createOrientation(radians(-90)), true)
     },
     
     async forward() {
@@ -29,10 +30,11 @@ export default function (car: Car) {
     },
   
     async triangle() {
-      await car.goto(createPosition(meters(.3), meters(0)))
-      await car.goto(createPosition(meters(0), meters(.6)))
-      await car.goto(createPosition(meters(-.3), meters(0)))
-      await car.goto(createPosition(meters(0), meters(0)))
+      await car.goto(createPosition(0, 0))
+      await car.goto(createPosition(300, 0))
+      await car.goto(createPosition(0, 600))
+      await car.goto(createPosition(-300, 0))
+      await car.goto(createPosition(0, 0))
     },
   
     async star() {
@@ -40,30 +42,40 @@ export default function (car: Car) {
         await car.go(500, 40)
         // take photo
         await car.go(500, -40)
-        await car.turn(45, Direction.left, 60, true)
+        await car.turn(createOrientation(radians(-45)), true)
       }
     },
   
     async curve() {
-      await car.turn(90, Direction.left, 50)
+      await car.turn(createOrientation(radians(-90)))
       await car.go(1500, -30)
-      await car.turn(90, Direction.right, 50)
+      await car.turn(createOrientation(radians(90)))
       await car.go(1500, 30)
     },
   
     async square() {
-      await car.goto(createPosition(meters(-.5), meters(.5)))
-      await car.goto(createPosition(meters(.5), meters(.5)))
-      await car.goto(createPosition(meters(.5), meters(-.5)))
-      await car.goto(createPosition(meters(-.5), meters(-.5)))
-      await car.goto(createPosition(meters(-.5), meters(.5)))
+      await car.goto(createPosition(0, 500))
+      await car.goto(createPosition(500, 500))
+      await car.goto(createPosition(500, 0))
+      await car.goto(createPosition(0, 0))
+      await car.goto(createPosition(0, 500))
     },
-  
-    noop() {
+
+    async circle() {
+      for (let i = 0; i < 3; i += .3) {
+        const x = 300 * Math.sin(i)
+        const y = 300 * Math.cos(i)
+        console.log(x, y)
+        await car.goto(createPosition(x, y))
+      }
     },
   
     stop() {
       car.stop()
+    },
+
+    async backToStart() {
+      await car.goto(createPosition(0, 0))
     },
   }
 }

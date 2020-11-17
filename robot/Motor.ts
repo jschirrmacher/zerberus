@@ -14,7 +14,7 @@ export type Motor = {
   no: number,
   speed: number,
   mode: MotorMode,
-  accelerate: (speed: number) => Trigger,
+  accelerate: (speed: number) => void,
   go(distance: number, speed: number): Trigger,
   stop: () => Trigger,
   float: () => Trigger,
@@ -46,6 +46,10 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
     motor.mode = mode
   }
 
+  function log(): void {
+    console.debug(`Motor #${motor.no}:${''.padStart((motor.no - 1)* 15)}${motor.mode} ${motor.speed.toFixed(0)}%`)
+  }
+
   async function sendSpeed(motor: Motor, speed: number): Promise<void> {
     if (speed < 0 && motor.mode !== MotorMode.BACKWARDS) {
       setMode(motor, MotorMode.BACKWARDS)
@@ -67,15 +71,16 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
     const time = Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100
     motor.speed = speed
     ena.pwmWrite(pwmValue)
+    log()
     await wait(time)
   }
 
   function halt(motor: Motor, mode: MotorMode): void {
-    console.debug(`${mode} motor #${motor.no}`)
-    ena.pwmWrite(0)
     encoderTimer && clearInterval(encoderTimer)
     encoderTimer = undefined
+    ena.pwmWrite(0)
     setMode(motor, mode)
+    log()
     motor.speed = 0
   }
 
@@ -84,19 +89,17 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
     speed: 0,
     mode: MotorMode.FLOAT,
 
-    accelerate(speed: number): Trigger {
-      return NonCancellableTrigger(async () => {
-        console.debug(`Motor #${this.no}: accelerate(from=${this.speed}% to ${speed}%)`)
-        while (speed !== this.speed) {
-          const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
-          const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
-          await sendSpeed(this, newSpeed)
-        }
-      })
+    accelerate(speed: number): void {
+      // console.debug(`Motor #${this.no}:${indent(motor.no)}accelerate(from=${this.speed}% to ${speed}%)`)
+      while (speed !== this.speed) {
+        const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
+        const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
+        sendSpeed(this, newSpeed)
+      }
     },
 
     go(distance: number, speed: number): Trigger {
-      console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
+      // console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
       const trigger = encoder.position(encoder.currentPosition + distance * Math.sign(speed))
       this.accelerate(speed)
       return trigger

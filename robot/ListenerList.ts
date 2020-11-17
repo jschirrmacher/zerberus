@@ -34,13 +34,13 @@ export default function (): ListenerList {
     add(func: Listener): Trigger {
       const id = ++listenerId
 
-      console.debug(`Creating listener #${id}`)
+      // console.debug(`Creating listener #${id}`)
       return {
         promise: new Promise(resolve => {
           list[id] = (...args: unknown[]) => {
             const condition = func(...args)
             if (condition) {
-              console.debug(`Listener #${id} triggered`, args.map(a => '' + a))
+              // console.debug(`Listener #${id} triggered`, args.map(a => '' + a))
               delete list[id]
               resolve()
             }
@@ -49,7 +49,7 @@ export default function (): ListenerList {
         }),
 
         cancel: () => {
-          console.debug(`Listener #${id} cancelled`)
+          // console.debug(`Listener #${id} cancelled`)
           delete list[id]
         }
       }    
