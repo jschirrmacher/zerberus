@@ -6,7 +6,7 @@ import express from 'express'
 import IO from 'socket.io'
 import CommandList from './CommandList'
 import { Position } from './Position'
-import { Orientation } from './Orientation'
+import { Orientation, create as createOrientation, radians } from './Orientation'
 import Gpio from './gpio'
 
 const gpio = Gpio()
@@ -61,6 +61,31 @@ io.on('connection', client => {
   client.on('disconnect', () => {
     gpio.removeListener(listenerId)
     console.log('Client disconnected')
+  })
+
+  client.on('control', async (info) => {
+    console.debug('Direct control ' + info.cmd)
+    switch (info.cmd) {
+      case 'accelerate': 
+        car.accelerate(Math.min(100, car.speed + 10))
+        break
+
+      case 'decelerate':
+        car.accelerate(Math.max(-100, car.speed - 10))
+        break
+
+      case 'turn-left':
+        car.turn(createOrientation(radians(-30)))
+        break
+
+      case 'turn-right':
+        car.turn(createOrientation(radians(30)))
+        break
+
+      case 'break':
+        car.stop()
+        break
+    }
   })
 })
 

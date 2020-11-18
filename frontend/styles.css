@@ -82,7 +82,7 @@
 
 .motor img {
   width: 100px;
-  animation: rotation;
+  animation: 0s linear 0s infinite normal none running rotation;
 }
 .motor .speed {
   text-align: center;
@@ -94,7 +94,7 @@
   }
 
   to {
-    transform: rotate(45deg);
+    transform: rotate(360deg);
   }
 }
 

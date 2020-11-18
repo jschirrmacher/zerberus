@@ -29,6 +29,7 @@ const clampSpeed = clamp(50, 100)
 export type Car = {
   position: Position,
   orientation: Orientation,
+  speed: number,
   accelerate(speed: number): void,
   stop(): Promise<void>,
   float(): void,
@@ -64,6 +65,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
   const car: Car = {
     position: createPosition(0, 0),
     orientation: createOrientation(0),
+    speed: 0,
 
     /*
       Accelerate car to the given speed.
@@ -74,6 +76,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     accelerate(speed: number): void {
       motors.left.accelerate(speed)
       motors.right.accelerate(speed)
+      car.speed = speed
     },
 
     /*
@@ -214,7 +217,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
 
       const delta = Math.PI / 2 - car.orientation.angle
       car.position.x += dY * Math.cos(car.orientation.angle) + dX * Math.cos(delta)
-      car.position.y += dY * Math.sin(car.orientation.angle) - dX * Math.sin(delta)
+      car.position.y += dY * Math.sin(car.orientation.angle) + dX * Math.sin(delta)
       car.orientation = createOrientation(car.orientation.angle + theta)
 
       // console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)

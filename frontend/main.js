@@ -1,6 +1,7 @@
 (function () {
   const canvas = document.querySelector('#car-area')
   const car = document.querySelector('#car')
+  const carPos = document.querySelector('#car-pos')
   const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
 
   const socket = io()
@@ -45,7 +46,10 @@
   })
 
   function setCarPosition(msg) {
-    car.setAttribute('style', `transform: translate(${msg.posX * 150 + center.x}px, ${center.y - msg.posY * 150}px) rotate(${-msg.orientation}deg) scale(.5)`)
+    const x = msg.posX * 150 + center.x
+    const y = msg.posY * 150 + center.y
+    car.setAttribute('style', `transform: translate(${x}px, ${y}px) rotate(${msg.orientation}deg) scale(.5)`)
+    carPos.innerHTML = `x: ${msg.posX.toFixed()}<br>y: ${msg.posY.toFixed()}<br>o: ${msg.orientation.toFixed(0)}`
   }
 
   socket.on('connect', () => socket.emit('command', {name: 'list-commands'}))
@@ -58,6 +62,16 @@
     document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img']
   } )
 
+  window.addEventListener('keydown', (event) => {
+    const keys = {
+      ArrowUp: 'accelerate',
+      ArrowDown: 'decelerate',
+      ArrowLeft: 'turn-left',
+      ArrowRight: 'turn-right',
+      Space: 'break',
+    }
+    socket.emit('control', { cmd: keys[event.code] })
+  })
 
   connectLEDs()
   connectMotors()
@@ -74,11 +88,13 @@
   function connectMotors() {
     document.querySelectorAll('.motor').forEach(motor => {
       function updateWheel() {
-        if (motor.control.in1 !== motor.control.in2) {
-          const direction = motor.control.in1 ? 'reverse' : 'normal'
-          motor.wheel.style.animation = `${motor.control.ena / 255}s linear infinite rotation ${direction}`
-          motor.speedo.innerText = (motor.control.in1 ? -1 : 1) * Math.round(motor.control.ena / 2.55) + '%'
+        if (motor.control.in1 !== motor.control.in2 && motor.control.ena) {
+          const percent = motor.control.ena / 2.55
+          motor.wheel.style.animationDuration = (100 / percent) + 's'
+          motor.wheel.style.animationDirection = motor.control.in1 ? 'reverse' : 'normal'
+          motor.speedo.innerText = (motor.control.in1 ? -1 : 1) * Math.round(percent) + '%'
         } else {
+          motor.wheel.style.animationDuration = '0s'
           motor.speedo.innerText = 'STOPPED'
         }
       }
