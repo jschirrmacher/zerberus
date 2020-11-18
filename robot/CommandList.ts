@@ -6,19 +6,19 @@ export default function (car: Car) {
   return {
     async loop() {
       for (let i=0; i < 10; i++) {
-        await car.turn(createOrientation(radians(-45)))
-        await car.turn(createOrientation(radians(270)))
-        await car.turn(createOrientation(radians(-45)))
-        await car.turn(createOrientation(radians(180)), true)
+        await car.turnRelative(createOrientation(radians(-45)))
+        await car.turnRelative(createOrientation(radians(270)))
+        await car.turnRelative(createOrientation(radians(-45)))
+        await car.turnRelative(createOrientation(radians(180)), true)
       }
     },
   
     async turn() {
-      await car.turn(createOrientation(radians(90)))
+      await car.turnRelative(createOrientation(radians(90)))
     },
     
     async turnOnSpot() {
-      await car.turn(createOrientation(radians(-90)), true)
+      await car.turnRelative(createOrientation(radians(-90)), true)
     },
     
     async forward() {
@@ -42,14 +42,14 @@ export default function (car: Car) {
         await car.go(500, 40)
         // take photo
         await car.go(500, -40)
-        await car.turn(createOrientation(radians(-45)), true)
+        await car.turnRelative(createOrientation(radians(-45)), true)
       }
     },
   
     async curve() {
-      await car.turn(createOrientation(radians(-90)))
+      await car.turnRelative(createOrientation(radians(-90)))
       await car.go(1500, -30)
-      await car.turn(createOrientation(radians(90)))
+      await car.turnRelative(createOrientation(radians(90)))
       await car.go(1500, 30)
     },
   

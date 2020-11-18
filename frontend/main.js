@@ -64,13 +64,15 @@
 
   window.addEventListener('keydown', (event) => {
     const keys = {
-      ArrowUp: 'accelerate',
-      ArrowDown: 'decelerate',
-      ArrowLeft: 'turn-left',
-      ArrowRight: 'turn-right',
+      ArrowUp: 'forward',
+      ArrowDown: 'back',
+      ArrowLeft: 'left',
+      ArrowRight: 'right',
       Space: 'break',
     }
-    socket.emit('control', { cmd: keys[event.code] })
+    if (keys[event.code]) {
+      socket.emit('control', { cmd: keys[event.code] })
+    }
   })
 
   connectLEDs()

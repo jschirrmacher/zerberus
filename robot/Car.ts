@@ -28,14 +28,15 @@ const clampSpeed = clamp(50, 100)
 export type Car = {
   position: Position,
   orientation: Orientation,
-  speed: number,
+  speed(): number,
   accelerate(speed: number): void,
   stop(): Promise<void>,
   float(): void,
-  turn(angle: Orientation): Promise<void>,
-  turn(angle: Orientation, onTheSpot: boolean): Promise<void>,
-  go(distance: number, speed: number): Promise<void>,
+  turn(direction: Direction): Promise<void>,
+  turnRelative(angle: Orientation): Promise<void>,
+  turnRelative(angle: Orientation, onTheSpot): Promise<void>,
   turnTo(destination: Orientation): Promise<void>,
+  go(distance: number, speed: number): Promise<void>,
   goto(position: Position): Promise<void>,
   setPositionListener(listener: Listener): void,
   destruct(): Promise<void>,
@@ -64,18 +65,24 @@ export default function (motors: {left: Motor, right: Motor}): Car {
   const car: Car = {
     position: createPosition(0, 0),
     orientation: createOrientation(0),
-    speed: 0,
+
+    /*
+      Returns the current speed of the car
+    */
+    speed() {
+      return (motors.left.speed + motors.right.speed) / 2
+    },
 
     /*
       Accelerate car to the given speed.
       The speed is specified as a percentage of the motor's max speed.
       Speed can also be negative, so that the car runs backwards.
-      The car only accelerated in a way, that battery and controller health is preserved.
     */
-    accelerate(speed: number): void {
-      motors.left.accelerate(speed)
-      motors.right.accelerate(speed)
-      car.speed = speed
+    async accelerate(speed: number): Promise<void> {
+      await Promise.all([
+        motors.left.accelerate(speed),
+        motors.right.accelerate(speed)
+      ])
     },
 
     /*
@@ -93,18 +100,33 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     },
 
     /*
-      Turn the car in the given direction to a given degree in a given speed.
+      Turn car in a given direction by moving the motors on the side of the requested
+      direction a bit slower (or even backwards), while accelerating the motors on
+      the other side the same amount. In case the car was standing, it turns on spot.
+    */
+    async turn(direction: Direction): Promise<void> {
+      console.debug(`Turn car ${direction}`)
+      const higherSpeed = Math.min(car.speed() + 25, 100)
+      const lowerSpeed = Math.max(higherSpeed - 50, -100)
+      await Promise.all([
+        motors[direction].accelerate(lowerSpeed),
+        motors[otherDirection(direction)].accelerate(higherSpeed)
+      ])
+    },
+
+    /*
+      Turn the car in the given direction to a given degree.
       If 'onTheSpot' is set true, the wheels will turn in different directions.
       After turning, the motors are switched to floating.
       Speed should always be positive when turning.
     */
-    async turn(angle: Orientation, onTheSpot = false): Promise<void> {
+    async turnRelative(angle: Orientation, onTheSpot = false): Promise<void> {
       console.debug(`Turn car ${angle}`)
       if (angle.angle !== 0) {
-        const direction = angle.angle > 0 ? Direction.left : Direction.right
+        const direction = angle.angle > 0 ? Direction.right : Direction.left
         const motor = motors[otherDirection(direction)]
         const other = motors[direction]
-        const speed = clampSpeed(Math.abs(angle.angle) / Math.PI * 75)
+        const speed = Math.abs(angle.angle) > 1 ? 100 : 75
         const distance = WIDTH_OF_AXIS / (onTheSpot ? 2 : 1) * Math.abs(angle.angle) * TICKS_PER_MM
         console.debug(`car.turn: dist=${distance}`)
         await setMotors(
@@ -175,7 +197,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
 
         const direction = createOrientation(this.position.angleTo(position))
         const angle = direction.differenceTo(car.orientation)
-        await this.turn(createOrientation(angle), true)
+        await this.turnRelative(createOrientation(angle), true)
 
         const newDistance = this.position.distanceTo(position)
         const speed = clampSpeed(newDistance / 16)
@@ -220,7 +242,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       car.orientation = createOrientation(car.orientation.angle + theta)
 
       // console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)
-      if (dX || dY) {
+      if (dX || dY || theta) {
         // console.log('Current orientation: ' + car.orientation)
         listeners.call(car.position, car.orientation)
       }

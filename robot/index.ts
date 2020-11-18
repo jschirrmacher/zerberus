@@ -1,6 +1,6 @@
 import path from 'path'
 import Motor from './Motor'
-import Car from './Car'
+import Car, { Direction } from './Car'
 import Encoder from './Encoder'
 import express from 'express'
 import IO from 'socket.io'
@@ -66,20 +66,20 @@ io.on('connection', client => {
   client.on('control', async (info) => {
     console.debug('Direct control ' + info.cmd)
     switch (info.cmd) {
-      case 'accelerate': 
-        car.accelerate(Math.min(100, car.speed + 25))
+      case 'forward': 
+        car.accelerate(car.speed() + 25)
         break
 
-      case 'decelerate':
-        car.accelerate(Math.max(-100, car.speed - 25))
+      case 'back':
+        car.accelerate(car.speed() - 25)
         break
 
-      case 'turn-left':
-        car.turn(createOrientation(radians(-30)))
+      case 'left':
+        car.turn(Direction.left)
         break
 
-      case 'turn-right':
-        car.turn(createOrientation(radians(30)))
+      case 'right':
+        car.turn(Direction.right)
         break
 
       case 'break':
