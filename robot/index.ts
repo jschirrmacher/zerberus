@@ -67,11 +67,11 @@ io.on('connection', client => {
     console.debug('Direct control ' + info.cmd)
     switch (info.cmd) {
       case 'accelerate': 
-        car.accelerate(Math.min(100, car.speed + 10))
+        car.accelerate(Math.min(100, car.speed + 25))
         break
 
       case 'decelerate':
-        car.accelerate(Math.max(-100, car.speed - 10))
+        car.accelerate(Math.max(-100, car.speed - 25))
         break
 
       case 'turn-left':

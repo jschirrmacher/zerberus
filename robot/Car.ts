@@ -1,7 +1,7 @@
 import { Motor, TICKS_PER_MM } from './Motor'
 import { Position, create as createPosition } from './Position'
-import { create as createOrientation, DegreeAngle, Orientation } from './Orientation'
-import ListenerList, { emptyTrigger, Listener, Trigger } from './ListenerList'
+import { create as createOrientation, Orientation } from './Orientation'
+import ListenerList, { Listener, Trigger } from './ListenerList'
 
 export const WIDTH_OF_AXIS = 270 // mm
 const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
@@ -9,7 +9,6 @@ const MINIMAL_TURN_ANGLE = Math.PI / 180
 const MINIMAL_DISTANCE = 20
 
 const epsilon = 0.003
-const twoPi = 2 * Math.PI
 
 export enum Direction {
   left = 'left',
@@ -105,7 +104,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
         const direction = angle.angle > 0 ? Direction.left : Direction.right
         const motor = motors[otherDirection(direction)]
         const other = motors[direction]
-        const speed = clampSpeed(Math.abs(angle.angle) / Math.PI * 50)
+        const speed = clampSpeed(Math.abs(angle.angle) / Math.PI * 75)
         const distance = WIDTH_OF_AXIS / (onTheSpot ? 2 : 1) * Math.abs(angle.angle) * TICKS_PER_MM
         console.debug(`car.turn: dist=${distance}`)
         await setMotors(
