@@ -64,8 +64,8 @@ export default function (motors: {left: Motor, right: Motor}): Car {
   }
 
   function getTurnSpeed(currentSpeed: number): { lowerSpeed: number, higherSpeed: number } {
-    if (Math.abs(currentSpeed) < 50) {
-      return { lowerSpeed: -50, higherSpeed: 50 }
+    if (Math.abs(currentSpeed) < 75) {
+      return { lowerSpeed: -75, higherSpeed: 75 }
     }
 
     const higherSpeed = Math.min(currentSpeed + 25, 100)
