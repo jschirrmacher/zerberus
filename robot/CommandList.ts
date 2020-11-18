@@ -4,6 +4,14 @@ import { radians, create as createOrientation } from './Orientation'
 
 export default function (car: Car) {
   return {
+    runLeft() {
+      car.motors.left.accelerate(50)
+    },
+
+    runRight() {
+      car.motors.right.accelerate(50)
+    },
+
     async loop() {
       for (let i=0; i < 10; i++) {
         await car.turnRelative(createOrientation(radians(-45)))

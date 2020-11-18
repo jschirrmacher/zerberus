@@ -26,6 +26,7 @@ function clamp(min: number, max: number) {
 const clampSpeed = clamp(50, 100)
 
 export type Car = {
+  motors: Record<Direction, Motor>,
   position: Position,
   orientation: Orientation,
   speed(): number,
@@ -63,6 +64,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
   }
   
   const car: Car = {
+    motors,
     position: createPosition(0, 0),
     orientation: createOrientation(0),
 

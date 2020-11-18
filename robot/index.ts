@@ -11,8 +11,8 @@ import Gpio from './gpio'
 
 const gpio = Gpio()
 
-const leftEncoder = Encoder(gpio, 14, 15)
-const rightEncoder = Encoder(gpio, 19, 26)
+const leftEncoder = Encoder(gpio, 19, 26)
+const rightEncoder = Encoder(gpio, 14, 15)
 const leftMotorSet = Motor(gpio, 27, 17, 22, leftEncoder)
 const rightMotorSet = Motor(gpio, 3, 2, 4, rightEncoder)
 const car = Car({ left: leftMotorSet, right: rightMotorSet })
