@@ -53,7 +53,11 @@ To send commands to the car, press the buttons displayed right of the car visual
 
 ### Start the edge detection
 
-On the raspberry pi to start the python script to prevent the robot from running into walls, run `python3 use_classifier.py` in the coon_chaser directory on the raspberry pi. 
+On the raspberry pi to start the python script to prevent the robot from running into walls, run `python3 use_classifier.py` in the coon_chaser directory on the raspberry pi.
+
+## Car Control
+
+From the web frontend, you can control the car in different ways, either with manual control (pressing arrow keys and space bar to break), or by pressing some of the screen buttons running pre-defined programs (not all of them working as expected yet - remember this work is still in progress).
 
 ## Parts list
 
