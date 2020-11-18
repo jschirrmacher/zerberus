@@ -4,12 +4,14 @@ import { radians, create as createOrientation } from './Orientation'
 
 export default function (car: Car) {
   return {
-    runLeft() {
-      car.motors.left.accelerate(50)
+    async runLeft() {
+      await car.motors.left.accelerate(100)
+      await new Promise(resolve => setTimeout(resolve, 200))
     },
 
-    runRight() {
-      car.motors.right.accelerate(50)
+    async runRight() {
+      await car.motors.right.accelerate(100)
+      await new Promise(resolve => setTimeout(resolve, 200))
     },
 
     async loop() {

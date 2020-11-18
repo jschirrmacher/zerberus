@@ -58,7 +58,9 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
       if (lastTick) {
         encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
       }
-      // console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
+      if (process.env.LOG_ENCODER) {
+        console.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
+      }
       lastTick = time
       listeners.call(encoder.currentPosition, encoder.currentSpeed)
     },
