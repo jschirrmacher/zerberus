@@ -1,5 +1,5 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
-import { emptyTrigger, NonCancellableTrigger, Trigger } from "./ListenerList"
+import { emptyTrigger, Trigger } from "./ListenerList"
 import wait from "./wait"
 import { OUTPUT, PWM } from './gpio'
 
@@ -8,7 +8,6 @@ export const PERIMETER = DIAMETER * Math.PI
 export const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
 
 const MAX_ACCELERATION = 40
-const SAMPLE_DURATION_MS = 3
 
 export type Motor = {
   no: number,
@@ -37,9 +36,6 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
   
-  let encoderTimer: NodeJS.Timeout
-  let simTime = 0
-
   function setMode(motor: Motor, mode: MotorMode): void {
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
     in2.digitalWrite(mode === MotorMode.BACKWARDS || mode === MotorMode.FLOAT ? 1 : 0)
@@ -59,13 +55,7 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
       setMode(motor, MotorMode.FLOAT)
     }
 
-    if (encoder.simulated) {
-      encoderTimer && clearInterval(encoderTimer)
-      if (speed !== 0) {
-        const ticks = Math.round(SAMPLE_DURATION_MS * 50000 / Math.abs(speed))
-        encoderTimer = setInterval(() => encoder.tick(speed < 0 ? -1 : 1, simTime += ticks), SAMPLE_DURATION_MS)
-      }
-    }
+    encoder.simulateSpeed(speed)
 
     const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(speed * 2.55))))
     const time = Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100
@@ -76,8 +66,7 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
   }
 
   function halt(motor: Motor, mode: MotorMode): void {
-    encoderTimer && clearInterval(encoderTimer)
-    encoderTimer = undefined
+    encoder.simulateSpeed(0)
     ena.pwmWrite(0)
     setMode(motor, mode)
     log()
@@ -124,7 +113,7 @@ export default function (gpio, pin_in1: number, pin_in2: number, pin_ena: number
     },
 
     destruct(): void {
-      encoderTimer && clearInterval(encoderTimer)
+      encoder.simulateSpeed(0)
     }
   }
   

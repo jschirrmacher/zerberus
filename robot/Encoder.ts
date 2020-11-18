@@ -13,6 +13,7 @@ export type Encoder = {
   tick(diff: number, time: number): void,
   position(desiredPosition: number): Trigger,
   speed(desiredSpeed: number): Trigger,
+  simulateSpeed(speed: number): void,
 }
 
 let encoderNo = 1
@@ -34,10 +35,13 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
   const notifier = gpio.createNotifier([pin_a, pin_b])
   let listeners = ListenerList()
 
+  const SAMPLE_DURATION_MS = 3
+
   const encoder = {
     no: encoderNo++,
     simulated: notifier.simulated,
     currentPosition: 0,
+    timer: undefined as NodeJS.Timer,
 
     /*
       The current speed of the motor is measured in revolutions per second
@@ -57,6 +61,17 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
       // console.debug(`Encoder #${encoder.no}: pos=${encoder.currentPosition}, spd=${encoder.currentSpeed}, diff=${time - lastTick}`)
       lastTick = time
       listeners.call(encoder.currentPosition, encoder.currentSpeed)
+    },
+
+    simulateSpeed(speed: number): void {
+      if (encoder.simulated) {
+        encoder.timer && clearInterval(encoder.timer)
+        encoder.timer = undefined
+        if (speed) {
+          const diff = Math.round(speed * SAMPLE_DURATION_MS / 36.7)
+          encoder.timer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
+        }
+      }
     },
 
     /*
