@@ -62,6 +62,16 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       return stop
     })
   }
+
+  function getTurnSpeed(currentSpeed: number): { lowerSpeed: number, higherSpeed: number } {
+    if (Math.abs(currentSpeed) < 50) {
+      return { lowerSpeed: -50, higherSpeed: 50 }
+    }
+
+    const higherSpeed = Math.min(currentSpeed + 25, 100)
+    const lowerSpeed = Math.max(higherSpeed - 50, -100)
+    return { lowerSpeed, higherSpeed }
+  }
   
   const car: Car = {
     motors,
@@ -108,8 +118,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     */
     async turn(direction: Direction): Promise<void> {
       console.debug(`Turn car ${direction}`)
-      const higherSpeed = Math.min(car.speed() + 25, 100)
-      const lowerSpeed = Math.max(higherSpeed - 50, -100)
+      const { higherSpeed, lowerSpeed } = getTurnSpeed(car.speed())
       await Promise.all([
         motors[direction].accelerate(lowerSpeed),
         motors[otherDirection(direction)].accelerate(higherSpeed)
