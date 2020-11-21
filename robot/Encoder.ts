@@ -79,12 +79,12 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number): Encoder {
     position(desiredPosition: number): Trigger {
       // console.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
       const direction = Math.sign(desiredPosition - encoder.currentPosition)
-      return listeners.add((pos: number, speed: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
+      return listeners.add((pos: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
     },
 
     speed(desiredSpeed: number): Trigger {
       // console.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
-      const direction = Math.sign(desiredSpeed - encoder.currentSpeed)
+      const direction = Math.sign(desiredSpeed - (encoder.currentSpeed || 0))
       return listeners.add((pos: number, speed: number) => direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed)
     }
   }

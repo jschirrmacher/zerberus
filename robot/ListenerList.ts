@@ -34,10 +34,13 @@ export default function (): ListenerList {
   return {    
     add(func: Listener): Trigger {
       const id = ++listenerId
-
-      // console.debug(`Creating listener #${id}`)
-      return {
-        promise: new Promise(resolve => {
+      let cancel = voidFunc
+      const promise = Promise.race([
+        new Promise(resolve => {
+          cancel = resolve
+          delete list[id]
+        }),
+        new Promise(resolve => {
           list[id] = (...args: unknown[]) => {
             const condition = func(...args)
             if (condition) {
@@ -47,12 +50,13 @@ export default function (): ListenerList {
             }
             return condition
           }
-        }),
+        })
+      ]) as Promise<void>
 
-        cancel: () => {
-          // console.debug(`Listener #${id} cancelled`)
-          delete list[id]
-        }
+      // console.debug(`Creating listener #${id}`)
+      return {
+        promise,
+        cancel
       }    
     },
 
