@@ -8,6 +8,7 @@ import CommandList from './CommandList'
 import { Position } from './Position'
 import { Orientation } from './Orientation'
 import Gpio from './gpio'
+import HTTP = require('http')
 
 const gpio = Gpio()
 
@@ -19,7 +20,7 @@ const car = Car({ left: leftMotorSet, right: rightMotorSet })
 const commands = CommandList(car)
 
 const app = express()
-const server = require('http').createServer(app)
+const server = HTTP.createServer(app)
 const io = IO(server)
 server.listen(10000)
 app.use('/', express.static(path.resolve(__dirname, '..', 'frontend')))

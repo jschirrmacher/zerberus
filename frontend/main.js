@@ -1,3 +1,4 @@
+/* global io */
 (function () {
   const canvas = document.querySelector('#car-area')
   const car = document.querySelector('#car')

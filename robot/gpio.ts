@@ -1,7 +1,7 @@
 import { Stream } from 'stream'
 
-const NODE_ENV = process.env.NODE_ENV || 'development'
-let pigpio = NODE_ENV === 'production' ? require('pigpio') : null
+const NODE_ENV = process.env.NODE_ENV || 'development'
+const pigpio = NODE_ENV === 'production' ? require('pigpio') : null
 
 export const INPUT = 'IN'
 export const OUTPUT = 'OUT'
@@ -49,7 +49,24 @@ const gpioPins = {
   21: 40
 }
 
-export default function () {
+export type GPIOPin = {
+  digitalWrite(value: number): void,
+  pwmWrite(dutyCycle: number): void,
+}
+
+export type GPIONotifier = {
+  simulated: boolean,
+  stream(): Stream,
+}
+
+export type GPIO = {
+  create(pin: number, options: Record<string, unknown>): GPIOPin,
+  createNotifier(pins: number[]): GPIONotifier,
+  addListener(emit: (event: string | symbol, ...args: unknown[]) => boolean): number,
+  removeListener(listenerId): void,
+}
+
+export default function (): GPIO {
   let listenerId = 0
   const listeners = {} as Record<number, (...args: unknown[]) => void>
 
@@ -58,7 +75,7 @@ export default function () {
   }
 
   return {
-    create(pin: number, options = {} as Record<string, unknown>) {
+    create(pin: number, options = {} as Record<string, unknown>): GPIOPin {
       const pigpioObj = pigpio && new pigpio.Gpio(pin, options)
       const actualPin = gpioPins[pin]
 
@@ -80,11 +97,13 @@ export default function () {
       }
     },
 
-    createNotifier(pins: number[]) {
+    createNotifier(pins: number[]): GPIONotifier {
       const bits = pins.map(pin => 1 << pin).reduce((bits, bit) => bits | bit)
       const pigpioNotifier = pigpio && new pigpio.Notifier({ bits })
       const dataStream = !pigpio && new Stream.Readable({
-        read() {},
+        read() {
+          // Do nothing
+        },
         objectMode: true,
       })
 
@@ -97,12 +116,12 @@ export default function () {
       }
     },
 
-    addListener(emit: (event: string | symbol, ...args: any[]) => boolean): number {
+    addListener(emit: (event: string | symbol, ...args: unknown[]) => boolean): number {
       listeners[++listenerId] = emit
       return listenerId
     },
 
-    removeListener(listenerId) {
+    removeListener(listenerId): void {
       delete listeners[listenerId]
     },
   }

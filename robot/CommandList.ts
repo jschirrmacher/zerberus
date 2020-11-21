@@ -2,7 +2,9 @@ import { Car } from "./Car";
 import { create as createPosition } from './Position'
 import { radians, create as createOrientation } from './Orientation'
 
-export default function (car: Car) {
+type CommandFunction = () => void | Promise<void>
+
+export default function (car: Car): Record<string, CommandFunction> {
   return {
     async runLeft() {
       await car.motors.left.accelerate(100)

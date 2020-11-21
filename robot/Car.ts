@@ -50,7 +50,6 @@ async function setMotors(left: () => Trigger, right: () => Trigger) {
 }
 
 export default function (motors: {left: Motor, right: Motor}): Car {
-  let interval: NodeJS.Timer
   const listeners = ListenerList()
 
   function createTrigger(getDiff: (pos: Position, orientation: Orientation) => number) {

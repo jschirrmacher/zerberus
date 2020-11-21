@@ -5,6 +5,7 @@
   "scripts": {
     "start": "NODE_ENV=production ts-node robot",
     "simulator": "ts-node robot",
+    "lint": "eslint .",
     "test": "mocha -r ts-node/register robot/**/*.test.ts"
   },
   "keywords": [],
@@ -23,6 +24,9 @@
   },
   "devDependencies": {
     "@types/mocha": "^8.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.14.0",
     "mocha": "^8.2.0",
     "node-fetch": "^2.6.1",
     "should": "^13.2.3"

@@ -1,9 +1,8 @@
-import { INPUT, PI_NTFY_FLAGS_ALIVE } from './gpio'
+import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from './gpio'
 import ListenerList, { Trigger } from './ListenerList'
 
-const Gpio = require('./gpio')
-
 export const TICKS_PER_REV = 544
+const SAMPLE_DURATION_MS = 3
 
 export type Encoder = {
   no: number,
@@ -29,19 +28,17 @@ const QEM = [
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
 */
-export default function (gpio, pin_a: number, pin_b: number): Encoder {
+export default function (gpio: GPIO, pin_a: number, pin_b: number): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
   const notifier = gpio.createNotifier([pin_a, pin_b])
-  let listeners = ListenerList()
-
-  const SAMPLE_DURATION_MS = 3
+  const listeners = ListenerList()
+  let timer = undefined as NodeJS.Timer
 
   const encoder = {
     no: encoderNo++,
     simulated: notifier.simulated,
     currentPosition: 0,
-    timer: undefined as NodeJS.Timer,
 
     /*
       The current speed of the motor is measured in revolutions per second
@@ -67,11 +64,11 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
 
     simulateSpeed(speed: number): void {
       if (encoder.simulated) {
-        encoder.timer && clearInterval(encoder.timer)
-        encoder.timer = undefined
+        timer && clearInterval(timer)
+        timer = undefined
         if (speed) {
           const diff = Math.round(speed * SAMPLE_DURATION_MS / 36.7)
-          encoder.timer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
+          timer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
         }
       }
     },
@@ -95,7 +92,7 @@ export default function (gpio, pin_a: number, pin_b: number): Encoder {
   function handleChunk(chunk: Buffer) {
     if (!(chunk.readUInt16LE(2) & PI_NTFY_FLAGS_ALIVE)) {
       const level = chunk.readUInt32LE(8)
-      const newVal = ((level >>> pin_a) & 1) << 1 | ((level >>> pin_b) & 1)
+      const newVal = ((level >>> pin_a) & 1) << 1 | ((level >>> pin_b) & 1)
       const diff = QEM[oldVal][newVal]
       if (!Number.isNaN(diff) && diff !== 0) {
         encoder.tick(diff, chunk.readUInt32LE(4))

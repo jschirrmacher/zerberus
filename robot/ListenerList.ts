@@ -3,18 +3,19 @@ export type Trigger = {
   cancel: () => void,
 }
 
-export const emptyTrigger = {
-  promise: new Promise(() => {}) as Promise<void>,
-  cancel: () => {}
+const voidFunc = (): void => {
+  // do nothing
 }
 
-export function NonCancellableTrigger(func: () => unknown): Trigger {
+export const emptyTrigger = {
+  promise: new Promise(voidFunc) as Promise<void>,
+  cancel: voidFunc
+}
+
+export function NonCancellableTrigger(func: () => Promise<void>): Trigger {
   return {
-    promise: new Promise(async resolve => {
-      await func()
-      resolve()
-    }),
-    cancel: () => {}
+    promise: func(),
+    cancel: voidFunc
   }
 }
 
