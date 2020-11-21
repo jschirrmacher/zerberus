@@ -259,7 +259,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     }
   }
 
-  interval = setInterval(updatePosition, 20)
+  const interval = setInterval(updatePosition, 20)
 
   return car
 }

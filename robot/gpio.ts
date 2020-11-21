@@ -59,10 +59,12 @@ export type GPIONotifier = {
   stream(): Stream,
 }
 
+export type ListenerFunction = (event: string | symbol, ...args: unknown[]) => boolean
+
 export type GPIO = {
   create(pin: number, options: Record<string, unknown>): GPIOPin,
   createNotifier(pins: number[]): GPIONotifier,
-  addListener(emit: (event: string | symbol, ...args: unknown[]) => boolean): number,
+  addListener(listener: ListenerFunction): number,
   removeListener(listenerId): void,
 }
 
@@ -116,8 +118,8 @@ export default function (): GPIO {
       }
     },
 
-    addListener(emit: (event: string | symbol, ...args: unknown[]) => boolean): number {
-      listeners[++listenerId] = emit
+    addListener(listener: ListenerFunction): number {
+      listeners[++listenerId] = listener
       return listenerId
     },
 

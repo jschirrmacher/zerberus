@@ -2,7 +2,7 @@ import { Car } from "./Car";
 import { create as createPosition } from './Position'
 import { radians, create as createOrientation } from './Orientation'
 
-type CommandFunction = () => void | Promise<void>
+type CommandFunction = (...ags: unknown[]) => void | Promise<void>
 
 export default function (car: Car): Record<string, CommandFunction> {
   return {
