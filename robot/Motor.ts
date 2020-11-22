@@ -13,7 +13,7 @@ export type Motor = {
   no: number,
   speed: number,
   mode: MotorMode,
-  accelerate: (speed: number) => void,
+  accelerate: (speed: number) => Promise<void>,
   go(distance: number, speed: number): Trigger,
   stop: () => Trigger,
   float: () => Trigger,
@@ -22,7 +22,7 @@ export type Motor = {
   destruct(): void,
 }
 
-enum MotorMode {
+export enum MotorMode {
   BREAK = 'break',
   FLOAT = 'float',
   FORWARD = 'forward',
@@ -31,7 +31,7 @@ enum MotorMode {
 
 let motorNo = 1
 
-export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder): Motor {
+export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = { debug: console.debug }): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
@@ -43,7 +43,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
   }
 
   function log(): void {
-    console.debug(`Motor #${motor.no}:${''.padStart((motor.no - 1)* 15)}${motor.mode} ${motor.speed.toFixed(0)}%`)
+    logger.debug(`Motor,${motor.no},${''.padStart((motor.no - 1)* 15)},${motor.mode},${motor.speed.toFixed(0)}`)
   }
 
   async function sendSpeed(motor: Motor, speed: number): Promise<void> {
@@ -78,12 +78,14 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     speed: 0,
     mode: MotorMode.FLOAT,
 
-    accelerate(speed: number): void {
+    // @todo Return a cancellable promise instead
+    async accelerate(speed: number): Promise<void> {
+      speed = Math.min(Math.abs(speed), 100) * Math.sign(speed)
       // console.debug(`Motor #${this.no}:${indent(motor.no)}accelerate(from=${this.speed}% to ${speed}%)`)
       while (speed !== this.speed) {
         const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
         const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
-        sendSpeed(this, newSpeed)
+        await sendSpeed(this, newSpeed)
       }
     },
 
@@ -94,11 +96,13 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       return trigger
     },
     
+    // @todo Create an actual trigger
     stop(): Trigger {
       halt(this, MotorMode.BREAK)
       return emptyTrigger
     },
     
+    // @todo Create an actual trigger
     float(): Trigger {
       halt(this, MotorMode.FLOAT)
       return emptyTrigger
