@@ -8,7 +8,7 @@ const voidFunc = (): void => {
 }
 
 export const emptyTrigger = {
-  promise: new Promise(voidFunc) as Promise<void>,
+  promise: Promise.resolve(),
   cancel: voidFunc
 }
 
