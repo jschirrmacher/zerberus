@@ -1,4 +1,6 @@
 /node_modules
+/.nyc_output
+/coverage
 /image_recognition/data/all_images
 /pictures
 image_recognition/data/break/

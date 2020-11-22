@@ -28,7 +28,7 @@ const QEM = [
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
 */
-export default function (gpio: GPIO, pin_a: number, pin_b: number): Encoder {
+export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { debug: console.debug }): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
   const notifier = gpio.createNotifier([pin_a, pin_b])
@@ -56,7 +56,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number): Encoder {
         encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
       }
       if (process.env.LOG_ENCODER) {
-        console.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
+        logger.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
       }
       lastTick = time
       listeners.call(encoder.currentPosition, encoder.currentSpeed)
@@ -77,16 +77,16 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number): Encoder {
       Returns a trigger that waits for a position to be reached.
     */
     position(desiredPosition: number): Trigger {
-      // console.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
+      // logger.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
       const direction = Math.sign(desiredPosition - encoder.currentPosition)
       return listeners.add((pos: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
     },
 
     speed(desiredSpeed: number): Trigger {
-      // console.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
+      // logger.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
       const direction = Math.sign(desiredSpeed - (encoder.currentSpeed || 0))
       return listeners.add((pos: number, speed: number) => direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed)
-    }
+    },
   }
 
   function handleChunk(chunk: Buffer) {
