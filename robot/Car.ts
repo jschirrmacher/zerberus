@@ -1,7 +1,8 @@
 import { Motor, TICKS_PER_MM } from './Motor'
 import { Position, create as createPosition } from './Position'
 import { create as createOrientation, Orientation } from './Orientation'
-import ListenerList, { Listener, Trigger } from './ListenerList'
+import ListenerList, { Listener } from './ListenerList'
+import { CancellableAsync } from './CancellableAsync'
 
 export const WIDTH_OF_AXIS = 270 // mm
 const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
@@ -43,7 +44,7 @@ export type Car = {
   destruct(): Promise<void>,
 }
 
-async function setMotors(left: () => Trigger, right: () => Trigger) {
+async function setMotors(left: () => CancellableAsync, right: () => CancellableAsync) {
   const trigger = [ left(), right() ]
   await Promise.race(trigger.map(t => t.promise))
   trigger.forEach(t => t.cancel())

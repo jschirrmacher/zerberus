@@ -5,6 +5,26 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Mocha Tests",
+      "args": [
+        "-u",
+        "bdd",
+        "-r",
+        "ts-node/register",
+        "--timeout",
+        "9999",
+        "--colors",
+        "${workspaceFolder}/robot/**/*.test.ts",
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    {
       "name": "Python: Train classifier",
       "type": "python",
       "request": "launch",

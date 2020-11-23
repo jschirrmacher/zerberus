@@ -1,7 +1,7 @@
 import 'should'
 import MotorFactory, { Motor, MotorMode } from './Motor'
 import { gpio, initializedPins } from './GPIOMock'
-import { OUTPUT, PWM } from './gpio'
+import { INPUT, OUTPUT, PWM } from './gpio'
 import EncoderFactory from './Encoder'
 
 const console = {
@@ -13,6 +13,7 @@ describe('Motor', () => {
   let motor: Motor
 
   beforeEach(() => {
+    Object.keys(initializedPins).forEach(key => delete initializedPins[key])
     motor = MotorFactory(gpio, 1, 2, 3, EncoderFactory(gpio, 4, 5), console)
   })
 
@@ -21,14 +22,19 @@ describe('Motor', () => {
   })
 
   it('should initialize the GPIO', () => {
-    Object.keys(initializedPins).forEach(key => delete initializedPins[key])
-    MotorFactory(gpio, 1, 2, 3)
-    initializedPins.should.deepEqual({1: { mode: OUTPUT }, 2: { mode: OUTPUT }, 3: { mode: PWM }})
+    initializedPins.should.deepEqual({
+      1: { mode: OUTPUT },
+      2: { mode: OUTPUT },
+      3: { mode: PWM },
+      4: { mode: INPUT },
+      5: { mode: INPUT },
+    })
   })
 
   it('should have an id', () => {
     const motor2 = MotorFactory(gpio, 6, 7, 8)
-    motor2.no.should.not.equal(motor.no)
+    const no2 = motor2.no
+    no2.should.not.equal(motor.no)
   })
 
   it('should be in FORWARD mode after being accelerated', async () => {
@@ -75,5 +81,19 @@ describe('Motor', () => {
     await motor.accelerate(100)
     await motor.stop().promise
     motor.mode.should.equal(MotorMode.BREAK)
+  })
+
+  it('should allow to wait for a position to be reached', async () => {
+    const trigger = motor.positionReached(10)
+    motor.accelerate(100)
+    await trigger.promise
+    motor.getPosition().should.be.greaterThanOrEqual(10)
+  })
+
+  it('should allow to be notified when a speed is reached', async () => {
+    const trigger = motor.speedReached(50)
+    motor.accelerate(100)
+    await trigger.promise
+    motor.getSpeed().should.be.greaterThanOrEqual(50)
   })
 })

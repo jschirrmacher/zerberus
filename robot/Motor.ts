@@ -1,5 +1,5 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
-import { emptyTrigger, Trigger } from "./ListenerList"
+import { CancellableAsync, resolvedCancellableAsync } from "./CancellableAsync"
 import wait from "./wait"
 import { GPIO, OUTPUT, PWM } from './gpio'
 
@@ -14,11 +14,13 @@ export type Motor = {
   speed: number,
   mode: MotorMode,
   accelerate: (speed: number) => Promise<void>,
-  go(distance: number, speed: number): Trigger,
-  stop: () => Trigger,
-  float: () => Trigger,
+  go(distance: number, speed: number): CancellableAsync,
+  stop: () => CancellableAsync,
+  float: () => CancellableAsync,
   getPosition: () => number,
-  on(position: number): Promise<void>,
+  getSpeed(): number,
+  positionReached(position: number): CancellableAsync,
+  speedReached(speed: number): CancellableAsync,
   destruct(): void,
 }
 
@@ -32,6 +34,7 @@ export enum MotorMode {
 let motorNo = 1
 
 export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = { debug: console.debug }): Motor {
+  let destructed = false
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
@@ -55,7 +58,9 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       setMode(motor, MotorMode.FLOAT)
     }
 
-    encoder.simulateSpeed(speed)
+    if (!destructed) {
+      encoder.simulateSpeed(speed)
+    }
 
     const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(speed * 2.55))))
     const time = Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100
@@ -78,7 +83,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     speed: 0,
     mode: MotorMode.FLOAT,
 
-    // @todo Return a cancellable promise instead
+    // @todo Return a CancellableAsync instead
     async accelerate(speed: number): Promise<void> {
       speed = Math.min(Math.abs(speed), 100) * Math.sign(speed)
       // console.debug(`Motor #${this.no}:${indent(motor.no)}accelerate(from=${this.speed}% to ${speed}%)`)
@@ -89,35 +94,55 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       }
     },
 
-    go(distance: number, speed: number): Trigger {
+    go(distance: number, speed: number): CancellableAsync {
       // console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
-      const trigger = encoder.position(encoder.currentPosition + distance * Math.sign(speed))
+      const trigger = motor.positionReached(encoder.currentPosition + distance * Math.sign(speed))
       this.accelerate(speed)
       return trigger
     },
     
     // @todo Create an actual trigger
-    stop(): Trigger {
+    stop(): CancellableAsync {
       halt(this, MotorMode.BREAK)
-      return emptyTrigger
+      return resolvedCancellableAsync
     },
     
     // @todo Create an actual trigger
-    float(): Trigger {
+    float(): CancellableAsync {
       halt(this, MotorMode.FLOAT)
-      return emptyTrigger
+      return resolvedCancellableAsync
     },
 
     getPosition(): number {
       return encoder.currentPosition
     },
 
-    on(position: number): Promise<void> {
-      return encoder.position(position).promise
+    getSpeed(): number {
+      return encoder.currentSpeed
+    },
+
+    /*
+      Installs a listener Returns a CancellableAsync with a promise for a position to be reached.
+    */
+    positionReached(desiredPosition: number): CancellableAsync {
+      // logger.debug(`Motor #${motor.no}: setting trigger to position=${desiredPosition}`)
+      const direction = Math.sign(desiredPosition - encoder.currentPosition)
+      return encoder.listeners.add((pos: number) => {
+        return direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition
+      })
+    },
+
+    speedReached(desiredSpeed: number): CancellableAsync {
+      // logger.debug(`Motor #${motor.no}: setting trigger to speed=${desiredSpeed}`)
+      const direction = Math.sign(desiredSpeed - (encoder.currentSpeed || 0))
+      return encoder.listeners.add((pos: number, speed: number) => {
+        return direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed
+      })
     },
 
     destruct(): void {
       encoder.simulateSpeed(0)
+      destructed = true
     }
   }
   

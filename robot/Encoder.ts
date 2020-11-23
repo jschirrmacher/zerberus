@@ -1,5 +1,5 @@
 import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from './gpio'
-import ListenerList, { Trigger } from './ListenerList'
+import createListenerList, { ListenerList } from './ListenerList'
 
 export const TICKS_PER_REV = 544
 const SAMPLE_DURATION_MS = 3
@@ -9,9 +9,8 @@ export type Encoder = {
   simulated: boolean,
   currentPosition: number,
   currentSpeed: number,
+  listeners: ListenerList,
   tick(diff: number, time: number): void,
-  position(desiredPosition: number): Trigger,
-  speed(desiredSpeed: number): Trigger,
   simulateSpeed(speed: number): void,
 }
 
@@ -32,13 +31,13 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
   let oldVal = 0
   let lastTick = undefined as number
   const notifier = gpio.createNotifier([pin_a, pin_b])
-  const listeners = ListenerList()
   let timer = undefined as NodeJS.Timer
 
   const encoder = {
     no: encoderNo++,
     simulated: notifier.simulated,
     currentPosition: 0,
+    listeners: createListenerList(),
 
     /*
       The current speed of the motor is measured in revolutions per second
@@ -59,7 +58,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
         logger.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
       }
       lastTick = time
-      listeners.call(encoder.currentPosition, encoder.currentSpeed)
+      encoder.listeners.call(encoder.currentPosition, encoder.currentSpeed)
     },
 
     simulateSpeed(speed: number): void {
@@ -71,21 +70,6 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
           timer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
         }
       }
-    },
-
-    /*
-      Returns a trigger that waits for a position to be reached.
-    */
-    position(desiredPosition: number): Trigger {
-      // logger.debug(`Encoder #${encoder.no}: setting trigger to position=${desiredPosition}`)
-      const direction = Math.sign(desiredPosition - encoder.currentPosition)
-      return listeners.add((pos: number) => direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition)
-    },
-
-    speed(desiredSpeed: number): Trigger {
-      // logger.debug(`Encoder #${encoder.no}: setting trigger to speed=${desiredSpeed}`)
-      const direction = Math.sign(desiredSpeed - (encoder.currentSpeed || 0))
-      return listeners.add((pos: number, speed: number) => direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed)
     },
   }
 

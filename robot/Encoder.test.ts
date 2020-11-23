@@ -43,29 +43,6 @@ describe('Encoder', () => {
     encoder.currentSpeed.should.equal(2000000 / TICKS_PER_REV)
   })
 
-  it('should allow to wait for a position to be reached', async () => {
-    const trigger = encoder.position(10)
-    timer = setInterval(() => encoder.tick(1, 1))
-    await trigger.promise
-    encoder.currentPosition.should.equal(10)
-  })
-
-  it('should allow to be notified when a speed is reached', async () => {
-    const trigger = encoder.speed(50)
-    let time = 1
-    timer = setInterval(() => encoder.tick(time / 100, time += 200))
-    await trigger.promise
-    encoder.currentSpeed.should.greaterThanOrEqual(50)
-  })
-
-  it('should return triggers that can be cancelled', async () => {
-    const trigger = encoder.position(10)
-    encoder.tick(1, 1)
-    trigger.cancel()
-    await trigger.promise
-    encoder.currentPosition.should.equal(1)
-  })
-
   it('should log in csv format if env ist set', () => {
     const console = {
       messages: [],
