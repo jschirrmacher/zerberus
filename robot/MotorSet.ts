@@ -11,7 +11,7 @@ const MAX_ACCELERATION = 40
 
 export type Motor = {
   no: number,
-  speed: number,
+  throttle: number,
   mode: MotorMode,
   accelerate: (speed: number) => Promise<void>,
   go(distance: number, speed: number): CancellableAsync,
@@ -46,25 +46,25 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
   }
 
   function log(): void {
-    logger.debug(`Motor,${motor.no},${''.padStart((motor.no - 1)* 15)},${motor.mode},${motor.speed.toFixed(0)}`)
+    logger.debug(`Motor,${motor.no},${''.padStart((motor.no - 1)* 15)},${motor.mode},${motor.throttle.toFixed(0)}`)
   }
 
-  async function sendSpeed(motor: Motor, speed: number): Promise<void> {
-    if (speed < 0 && motor.mode !== MotorMode.BACKWARDS) {
+  async function sendThrottle(motor: Motor, throttle: number): Promise<void> {
+    if (throttle < 0 && motor.mode !== MotorMode.BACKWARDS) {
       setMode(motor, MotorMode.BACKWARDS)
-    } else if (speed > 0 && motor.mode !== MotorMode.FORWARD) {
+    } else if (throttle > 0 && motor.mode !== MotorMode.FORWARD) {
       setMode(motor, MotorMode.FORWARD)
-    } else if (speed === 0 && motor.mode !== MotorMode.FLOAT) {
+    } else if (throttle === 0 && motor.mode !== MotorMode.FLOAT) {
       setMode(motor, MotorMode.FLOAT)
     }
 
     if (!destructed) {
-      encoder.simulateSpeed(speed)
+      encoder.simulateSpeed(throttle)
     }
 
-    const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(speed * 2.55))))
-    const time = Math.abs(speed - motor.speed) / MAX_ACCELERATION * 100
-    motor.speed = speed
+    const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(throttle * 2.55))))
+    const time = Math.abs(throttle - motor.throttle) / MAX_ACCELERATION * 100
+    motor.throttle = throttle
     ena.pwmWrite(pwmValue)
     log()
     await wait(time)
@@ -75,29 +75,29 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     ena.pwmWrite(0)
     setMode(motor, mode)
     log()
-    motor.speed = 0
+    motor.throttle = 0
   }
 
   const motor = {
     no: motorNo++, 
-    speed: 0,
+    throttle: 0,
     mode: MotorMode.FLOAT,
 
     // @todo Return a CancellableAsync instead
-    async accelerate(speed: number): Promise<void> {
-      speed = Math.min(Math.abs(speed), 100) * Math.sign(speed)
+    async accelerate(throttle: number): Promise<void> {
+      throttle = Math.min(Math.abs(throttle), 100) * Math.sign(throttle)
       // console.debug(`Motor #${this.no}:${indent(motor.no)}accelerate(from=${this.speed}% to ${speed}%)`)
-      while (speed !== this.speed) {
-        const diff = Math.min(MAX_ACCELERATION, Math.abs(speed - this.speed))
-        const newSpeed = this.speed + Math.sign(speed - this.speed) * diff
-        await sendSpeed(this, newSpeed)
+      while (throttle !== this.throttle) {
+        const diff = Math.min(MAX_ACCELERATION, Math.abs(throttle - this.throttle))
+        const newThrottle = this.throttle + Math.sign(throttle - this.throttle) * diff
+        await sendThrottle(this, newThrottle)
       }
     },
 
-    go(distance: number, speed: number): CancellableAsync {
-      // console.debug(`Motor #${this.no}: go(distance=${distance}, speed=${speed}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
-      const trigger = motor.positionReached(encoder.currentPosition + distance * Math.sign(speed))
-      this.accelerate(speed)
+    go(distance: number, throttle: number): CancellableAsync {
+      // console.debug(`Motor #${this.no}: go(distance=${distance}, throttle=${throttle}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
+      const trigger = motor.positionReached(encoder.currentPosition + distance * Math.sign(throttle))
+      this.accelerate(throttle)
       return trigger
     },
     

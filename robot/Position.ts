@@ -1,4 +1,4 @@
-import { TICKS_PER_MM } from "./Motor"
+import { TICKS_PER_MM } from "./MotorSet"
 import { RadianAngle } from "./Orientation"
 
 export type TickPosition = number

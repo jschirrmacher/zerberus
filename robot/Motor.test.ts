@@ -1,5 +1,5 @@
 import 'should'
-import MotorFactory, { Motor, MotorMode } from './Motor'
+import MotorFactory, { Motor, MotorMode } from './MotorSet'
 import { gpio, initializedPins } from './GPIOMock'
 import { INPUT, OUTPUT, PWM } from './gpio'
 import EncoderFactory from './Encoder'
@@ -53,16 +53,16 @@ describe('Motor', () => {
     motor.mode.should.equal(MotorMode.FLOAT)
   })
 
-  it('should reflect the speed', async () => {
+  it('should reflect the throttle', async () => {
     await motor.accelerate(42)
-    motor.speed.should.equal(42)
+    motor.throttle.should.equal(42)
   })
 
   it('should not allow to accelerate to more than 100%', async () => {
     await motor.accelerate(101)
-    motor.speed.should.equal(100)
+    motor.throttle.should.equal(100)
     await motor.accelerate(-101)
-    motor.speed.should.equal(-100)
+    motor.throttle.should.equal(-100)
   })
   
   it('should accelerate with a maximum acceleration', async () => {
@@ -88,6 +88,13 @@ describe('Motor', () => {
     motor.accelerate(100)
     await trigger.promise
     motor.getPosition().should.be.greaterThanOrEqual(10)
+  })
+
+  it('should allow to wait for a negative position to be reached', async () => {
+    const trigger = motor.positionReached(-10)
+    motor.accelerate(-100)
+    await trigger.promise
+    motor.getPosition().should.be.lessThanOrEqual(10)
   })
 
   it('should allow to be notified when a speed is reached', async () => {

@@ -1,4 +1,4 @@
-import { Motor, TICKS_PER_MM } from './Motor'
+import { Motor, TICKS_PER_MM } from './MotorSet'
 import { Position, create as createPosition } from './Position'
 import { create as createOrientation, Orientation } from './Orientation'
 import ListenerList, { Listener } from './ListenerList'
