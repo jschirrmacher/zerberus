@@ -103,4 +103,9 @@ describe('Motor', () => {
     await trigger.promise
     motor.getSpeed().should.be.greaterThanOrEqual(50)
   })
+
+  it('should allow to run the motor a given distance', async () => {
+    await motor.go(100, 100).promise
+    motor.getPosition().should.be.greaterThanOrEqual(100)
+  })
 })
