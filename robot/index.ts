@@ -1,5 +1,5 @@
 import path from 'path'
-import Motor from './Motor'
+import Motor from './MotorSet'
 import Car, { Direction } from './Car'
 import Encoder from './Encoder'
 import express from 'express'
