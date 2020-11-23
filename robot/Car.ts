@@ -79,10 +79,10 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     orientation: createOrientation(0),
 
     /*
-      Returns the current speed of the car
+      Returns the current throttle of the car
     */
     speed() {
-      return (motors.left.speed + motors.right.speed) / 2
+      return (motors.left.throttle + motors.right.throttle) / 2
     },
 
     /*
