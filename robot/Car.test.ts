@@ -61,7 +61,7 @@ describe('Car', () => {
     })
   })
 
-  describe('turning', () => {
+  describe('turning relative', () => {
     it('should stop when relative angle is reached', async () => {
       await car.turnRelative(createOrientation(Math.PI / 4))
       Math.abs(car.orientation.degreeAngle() - 45).should.lessThanOrEqual(2)
@@ -74,6 +74,23 @@ describe('Car', () => {
 
     it('should not turn if angle is too small', async () => {
       await car.turnRelative(createOrientation(MINIMAL_TURN_ANGLE * .99))
+      car.orientation.degreeAngle().should.equal(0)
+    })
+  })
+
+  describe('turning to an absolute angle', () => {
+    it('should stop when angle is reached', async () => {
+      await car.turnTo(createOrientation(Math.PI / 4))
+      Math.abs(car.orientation.degreeAngle() - 45).should.lessThanOrEqual(4)
+    })
+
+    it('should turn left', async () => {
+      await car.turnTo(createOrientation(-Math.PI * 3 / 4))
+      Math.abs(car.orientation.degreeAngle() + 135).should.lessThanOrEqual(4)
+    })
+
+    it('should not turn if angle is too small', async () => {
+      await car.turnTo(createOrientation(MINIMAL_TURN_ANGLE * .99))
       car.orientation.degreeAngle().should.equal(0)
     })
   })

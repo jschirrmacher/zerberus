@@ -68,8 +68,8 @@ export default function (motors: {left: Motor, right: Motor}): Car {
   }
 
   function getTurnSpeed(currentSpeed: number): { lowerSpeed: number, higherSpeed: number } {
-    if (Math.abs(currentSpeed) < 75) {
-      return { lowerSpeed: -75, higherSpeed: 75 }
+    if (Math.abs(currentSpeed) < 50) {
+      return { lowerSpeed: -50, higherSpeed: 50 }
     }
 
     const higherSpeed = Math.min(currentSpeed + 25, 100)
@@ -136,8 +136,8 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       the other side the same amount. In case the car was standing, it turns on spot.
     */
     async turn(direction: Direction): Promise<void> {
-      console.debug(`Turn car ${direction}`)
       const { higherSpeed, lowerSpeed } = getTurnSpeed(car.speed())
+      console.debug(`Turn car ${direction}, speed=(${higherSpeed}, ${lowerSpeed})`)
       await Promise.all([
         motors[direction].accelerate(lowerSpeed),
         motors[otherDirection(direction)].accelerate(higherSpeed)
@@ -179,19 +179,11 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       Turn car to the given destination angle.
     */
     async turnTo(destination: Orientation): Promise<void> {
-      let speed = 0
-
       function adaptSpeed(orientation: Orientation) {
         const diff = orientation.differenceTo(destination)
         console.debug(`diff=${createOrientation(diff)}`)
         if (Math.abs(diff) > MINIMAL_TURN_ANGLE) {
-          const newSpeed = clampSpeed(Math.abs(diff) / Math.PI * 100) * Math.sign(diff)
-          if (Math.abs(newSpeed - speed) > 1) {
-            console.debug(`turn speed=${newSpeed}`)
-            speed = newSpeed
-            motors.left.accelerate(-speed)
-            motors.right.accelerate(speed)
-          }
+          car.turn(diff > 0 ? Direction.right : Direction.left)
         }
         return diff
       }
@@ -261,7 +253,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       car.position.y += dY * Math.sin(car.orientation.angle) + dX * Math.sin(delta)
       car.orientation = createOrientation(car.orientation.angle + theta)
 
-      // console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)
+      console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)
       if (dX || dY || theta) {
         // console.log('Current orientation: ' + car.orientation)
         listeners.call(car.position, car.orientation)
