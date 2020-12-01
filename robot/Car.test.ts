@@ -1,7 +1,8 @@
 import 'should'
-import CarFactory, { Car, Direction } from './Car'
+import CarFactory, { Car, Direction, MINIMAL_TURN_ANGLE } from './Car'
 import MockMotor from './MockMotor'
 import { Motor } from './MotorSet'
+import { create as createOrientation } from './Orientation'
 
 describe('Car', () => {
   let leftMotorSet: Motor
@@ -43,6 +44,37 @@ describe('Car', () => {
       await car.turn(Direction.left)
       leftMotorSet.throttle.should.lessThan(0)
       rightMotorSet.throttle.should.greaterThan(0)
+    })
+
+    it('should set one motor slower than the other when turning while car is in motion', async () => {
+      await car.accelerate(50)
+      await car.turn(Direction.left)
+      leftMotorSet.throttle.should.lessThan(rightMotorSet.throttle)
+    })
+
+    it('should run the motors only until reaching a position', async () => {
+      await car.go(100, 50)
+      leftMotorSet.throttle.should.equal(0)
+      rightMotorSet.throttle.should.equal(0)
+      leftMotorSet.getPosition().should.be.greaterThanOrEqual(100)
+      rightMotorSet.getPosition().should.be.greaterThanOrEqual(100)
+    })
+  })
+
+  describe('turning', () => {
+    it('should stop when relative angle is reached', async () => {
+      await car.turnRelative(createOrientation(Math.PI / 4))
+      Math.abs(car.orientation.degreeAngle() - 45).should.lessThanOrEqual(2)
+    })
+
+    it('should stop at relative angle if turning on the spot', async () => {
+      await car.turnRelative(createOrientation(-Math.PI * 3 / 4), true)
+      Math.abs(car.orientation.degreeAngle() + 135).should.lessThanOrEqual(6)
+    })
+
+    it('should not turn if angle is too small', async () => {
+      await car.turnRelative(createOrientation(MINIMAL_TURN_ANGLE * .99))
+      car.orientation.degreeAngle().should.equal(0)
     })
   })
 })

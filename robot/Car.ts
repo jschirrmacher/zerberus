@@ -5,9 +5,9 @@ import ListenerList, { Listener } from './ListenerList'
 import { CancellableAsync } from './CancellableAsync'
 
 export const WIDTH_OF_AXIS = 270 // mm
-const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
-const MINIMAL_TURN_ANGLE = Math.PI / 180
-const MINIMAL_DISTANCE = 20
+export const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
+export const MINIMAL_TURN_ANGLE = Math.PI / 180
+export const MINIMAL_DISTANCE = 20
 
 const epsilon = 0.003
 
@@ -31,22 +31,26 @@ export type Car = {
   position: Position,
   orientation: Orientation,
   speed(): number,
+
   accelerate(speed: number): void,
   stop(): Promise<void>,
   float(): void,
+  go(distance: number, speed: number): Promise<void>,
   turn(direction: Direction): Promise<void>,
+
   turnRelative(angle: Orientation): Promise<void>,
   turnRelative(angle: Orientation, onTheSpot): Promise<void>,
+
   turnTo(destination: Orientation): Promise<void>,
-  go(distance: number, speed: number): Promise<void>,
   goto(position: Position): Promise<void>,
+
   setPositionListener(listener: Listener): void,
   destruct(): Promise<void>,
 }
 
 async function setMotors(left: () => CancellableAsync, right: () => CancellableAsync) {
   const trigger = [ left(), right() ]
-  await Promise.race(trigger.map(t => t.promise))
+  await Promise.all(trigger.map(t => t.promise))
   trigger.forEach(t => t.cancel())
 }
 
@@ -112,6 +116,21 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     },
 
     /*
+      Move the car a given distance (measured in motor ticks) in the specified speed.
+      The speed is a percentage, with 100% being the maximal capacity of the motors.
+      After reaching the position, the car is switched to floating mode.
+    */
+    async go(distance: number, speed: number): Promise<void> {
+      if (Math.abs(distance) >= MINIMAL_DISTANCE) {
+        await setMotors(
+          () => motors.left.go(distance, speed),
+          () => motors.right.go(distance, speed)
+        )
+        this.float()
+      }
+    },
+
+    /*
       Turn car in a given direction by moving the motors on the side of the requested
       direction a bit slower (or even backwards), while accelerating the motors on
       the other side the same amount. In case the car was standing, it turns on spot.
@@ -133,36 +152,26 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     */
     async turnRelative(angle: Orientation, onTheSpot = false): Promise<void> {
       console.debug(`Turn car ${angle}`)
-      if (angle.angle !== 0) {
+      if (Math.abs(angle.angle) >= MINIMAL_TURN_ANGLE) {
         const direction = angle.angle > 0 ? Direction.right : Direction.left
-        const motor = motors[otherDirection(direction)]
-        const other = motors[direction]
+        const motor = motors[direction]
+        const other = motors[otherDirection(direction)]
         const speed = Math.abs(angle.angle) > 1 ? 100 : 75
         const distance = WIDTH_OF_AXIS / (onTheSpot ? 2 : 1) * Math.abs(angle.angle) * TICKS_PER_MM
-        console.debug(`car.turn: dist=${distance}`)
-        await setMotors(
-          () => onTheSpot ? motor.go(distance, -speed) : motor.float(),
-          () => other.go(distance, speed)
-        )
+        console.debug(`car.turn: dist=${distance}, dir=${direction}, speed=${speed}, onTheSpot=${onTheSpot}`)
+        if (onTheSpot) {
+          await setMotors(
+            () => motor.go(distance, -speed),
+            () => other.go(distance, speed)
+          )
+        } else {
+          motor.float()
+          await other.go(distance, speed).promise
+        }
         car.float()
         console.debug(`car.turn: arrived at ${this.position} ${this.orientation}`)
       } else {
         console.debug(`car.turn: already at ${this.position} ${this.orientation}`)
-      }
-    },
-
-    /*
-      Move the car a given distance (measured in motor ticks) in the specified speed.
-      The speed is a percentage, with 100% being the maximal capacity of the motors.
-      After reaching the position, the car is switched to floating mode.
-    */
-    async go(distance: number, speed: number): Promise<void> {
-      if (distance !== 0) {
-        await setMotors(
-          () => motors.left.go(distance, speed),
-          () => motors.right.go(distance, speed)
-        )
-        this.float()
       }
     },
 
