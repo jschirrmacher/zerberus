@@ -14,8 +14,8 @@ const gpio = Gpio()
 
 const leftEncoder = Encoder(gpio, 14, 15)
 const rightEncoder = Encoder(gpio, 19, 26)
-const leftMotorSet = Motor(gpio, 27, 17, 22, leftEncoder)
-const rightMotorSet = Motor(gpio, 3, 2, 4, rightEncoder)
+const leftMotorSet = Motor(gpio, 2, 3, 4, leftEncoder)
+const rightMotorSet = Motor(gpio, 17, 27, 22, rightEncoder)
 const car = Car({ left: leftMotorSet, right: rightMotorSet })
 const commands = CommandList(car)
 
