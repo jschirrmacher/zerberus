@@ -195,7 +195,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
         adaptSpeed(car.orientation)
         await trigger.promise
         car.float()
-        console.debug(`Turning completed at ${car.orientation}`)
+        console.debug(`Turning completed at pos=${this.position} ${this.orientation}`)
       }
     },
 
@@ -208,11 +208,12 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       if (distance > MINIMAL_DISTANCE) {
         console.debug(`car.goto${position}, distance: ${distance}, currentPos=${this.position} ${this.orientation}`)
 
-        const direction = createOrientation(this.position.angleTo(position))
-        const angle = direction.differenceTo(car.orientation)
-        await this.turnRelative(createOrientation(angle), true)
+        const direction = createOrientation(car.position.angleTo(position))
+        const angle = car.orientation.differenceTo(direction)
+        console.log({ direction: '' + direction, angle })
+        await car.turnRelative(createOrientation(angle), true)
 
-        const newDistance = this.position.distanceTo(position)
+        const newDistance = car.position.distanceTo(position)
         const speed = clampSpeed(newDistance / 16)
         await car.go(newDistance, speed)
         car.float()
@@ -251,7 +252,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
 
       const delta = Math.PI / 2 - car.orientation.angle
       car.position.x += dY * Math.cos(car.orientation.angle) + dX * Math.cos(delta)
-      car.position.y += dY * Math.sin(car.orientation.angle) + dX * Math.sin(delta)
+      car.position.y -= dY * Math.sin(car.orientation.angle) + dX * Math.sin(delta)
       car.orientation = createOrientation(car.orientation.angle + theta)
 
       // console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)

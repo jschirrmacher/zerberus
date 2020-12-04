@@ -3,6 +3,7 @@ import CarFactory, { Car, Direction, MINIMAL_TURN_ANGLE } from './Car'
 import MockMotor from './MockMotor'
 import { Motor } from './MotorSet'
 import { create as createOrientation } from './Orientation'
+import { create as createPosition } from './Position'
 
 describe('Car', () => {
   let leftMotorSet: Motor
@@ -92,6 +93,48 @@ describe('Car', () => {
     it('should not turn if angle is too small', async () => {
       await car.turnTo(createOrientation(MINIMAL_TURN_ANGLE * .99))
       car.orientation.degreeAngle().should.equal(0)
+    })
+  })
+
+  describe('directions', () => {
+    it('should reach positive X coordinates when running east', async () => {
+      await car.go(100, 50)
+      car.position.x.should.be.greaterThan(0)
+    })
+
+    it('should reach positive Y coordinates when running north°', async () => {
+      await car.turnTo(createOrientation(-Math.PI / 2))
+      await car.go(100, 50)
+      car.position.y.should.be.greaterThan(0)
+    })
+
+    it('should reach negative X coordinates when running west', async () => {
+      await car.turnTo(createOrientation(Math.PI))
+      await car.go(100, 50)
+      car.position.x.should.be.lessThan(0)
+    })
+
+    it('should reach negative Y coordinates when running south', async () => {
+      await car.turnTo(createOrientation(Math.PI / 2))
+      await car.go(100, 50)
+      car.position.y.should.be.lessThan(0)
+    })
+  })
+
+  describe('absolute positioning', () => {
+    it('should reach the given position', async () => {
+      const destination = createPosition(200, 200)
+      await car.goto(destination)
+      car.position.distanceTo(destination).should.be.lessThanOrEqual(20)
+    })
+
+    it('should follow a route', async function () {
+      this.timeout(5000)
+      const steps = [[200, 200], [-200, 200], [-200, -200]]
+      await steps.reduce((p: Promise<void>, destination: number[]) => p.then(() => {
+        return car.goto(createPosition(destination[0], destination[1]))
+      }), Promise.resolve())
+      car.position.distanceTo(createPosition(-200, -200)).should.be.lessThanOrEqual(20)
     })
   })
 })
