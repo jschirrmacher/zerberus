@@ -30,8 +30,8 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 
 Then, install the robot software:
 
-    git clone https://github.com/jschirrmacher/coon-chaser.git
-    cd coon-chaser
+    git clone https://github.com/jschirrmacher/zerberus.git
+    cd zerberus
     npm i  // for production (on a Rasperry Pi), add `--production`
 
 ## Start
@@ -53,7 +53,7 @@ To send commands to the car, press the buttons displayed right of the car visual
 
 ### Start the edge detection
 
-On the raspberry pi to start the python script to prevent the robot from running into walls, run `python3 use_classifier.py` in the coon_chaser directory on the raspberry pi.
+On the raspberry pi to start the python script to prevent the robot from running into walls, run `python3 use_classifier.py` in the `zerberus` directory on the raspberry pi.
 
 ## Car Control
 

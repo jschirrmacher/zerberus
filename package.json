@@ -1,14 +1,17 @@
 {
-  "name": "coon-chaser",
+  "name": "zerberus",
   "version": "1.0.0",
   "description": "Software for a robot to chase racoons in your garden",
   "scripts": {
     "start": "NODE_ENV=production ts-node robot",
-    "simulator": "ts-node robot",
+    "simulator": "ts-node-dev --nolazy --watch --inspect -- robot",
     "lint": "eslint .",
     "test": "nyc --reporter=html --reporter=text mocha -r ts-node/register robot/**/*.test.ts"
   },
-  "keywords": [],
+  "keywords": ["rackoon", "self-driving car", "wild thumper", "robot"],
+  "repository": {
+    "url": "https://github.com/jschirrmacher/zerberus.git"
+  },
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -31,7 +34,8 @@
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
     "pre-commit": "^1.2.2",
-    "should": "^13.2.3"
+    "should": "^13.2.3",
+    "ts-node-dev": "^1.0.0"
   },
   "pre-commit": [
     "lint",
