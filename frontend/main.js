@@ -50,7 +50,7 @@
     const x = msg.posX * 150 + center.x
     const y = center.y - msg.posY * 150
     car.setAttribute('style', `transform: translate(${x}px, ${y}px) rotate(${msg.orientation}deg) scale(.5)`)
-    carPos.innerHTML = `x: ${msg.posX.toFixed()}<br>y: ${msg.posY.toFixed()}<br>o: ${msg.orientation.toFixed(0)}`
+    carPos.innerHTML = `x: ${msg.posX.toFixed(1)}<br>y: ${msg.posY.toFixed(1)}<br>o: ${msg.orientation.toFixed(0)}`
   }
 
   socket.on('connect', () => socket.emit('command', {name: 'list-commands'}))

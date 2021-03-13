@@ -20,10 +20,11 @@ export default function (): Motor {
     throttle: 0,
     mode: MotorMode.FLOAT,
 
-    async accelerate(throttle: number): Promise<void> {
+    accelerate(throttle: number): CancellableAsync {
       this.mode = throttle > 0 ? MotorMode.FORWARD : throttle < 0 ? MotorMode.BACKWARDS : MotorMode.FLOAT
       this.throttle = throttle
       currentSpeed = throttle / 10
+      return resolvedCancellableAsync
     },
 
     go(distance: number, throttle: number): CancellableAsync {

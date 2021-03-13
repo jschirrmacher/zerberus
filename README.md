@@ -2,7 +2,7 @@
 
 Software for a robot, which chases racoons out of your garden.
 
-It is build using the 4WD Wild Thumper Chassis with 34:1 gear and a Raspberry Pi 4B.
+It is build using the [4WD Wild Thumper Chassis with 34:1 gear](https://www.pololu.com/product/1566) and a Raspberry Pi 4B.
 
 The software consists of several parts:
 
@@ -16,15 +16,15 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 
 ### Setup raspberry pi
 
-- Install raspbian 64bit OS (https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
-- Follow https://mathinf.eu/pytorch/arm64/
-- Configure https://www.piwheels.org/
+- [Install raspbian 64bit OS](https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
+- [Follow instructions to us PyTorch](https://mathinf.eu/pytorch/arm64/)
+- Configure [PiWheels](https://www.piwheels.org/)
 - Enable camera using `sudo raspi-config`
-- curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-- sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev nodejs
-- sudo pip3 install scikit-build
-- sudo pip3 install opencv-python
-- sudo pip3 install scikit-image
+- `curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -`
+- `sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev nodejs`
+- `sudo pip3 install scikit-build`
+- `sudo pip3 install opencv-python`
+- `sudo pip3 install scikit-image`
 
 ### Install robot software
 
@@ -48,7 +48,7 @@ You need 'sudo' here to make sure that the program has access to the hardware.
 
 ### Start the viewer / controller
 
-To view the current state of the car, open http://localhost:10000 or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
+To view the current state of the car, open [http://localhost:10000](http://localhost:10000) or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
 To send commands to the car, press the buttons displayed right of the car visualization area.
 
 ### Start the edge detection
@@ -67,3 +67,9 @@ From the web frontend, you can control the car in different ways, either with ma
 - Accumulator for Motors
 - Accumulator for Raspi
 - Night Vision Camera
+
+## Development
+
+To get debug log output, use environment variable "DEBUG" and add the names of the components to get debug output for, like in this example:
+
+    export DEBUG=encoder,motorset,car

@@ -1,20 +1,22 @@
 import 'should'
-import MotorFactory, { Motor, MotorMode } from './MotorSet'
+import MotorFactory, { getAdaptedThrottle, Motor, MotorMode, MAX_ACCELERATION } from './MotorSet'
 import { gpio, initializedPins } from './GPIOMock'
 import { INPUT, OUTPUT, PWM } from './gpio'
 import EncoderFactory from './Encoder'
 
-const console = {
+const logger = {
   messages: [],
-  debug: (msg: string) => console.messages.push(msg)
+  debug: (msg: string) => {
+    logger.messages.push(msg)
+  }
 }
 
-describe('Motor', () => {
+describe('MotorSet', () => {
   let motor: Motor
 
   beforeEach(() => {
     Object.keys(initializedPins).forEach(key => delete initializedPins[key])
-    motor = MotorFactory(gpio, 1, 2, 3, EncoderFactory(gpio, 4, 5), console)
+    motor = MotorFactory(gpio, 1, 2, 3, EncoderFactory(gpio, 4, 5), logger)
   })
 
   afterEach(() => {
@@ -38,47 +40,53 @@ describe('Motor', () => {
   })
 
   it('should be in FORWARD mode after being accelerated', async () => {
-    await motor.accelerate(100)
+    await motor.accelerate(100).promise
     motor.mode.should.equal(MotorMode.FORWARD)
   })
 
   it('should be in BACKWARDS mode after being accelerated with negative speed', async () => {
-    await motor.accelerate(-100)
+    await motor.accelerate(-100).promise
     motor.mode.should.equal(MotorMode.BACKWARDS)
   })
 
   it('should go to FLOAT mode when decelerated to 0', async () => {
-    await motor.accelerate(10)
-    await motor.accelerate(0)
+    await motor.accelerate(10).promise
+    await motor.accelerate(0).promise
     motor.mode.should.equal(MotorMode.FLOAT)
   })
 
   it('should reflect the throttle', async () => {
-    await motor.accelerate(42)
+    await motor.accelerate(42).promise
     motor.throttle.should.equal(42)
   })
 
   it('should not allow to accelerate to more than 100%', async () => {
-    await motor.accelerate(101)
+    await motor.accelerate(101).promise
     motor.throttle.should.equal(100)
-    await motor.accelerate(-101)
+    await motor.accelerate(-101).promise
     motor.throttle.should.equal(-100)
+  })
+
+  it('should adapt throttle slowly', () => {
+    getAdaptedThrottle(100, 0).should.equal(MAX_ACCELERATION)
+    getAdaptedThrottle(100, 80).should.equal(100)
+    getAdaptedThrottle(-100, 80).should.equal(80 - MAX_ACCELERATION)
   })
   
   it('should accelerate with a maximum acceleration', async () => {
-    console.messages.length = 0
-    await motor.accelerate(100)
-    console.messages.map(e => e.split(',')[4]).should.deepEqual([ '40', '80', '100' ])
+    logger.messages.length = 0
+    await motor.accelerate(100).promise
+    logger.messages.map(e => e.split(',')[3]).should.deepEqual([ '40', '80', '100' ])
   })
 
   it('should go to FLOAT mode when calling float()', async () => {
-    await motor.accelerate(100)
+    await motor.accelerate(100).promise
     await motor.float().promise
     motor.mode.should.equal(MotorMode.FLOAT)
   })
 
   it('should go to BREAK mode when calling stop()', async () => {
-    await motor.accelerate(100)
+    await motor.accelerate(100).promise
     await motor.stop().promise
     motor.mode.should.equal(MotorMode.BREAK)
   })

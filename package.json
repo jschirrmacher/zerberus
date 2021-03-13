@@ -6,7 +6,7 @@
     "start": "NODE_ENV=production ts-node robot",
     "simulator": "ts-node-dev --nolazy --watch --inspect -- robot",
     "lint": "eslint .",
-    "test": "nyc --reporter=html --reporter=text mocha -r ts-node/register robot/**/*.test.ts"
+    "test": "nyc --reporter=html --reporter=text mocha"
   },
   "keywords": ["rackoon", "self-driving car", "wild thumper", "robot"],
   "repository": {

@@ -54,7 +54,9 @@ async function setMotors(left: () => CancellableAsync, right: () => CancellableA
   trigger.forEach(t => t.cancel())
 }
 
-export default function (motors: {left: Motor, right: Motor}): Car {
+const debug = (process.env.DEBUG && process.env.DEBUG.split(',').includes('car')) ? console.debug : () => undefined
+
+export default function (motors: {left: Motor, right: Motor}, logger = { debug }): Car {
   const listeners = ListenerList()
 
   function createTrigger(getDiff: (pos: Position, orientation: Orientation) => number) {
@@ -138,7 +140,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       }
 
       const { higherSpeed, lowerSpeed } = getTurnSpeeds()
-      // console.debug(`Turn car ${direction}, speed=(${higherSpeed}, ${lowerSpeed})`)
+      // logger.debug(`Turn car ${direction}, speed=(${higherSpeed}, ${lowerSpeed})`)
       await Promise.all([
         motors[direction].accelerate(lowerSpeed),
         motors[otherDirection(direction)].accelerate(higherSpeed)
@@ -152,14 +154,14 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       Speed should always be positive when turning.
     */
     async turnRelative(angle: Orientation, onTheSpot = false): Promise<void> {
-      console.debug(`Turn car ${angle}`)
+      logger.debug(`Turn car ${angle}`)
       if (Math.abs(angle.angle) >= MINIMAL_TURN_ANGLE) {
         const direction = angle.angle > 0 ? Direction.right : Direction.left
         const motor = motors[direction]
         const other = motors[otherDirection(direction)]
         const speed = Math.abs(angle.angle) > 1 ? 100 : 75
         const distance = WIDTH_OF_AXIS / (onTheSpot ? 2 : 1) * Math.abs(angle.angle) * TICKS_PER_MM
-        console.debug(`car.turn: dist=${distance}, dir=${direction}, speed=${speed}, onTheSpot=${onTheSpot}`)
+        logger.debug(`car.turn: dist=${distance}, dir=${direction}, speed=${speed}, onTheSpot=${onTheSpot}`)
         if (onTheSpot) {
           await setMotors(
             () => motor.go(distance, -speed),
@@ -170,9 +172,9 @@ export default function (motors: {left: Motor, right: Motor}): Car {
           await other.go(distance, speed).promise
         }
         car.float()
-        console.debug(`car.turn: arrived at ${this.position} ${this.orientation}`)
+        logger.debug(`car.turn: arrived at ${this.position} ${this.orientation}`)
       } else {
-        console.debug(`car.turn: already at ${this.position} ${this.orientation}`)
+        logger.debug(`car.turn: already at ${this.position} ${this.orientation}`)
       }
     },
 
@@ -182,20 +184,20 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     async turnTo(destination: Orientation): Promise<void> {
       function adaptSpeed(orientation: Orientation) {
         const diff = orientation.differenceTo(destination)
-        // console.debug(`diff=${createOrientation(diff)}`)
+        // logger.debug(`diff=${createOrientation(diff)}`)
         if (Math.abs(diff) > MINIMAL_TURN_ANGLE) {
           car.turn(diff > 0 ? Direction.right : Direction.left)
         }
         return diff
       }
 
-      console.log(`turnTo=${destination}`)
+      logger.debug(`turnTo=${destination}`)
       if (Math.abs(car.orientation.differenceTo(destination)) >= MINIMAL_TURN_ANGLE) {
         const trigger = createTrigger((pos: Position, ori: Orientation) => adaptSpeed(ori))
         adaptSpeed(car.orientation)
         await trigger.promise
         car.float()
-        console.debug(`Turning completed at pos=${this.position} ${this.orientation}`)
+        logger.debug(`Turning completed at pos=${this.position} ${this.orientation}`)
       }
     },
 
@@ -206,11 +208,11 @@ export default function (motors: {left: Motor, right: Motor}): Car {
     async goto(position: Position): Promise<void> {
       const distance = this.position.distanceTo(position)
       if (distance > MINIMAL_DISTANCE) {
-        console.debug(`car.goto${position}, distance: ${distance}, currentPos=${this.position} ${this.orientation}`)
+        logger.debug(`car.goto${position}, distance: ${distance}, currentPos=${this.position} ${this.orientation}`)
 
         const direction = createOrientation(car.position.angleTo(position))
         const angle = car.orientation.differenceTo(direction)
-        console.log({ direction: '' + direction, angle })
+        logger.debug({ direction: '' + direction, angle })
         await car.turnRelative(createOrientation(angle), true)
 
         const newDistance = car.position.distanceTo(position)
@@ -218,7 +220,7 @@ export default function (motors: {left: Motor, right: Motor}): Car {
         await car.go(newDistance, speed)
         car.float()
       }
-      console.debug(`car.goto: arrived at currentPos=${this.position} ${this.orientation}`)
+      logger.debug(`car.goto: arrived at currentPos=${this.position} ${this.orientation}`)
     },
 
     setPositionListener(listener: Listener): void {
@@ -255,9 +257,9 @@ export default function (motors: {left: Motor, right: Motor}): Car {
       car.position.y -= dY * Math.sin(car.orientation.angle) + dX * Math.sin(delta)
       car.orientation = createOrientation(car.orientation.angle + theta)
 
-      // console.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)
+      // logger.debug(`leftPos=${leftPos}, rightPos=${rightPos}, a=${a}, b=${b}, dX=${dX}, dY=${dY}, current position: ${car.position.x}, ${car.position.y}, ${car.orientation.degreeAngle()}°`)
       if (dX || dY || theta) {
-        // console.log('Current orientation: ' + car.orientation)
+        // logger.debug('Current orientation: ' + car.orientation)
         listeners.call(car.position, car.orientation)
       }
     }

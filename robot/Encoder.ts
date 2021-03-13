@@ -23,11 +23,13 @@ const QEM = [
   [NaN, 1, -1, 0],
 ]
 
+const debug = (process.env.DEBUG && process.env.DEBUG.split(',').includes('encoder')) ? console.debug : () => undefined
+
 /*
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
 */
-export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { debug: console.debug }): Encoder {
+export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { debug }): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
   const notifier = gpio.createNotifier([pin_a, pin_b])
@@ -38,6 +40,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
     simulated: notifier.simulated,
     currentPosition: 0,
     listeners: createListenerList(),
+    zeroSent: false,
 
     /*
       The current speed of the motor is measured in revolutions per second
@@ -54,9 +57,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
       if (lastTick) {
         encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
       }
-      if (process.env.LOG_ENCODER) {
-        logger.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
-      }
+      logger.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
       lastTick = time
       encoder.listeners.call(encoder.currentPosition, encoder.currentSpeed)
     },
@@ -65,7 +66,8 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
       if (encoder.simulated) {
         timer && clearInterval(timer)
         timer = undefined
-        if (speed) {
+        if (speed || !encoder.zeroSent) {
+          encoder.zeroSent = !speed
           const diff = Math.round(speed * SAMPLE_DURATION_MS / 36.7)
           timer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
         }

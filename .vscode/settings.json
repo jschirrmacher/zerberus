@@ -1,0 +1,6 @@
+{
+  "mochaExplorer.debuggerConfig": "Mocha Tests",
+  "mochaExplorer.exit": true,
+  "mochaExplorer.files": "robot/**/*.test.ts",
+  "mochaExplorer.require": "ts-node/register",
+}

@@ -1,0 +1,8 @@
+require:
+  - 'ts-node/register'
+extension:
+  - '.ts'
+exit: true
+spec:
+  - 'robot/**/*.test.ts'
+ui: bdd

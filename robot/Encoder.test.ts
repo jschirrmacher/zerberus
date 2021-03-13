@@ -48,7 +48,7 @@ describe('Encoder', () => {
       messages: [],
       debug: (msg: string) => console.messages.push(msg)
     }
-    process.env.LOG_ENCODER = 'true'
+    process.env.LOG = 'encoder'
     encoder = EncoderFactory(gpio, 1, 2, console)
     encoder.tick(1, 1)
     encoder.tick(1, 2)

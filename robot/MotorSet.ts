@@ -1,19 +1,17 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
-import { CancellableAsync, resolvedCancellableAsync } from "./CancellableAsync"
-import wait from "./wait"
+import { CancellableAsync } from "./CancellableAsync"
 import { GPIO, OUTPUT, PWM } from './gpio'
 
 export const DIAMETER = 120 // mm
 export const PERIMETER = DIAMETER * Math.PI
 export const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
+export const MAX_ACCELERATION = 40
 
-const MAX_ACCELERATION = 40
-
-export type Motor = {
+export interface Motor {
   no: number,
   throttle: number,
   mode: MotorMode,
-  accelerate: (throttle: number) => Promise<void>,
+  accelerate: (throttle: number) => CancellableAsync,
   go(distance: number, throttle: number): CancellableAsync,
   stop: () => CancellableAsync,
   float: () => CancellableAsync,
@@ -33,11 +31,20 @@ export enum MotorMode {
 
 let motorNo = 1
 
-export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = { debug: console.debug }): Motor {
-  let destructed = false
+export function getAdaptedThrottle(desired: number, current: number): number {
+  const diff = desired - current
+  return current + Math.sign(diff) * Math.min(Math.abs(diff), MAX_ACCELERATION)
+}
+
+export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = undefined as { debug: (message: string) => void }): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
+  const timer = setInterval(() => motor.throttle !== motor.currentThrottle && adaptSpeed(), 10)
+  if (!logger) {
+    const debugLog = process.env.DEBUG && process.env.DEBUG.split(',').includes('motorset')
+    logger = { debug: debugLog ? console.debug : () => undefined }
+  }
   
   function setMode(motor: Motor, mode: MotorMode): void {
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
@@ -46,71 +53,53 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
   }
 
   function log(): void {
-    logger.debug(`Motor,${motor.no},${''.padStart((motor.no - 1)* 15)},${motor.mode},${motor.throttle.toFixed(0)}`)
+    logger.debug(`Motor,${motor.no},${''.padStart((motor.no - 1)* 15)}${motor.mode},${motor.currentThrottle.toFixed(0)}`)
   }
 
-  async function sendThrottle(motor: Motor, throttle: number): Promise<void> {
-    if (throttle < 0 && motor.mode !== MotorMode.BACKWARDS) {
-      setMode(motor, MotorMode.BACKWARDS)
-    } else if (throttle > 0 && motor.mode !== MotorMode.FORWARD) {
-      setMode(motor, MotorMode.FORWARD)
-    } else if (throttle === 0 && motor.mode !== MotorMode.FLOAT) {
-      setMode(motor, MotorMode.FLOAT)
+  function adaptSpeed(): void {
+    motor.currentThrottle = getAdaptedThrottle(motor.throttle, motor.currentThrottle)
+    if (motor.mode !== MotorMode.BREAK) {
+      if (motor.currentThrottle < 0 && motor.mode !== MotorMode.BACKWARDS) {
+        setMode(motor, MotorMode.BACKWARDS)
+      } else if (motor.currentThrottle > 0 && motor.mode !== MotorMode.FORWARD) {
+        setMode(motor, MotorMode.FORWARD)
+      } else if (motor.currentThrottle === 0 && motor.mode !== MotorMode.FLOAT) {
+        setMode(motor, MotorMode.FLOAT)
+      }
     }
-
-    if (!destructed) {
-      encoder.simulateSpeed(throttle)
-    }
-
-    const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(throttle * 2.55))))
-    const time = Math.abs(throttle - motor.throttle) / MAX_ACCELERATION * 100
-    motor.throttle = throttle
+    const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(motor.currentThrottle * 2.55))))
     ena.pwmWrite(pwmValue)
+    encoder.simulateSpeed(motor.currentThrottle)
     log()
-    await wait(time)
-  }
-
-  function halt(motor: Motor, mode: MotorMode): void {
-    encoder.simulateSpeed(0)
-    ena.pwmWrite(0)
-    setMode(motor, mode)
-    log()
-    motor.throttle = 0
   }
 
   const motor = {
     no: motorNo++, 
     throttle: 0,
+    currentThrottle: 0,
     mode: MotorMode.FLOAT,
 
-    // @todo Return a CancellableAsync instead
-    async accelerate(throttle: number): Promise<void> {
-      throttle = Math.min(Math.abs(throttle), 100) * Math.sign(throttle)
-      // console.debug(`Motor #${this.no}:${indent(motor.no)}accelerate(from=${this.speed}% to ${speed}%)`)
-      while (throttle !== this.throttle) {
-        const diff = Math.min(MAX_ACCELERATION, Math.abs(throttle - this.throttle))
-        const newThrottle = this.throttle + Math.sign(throttle - this.throttle) * diff
-        await sendThrottle(this, newThrottle)
-      }
+    accelerate(throttle: number): CancellableAsync {
+      motor.throttle = Math.min(Math.abs(throttle), 100) * Math.sign(throttle)
+      return encoder.listeners.add(() => motor.currentThrottle === motor.throttle)
     },
 
     go(distance: number, throttle: number): CancellableAsync {
       // console.debug(`Motor #${this.no}: go(distance=${distance}, throttle=${throttle}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
       const trigger = motor.positionReached(encoder.currentPosition + distance * Math.sign(throttle))
-      this.accelerate(throttle)
+      motor.throttle = throttle
       return trigger
     },
     
-    // @todo Create an actual trigger
     stop(): CancellableAsync {
-      halt(this, MotorMode.BREAK)
-      return resolvedCancellableAsync
+      motor.throttle = 0
+      setMode(motor, MotorMode.BREAK)
+      return motor.speedReached(0)
     },
     
-    // @todo Create an actual trigger
     float(): CancellableAsync {
-      halt(this, MotorMode.FLOAT)
-      return resolvedCancellableAsync
+      motor.throttle = 0
+      return motor.speedReached(0)
     },
 
     getPosition(): number {
@@ -141,8 +130,10 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     },
 
     destruct(): void {
+      clearInterval(timer)
       encoder.simulateSpeed(0)
-      destructed = true
+      setMode(motor, MotorMode.FLOAT)
+      ena.pwmWrite(0)
     }
   }
   
