@@ -53,15 +53,23 @@
     carPos.innerHTML = `x: ${msg.posX.toFixed(1)}<br>y: ${msg.posY.toFixed(1)}<br>o: ${msg.orientation.toFixed(0)}`
   }
 
-  socket.on('connect', () => socket.emit('command', {name: 'list-commands'}))
+  socket.on('connect', () => socket.emit('command', { name: 'list-commands' }))
   socket.on('car-position', setCarPosition)
 
-  const camera_socket = io('http://192.168.178.78:5000/')
-
-  camera_socket.on('img', data => {
-    console.log(data)
-    document.getElementById('camera-preview').style.backgroundImage = "data:image/jpg;base64," + btoa(data['img'])
-  } )
+  const preview = document.getElementById('camera-preview')
+  const previewUrl = preview.src
+  setInterval(() => {
+    preview.src = previewUrl + (+ new Date())
+  }, 500)
+  // const camera_socket = io('http://192.168.178.78:5000/')
+  // camera_socket.on("error", () => {
+  //   debugger
+  // })
+  // const utf8decoder = new TextDecoder()
+  // camera_socket.on('img', async data => {
+  //   console.log("img", data)
+  //   document.getElementById('camera-preview').style.backgroundImage = "url(data:image/jpg;base64," + utf8decoder.decode(new Uint8Array(data['img'])) + ")"
+  // })
 
   window.addEventListener('keydown', (event) => {
     const keys = {
@@ -101,7 +109,7 @@
           motor.speedo.innerText = 'STOPPED'
         }
       }
-  
+
       function setValueHandler(name) {
         return function (value) {
           if (motor.control[name] !== value) {
@@ -110,12 +118,12 @@
           }
         }
       }
-  
+
       motor.control = { in1: false, in2: false, ena: false }
       motor.angle = 0
       motor.wheel = motor.querySelector('img')
       motor.speedo = motor.querySelector('.speed')
-      const [ in1, in2, ena ] = motor.dataset.connected.split(',')
+      const [in1, in2, ena] = motor.dataset.connected.split(',')
       document.querySelector('#' + in1).onValue = setValueHandler('in1')
       document.querySelector('#' + in2).onValue = setValueHandler('in2')
       document.querySelector('#' + ena).onValue = setValueHandler('ena')

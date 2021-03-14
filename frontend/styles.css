@@ -124,3 +124,8 @@
   margin-bottom: 5px;
   cursor: pointer;
 }
+
+#camera-preview {
+  height: 600px;
+  background-repeat: no-repeat;
+}

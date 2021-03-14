@@ -70,16 +70,17 @@ while True:
     ret, frame = cap.read()
     frame = cv2.flip(frame, 0)
     frame = cv2.flip(frame, 1)
-    cv2.imwrite(images + str(counter) + '.png', frame)
-    img = io.imread(images + str(counter) + '.png')
-    im_str = cv2.imencode('.jpg', frame)[1].tostring()
+    cv2.imwrite(images + 'camera.jpg', frame)
+    cv2.imwrite(images + str(counter) + '.jpg', frame)
+    img = io.imread(images + str(counter) + '.jpg')
     counter += 1
     img = transform.resize(img, (72, 128))
     img = t(img).float()
     output = net.forward(img.unsqueeze(0))[0][0]
     if connected:
         sio.emit('camera', {'obstacle': str(output > 0.9)})
-    server.emit('img', {'img':im_str})
+#    im_str = cv2.imencode('.jpg', frame)[1].tostring()
+#    server.emit('img', {'img':base64.b64encode(im_str)})
     print(output)
     print("Took: " + str(time() - tstep))
     tstep = time()
