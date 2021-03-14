@@ -60,7 +60,7 @@
 
   camera_socket.on('img', data => {
     console.log(data)
-    document.getElementById('camera-preview').style.backgroundImage = "data:image/png;base64," + data['img']
+    document.getElementById('camera-preview').style.backgroundImage = "data:image/jpg;base64," + btoa(data['img'])
   } )
 
   window.addEventListener('keydown', (event) => {

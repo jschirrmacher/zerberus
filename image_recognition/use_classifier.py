@@ -72,14 +72,14 @@ while True:
     frame = cv2.flip(frame, 1)
     cv2.imwrite(images + str(counter) + '.png', frame)
     img = io.imread(images + str(counter) + '.png')
-    im_b64 = base64.b64encode(frame)
+    im_str = cv2.imencode('.jpg', frame)[1].tostring()
     counter += 1
     img = transform.resize(img, (72, 128))
     img = t(img).float()
     output = net.forward(img.unsqueeze(0))[0][0]
     if connected:
         sio.emit('camera', {'obstacle': str(output > 0.9)})
-    server.emit('img', {'img':im_b64})
+    server.emit('img', {'img':im_str})
     print(output)
     print("Took: " + str(time() - tstep))
     tstep = time()
