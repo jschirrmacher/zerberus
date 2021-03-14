@@ -30,8 +30,12 @@ atexit.register(exit_handler)
 
 sio = socketio.Client()
 
-sio.connect('ws://localhost:10000')
-print("Initialised websocket connection")
+try:
+    sio.connect('ws://localhost:10000')
+    connected = True
+    print("Initialised websocket connection")
+except:
+    connected = False
 
 server = socketio.Server(cors_allowed_origins='*')
 app = socketio.WSGIApp(server)
@@ -73,7 +77,8 @@ while True:
     img = transform.resize(img, (72, 128))
     img = t(img).float()
     output = net.forward(img.unsqueeze(0))[0][0]
-    sio.emit('camera', {'obstacle': str(output > 0.9)})
+    if connected:
+        sio.emit('camera', {'obstacle': str(output > 0.9)})
     server.emit('img', {'img':im_b64})
     print(output)
     print("Took: " + str(time() - tstep))
