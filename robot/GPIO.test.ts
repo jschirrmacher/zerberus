@@ -16,9 +16,14 @@ describe("GPIO", () => {
       gpio.create(17)
     })
   
-    it("should set the mode of the created pim", () => {
+    it("should inform the listeners about the mode of a created pim", () => {
       gpio.create(17, { mode: INPUT })
       events.should.deepEqual([{ event: "gpio-mode", args: { pin: 11, mode: INPUT }}])
+    })
+
+    it("should remember the options of each pin set", () => {
+      gpio.create(17, { mode: INPUT })
+      gpio.initializedPins.should.deepEqual({17: { mode: INPUT }})
     })
   
     it("should notify registered listernes when digitalWrite() is called", () => {

@@ -59,32 +59,34 @@ describe('Encoder', () => {
     delete process.env.LOG_ENCODER
   })
 
-  function testStream(info: {flags: number, time: number, level: number}[]): Promise<void> {
-    pushStreamData(info)
-    return new Promise(resolve => setImmediate(resolve))
-  }
-
-  it('should read from stream', async () => {
-    await testStream([
-      {flags: 0, level: 2, time: 10000}
-    ])
-    encoder.currentPosition.should.equal(1)
+  it('should read from stream', (done) => {
+    pushStreamData([{ flags: 0, level: 2, time: 10000 }])
+    setImmediate(() => {
+      encoder.currentPosition.should.equal(1)
+      done()
+    })
   })
 
-  it('should handle buffers containing multiple entries', async () => {
-    await testStream([
+  it('should handle buffers containing multiple entries', (done) => {
+    pushStreamData([
       {flags: 0, level: 2, time: 10000},
       {flags: 0, level: 6, time: 20000}
     ])
-    encoder.currentPosition.should.equal(2)
+    setImmediate(() => {
+      encoder.currentPosition.should.equal(2)
+      done()
+    })
   })
 
-  it('should ignore keepalive ticks', async () => {
-    await testStream([
+  it('should ignore keepalive ticks', (done) => {
+    pushStreamData([
       {flags: 0, level: 2, time: 10000},
       {flags: PI_NTFY_FLAGS_ALIVE, level: 6, time: 20000}
     ])
-    encoder.currentPosition.should.equal(1)
+    setImmediate(() => {
+      encoder.currentPosition.should.equal(1)
+      done()
+    })
   })
 
   it('should allow to simulate motion', done => {
