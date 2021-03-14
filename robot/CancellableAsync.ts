@@ -20,7 +20,7 @@ export const resolvedCancellableAsync = {
 export function createCancellableAsync(func: () => Promise<unknown>): CancellableAsync {
   let cancel = voidFunc
   const finallyFuncs: Array<() => void> = []
-  function createFinally(resolve: () => void): () => void {
+  function createFinally(resolve: (value?: unknown) => void): () => void {
     return () => {
       finallyFuncs.forEach(f => f())
       finallyFuncs.length = 0

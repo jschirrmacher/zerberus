@@ -11,7 +11,7 @@ export type ListenerList = {
 let listenerId = 0
 
 export default function (): ListenerList {
-  const list = {} as Record<string, { func: Listener, resolve: () => void }>
+  const list = {} as Record<string, { func: Listener, resolve: (value?: unknown) => void }>
 
   function add(func: Listener): CancellableAsync {
     return createCancellableAsync(async () => new Promise(resolve => {
