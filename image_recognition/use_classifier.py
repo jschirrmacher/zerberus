@@ -55,6 +55,7 @@ print("Setup server")
 
 NET = '../class_net.pth'
 images = "./pictures/all_images/"
+mainImage = "../pictures/camera.jpg"
 Path(images).mkdir(parents=True, exist_ok=True)
 
 print("Setup file structure")
@@ -70,7 +71,7 @@ while True:
     ret, frame = cap.read()
     frame = cv2.flip(frame, 0)
     frame = cv2.flip(frame, 1)
-    cv2.imwrite(images + 'camera.jpg', frame)
+    cv2.imwrite(mainImage, frame)
     cv2.imwrite(images + str(counter) + '.jpg', frame)
     img = io.imread(images + str(counter) + '.jpg')
     counter += 1

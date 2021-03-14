@@ -58,9 +58,8 @@
 
   const preview = document.getElementById('camera-preview')
   const previewUrl = preview.src
-  setInterval(() => {
-    preview.src = previewUrl + (+ new Date())
-  }, 500)
+  setInterval(() => preview.src = previewUrl + "?" + (+ new Date()), 500)
+
   // const camera_socket = io('http://192.168.178.78:5000/')
   // camera_socket.on("error", () => {
   //   debugger

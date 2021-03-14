@@ -24,7 +24,7 @@ const server = HTTP.createServer(app)
 const io = IO(server)
 server.listen(10000)
 app.use('/', express.static(path.resolve(__dirname, '..', 'frontend')))
-app.get('/camera.jpg', (req, res) => res.sendFile(path.resolve(__dirname, '..', 'pictures', 'all_images', 'camera.jpg')))
+app.use('/', express.static(path.resolve(__dirname, '..', 'pictures')))
 
 function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation): boolean {
   client.emit('car-position', { posX: pos.metricCoordinates().x, posY: pos.metricCoordinates().y, orientation: orientation.degreeAngle() })
