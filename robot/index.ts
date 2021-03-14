@@ -7,10 +7,10 @@ import IO from 'socket.io'
 import CommandList from './CommandList'
 import { Position } from './Position'
 import { Orientation } from './Orientation'
-import Gpio from './gpio'
+import GPIOFactory from './gpio'
 import HTTP = require('http')
 
-const gpio = Gpio()
+const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
 const leftEncoder = Encoder(gpio, 14, 15)
 const rightEncoder = Encoder(gpio, 19, 26)

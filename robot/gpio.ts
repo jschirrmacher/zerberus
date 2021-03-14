@@ -1,7 +1,72 @@
 import { Stream } from 'stream'
 
-const NODE_ENV = process.env.NODE_ENV || 'development'
-const pigpio = NODE_ENV === 'production' ? require('pigpio') : null
+export type GPIOPin = {
+  currentValue: number
+  digitalWrite(value: number): void
+  pwmWrite(dutyCycle: number): void
+}
+
+export type GPIONotifier = {
+  simulated: boolean
+  bits: number
+  stream(): Stream
+}
+
+type ListenerId = number
+export type ListenerFunction = (event: string | symbol, ...args: unknown[]) => void
+type Options  = Record<string, unknown>
+
+export type GPIO = {
+  create(pin: number, options?: Options): GPIOPin,
+  createNotifier(pins: number[]): GPIONotifier,
+  addListener(listener: ListenerFunction): ListenerId,
+  removeListener(listenerId: ListenerId): void,
+  initializedPins: Record<number, Options>,
+}
+
+const readableData = []
+export function pushStreamData(info: {flags: number, time: number, level: number}[]): void {
+  const data = Buffer.alloc(12 * info.length)
+  info.forEach((entry, index) => {
+    data.writeInt16LE(entry.flags, index * 12 + 2)
+    data.writeInt32LE(entry.time, index * 12 + 4)
+    data.writeInt32LE(entry.level, index * 12 + 8)
+  })
+  readableData.push(data)
+}
+
+class FakeGPIO {
+  digitalWrite() {
+    //
+  }
+
+  pwmWrite() {
+    //
+  }
+}
+
+class FakeNotifer {
+  simulated = true
+  bits: number
+  
+  constructor({ bits }: { bits: number }) {
+    this.bits = bits
+  }
+
+  stream() {
+    function getNext() {
+      return readableData.shift()
+    }
+
+    return new Stream.Readable({
+      read() {
+        const value = getNext()
+        value && this.push(value)
+      },
+      objectMode: true,
+    })
+  }
+}
 
 export const INPUT = 'IN'
 export const OUTPUT = 'OUT'
@@ -49,81 +114,59 @@ const gpioPins = {
   21: 40
 }
 
-export type GPIOPin = {
-  digitalWrite(value: number): void,
-  pwmWrite(dutyCycle: number): void,
-}
-
-export type GPIONotifier = {
-  simulated: boolean,
-  stream(): Stream,
-}
-
-export type ListenerFunction = (event: string | symbol, ...args: unknown[]) => boolean
-
-export type GPIO = {
-  create(pin: number, options: Record<string, unknown>): GPIOPin,
-  createNotifier(pins: number[]): GPIONotifier,
-  addListener(listener: ListenerFunction): number,
-  removeListener(listenerId): void,
-}
-
-export default function (): GPIO {
+export default function (useFake = false): GPIO {
+  const pigpio = !useFake ? require('pigpio') : {
+    Gpio: FakeGPIO,
+    Notifier: FakeNotifer,
+  }
   let listenerId = 0
   const listeners = {} as Record<number, (...args: unknown[]) => void>
 
-  function broadcast(...args) {
-    Object.values(listeners).forEach(emit => emit(...args))
+  function notifyListeners(event: string | symbol, ...args: unknown[]): void {
+    Object.values(listeners).forEach(emit => emit(event, ...args))
   }
 
   return {
-    create(pin: number, options = {} as Record<string, unknown>): GPIOPin {
-      const pigpioObj = pigpio && new pigpio.Gpio(pin, options)
-      const actualPin = gpioPins[pin]
+    initializedPins: {},
 
+    create(pin: number, options = {} as Record<string, unknown>): GPIOPin {
+      const pigpioObj = new pigpio.Gpio(pin, options)
+      const actualPin = gpioPins[pin]
+      
+      this.initializedPins[pin] = options
       if (options.mode) {
-        broadcast('gpio-mode', { pin: actualPin, mode: options.mode })
+        notifyListeners('gpio-mode', { pin: actualPin, mode: options.mode })
       }
 
       return {
+        currentValue: 0,
+
         digitalWrite(value: number): void {
-          pigpioObj && pigpioObj.digitalWrite(value)
-          broadcast('gpio-write', { pin: actualPin, value })
+          pigpioObj.digitalWrite(value)
+          this.currentValue = value
+          notifyListeners('gpio-write', { pin: actualPin, value })
         },
 
         pwmWrite(dutyCycle: number): void {
           const value = Math.min(255, Math.max(0, dutyCycle))
-          pigpioObj && pigpioObj.pwmWrite(value)
-          broadcast('gpio-pwm', { pin: actualPin, value })
+          pigpioObj.pwmWrite(value)
+          this.currentValue = value
+          notifyListeners('gpio-pwm', { pin: actualPin, value })
         },
       }
     },
 
     createNotifier(pins: number[]): GPIONotifier {
       const bits = pins.map(pin => 1 << pin).reduce((bits, bit) => bits | bit)
-      const pigpioNotifier = pigpio && new pigpio.Notifier({ bits })
-      const dataStream = !pigpio && new Stream.Readable({
-        read() {
-          // Do nothing
-        },
-        objectMode: true,
-      })
-
-      return {
-        simulated: !pigpio,
-
-        stream() {
-          return dataStream || pigpioNotifier.stream()
-        }
-      }
+      return new pigpio.Notifier({ bits })
     },
 
-    addListener(listener: ListenerFunction): number {
+    addListener(listener: ListenerFunction): ListenerId {
       listeners[++listenerId] = listener
       return listenerId
     },
 
-    removeListener(listenerId): void {
+    removeListener(listenerId: ListenerId): void {
       delete listeners[listenerId]
     },
   }

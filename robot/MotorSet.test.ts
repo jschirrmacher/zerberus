@@ -1,7 +1,6 @@
 import 'should'
 import MotorFactory, { getAdaptedThrottle, Motor, MotorMode, MAX_ACCELERATION } from './MotorSet'
-import { gpio, initializedPins } from './GPIOMock'
-import { INPUT, OUTPUT, PWM } from './gpio'
+import GPIOFactory, { GPIO, INPUT, OUTPUT, PWM } from './gpio'
 import EncoderFactory from './Encoder'
 
 const logger = {
@@ -13,9 +12,10 @@ const logger = {
 
 describe('MotorSet', () => {
   let motor: Motor
+  let gpio: GPIO
 
   beforeEach(() => {
-    Object.keys(initializedPins).forEach(key => delete initializedPins[key])
+    gpio = GPIOFactory(true)
     motor = MotorFactory(gpio, 1, 2, 3, EncoderFactory(gpio, 4, 5), logger)
   })
 
@@ -24,7 +24,7 @@ describe('MotorSet', () => {
   })
 
   it('should initialize the GPIO', () => {
-    initializedPins.should.deepEqual({
+    gpio.initializedPins.should.deepEqual({
       1: { mode: OUTPUT },
       2: { mode: OUTPUT },
       3: { mode: PWM },

@@ -1,13 +1,14 @@
 import 'should'
 import EncoderFactory, { Encoder, TICKS_PER_REV } from "./Encoder"
-import { INPUT, PI_NTFY_FLAGS_ALIVE } from './gpio'
-import { gpio, initializedPins, pushStreamData } from './GPIOMock'
+import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE, pushStreamData } from './gpio'
 
 describe('Encoder', () => {
+  let gpio: GPIO
   let encoder: Encoder
   let timer: number
 
   beforeEach(() => {
+    gpio = GPIOFactory(true)
     encoder = EncoderFactory(gpio, 1, 2)
   })
 
@@ -18,9 +19,8 @@ describe('Encoder', () => {
   })
 
   it('should initialize the GPIO', () => {
-    Object.keys(initializedPins).forEach(key => delete initializedPins[key])
     encoder = EncoderFactory(gpio, 1, 2)
-    initializedPins.should.deepEqual({1: { mode: INPUT }, 2: { mode: INPUT }})
+    gpio.initializedPins.should.deepEqual({1: { mode: INPUT }, 2: { mode: INPUT }})
   })
 
   it('should have an id', () => {
