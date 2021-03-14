@@ -3,7 +3,9 @@
   const canvas = document.querySelector('#car-area')
   const car = document.querySelector('#car')
   const carPos = document.querySelector('#car-pos')
+  const carPath = document.querySelector("#path")
   const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
+  const wayPoints = [center.x.toFixed(0) + " " + center.y.toFixed(0)]
 
   const socket = io()
 
@@ -46,10 +48,19 @@
     connectController(commands)
   })
 
+  function addWaypoint(x, y) {
+    const waypoint = x.toFixed(0) + " " + y.toFixed(0)
+    if (waypoint !== wayPoints[wayPoints.length - 1]) {
+      wayPoints.push(waypoint)
+      carPath.setAttribute("d", "M" + wayPoints.join(" L"))
+    }
+  }
+
   function setCarPosition(msg) {
     const x = msg.posX * 150 + center.x
     const y = center.y - msg.posY * 150
     car.setAttribute('style', `transform: translate(${x}px, ${y}px) rotate(${msg.orientation}deg) scale(.5)`)
+    addWaypoint(x, y)
     carPos.innerHTML = `x: ${msg.posX.toFixed(1)}<br>y: ${msg.posY.toFixed(1)}<br>o: ${msg.orientation.toFixed(0)}`
   }
 
@@ -59,6 +70,12 @@
   const preview = document.getElementById('camera-preview')
   const previewUrl = preview.src
   setInterval(() => preview.src = previewUrl + "?" + (+ new Date()), 500)
+  document.querySelector("#clearPath").addEventListener("click", () => {
+    const currentPos = wayPoints[wayPoints.length - 1]
+    wayPoints.length = 0
+    addWaypoint(...currentPos.split(" ").map(Number))
+    document.activeElement.blur()
+  })
 
   // const camera_socket = io('http://192.168.178.78:5000/')
   // camera_socket.on("error", () => {
@@ -136,7 +153,10 @@
     commands.forEach(name => {
       const button = document.createElement('button')
       button.innerText = name
-      button.onclick = () => socket.emit('command', { name })
+      button.onclick = () => {
+        socket.emit('command', { name })
+        document.activeElement.blur()
+      }
       controller.appendChild(button)
     })
   }
