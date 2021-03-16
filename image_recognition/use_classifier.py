@@ -18,6 +18,7 @@ from time import time
 from threading import Thread 
 import base64
 from io import BytesIO
+import os
 
 cap = cv2.VideoCapture(0)
 
@@ -71,8 +72,9 @@ while True:
     ret, frame = cap.read()
     frame = cv2.flip(frame, 0)
     frame = cv2.flip(frame, 1)
-    cv2.imwrite(mainImage, frame)
     cv2.imwrite(images + str(counter) + '.jpg', frame)
+    os.remove(mainImage)
+    os.link(images + str(counter) + '.jpg', mainImage)
     img = io.imread(images + str(counter) + '.jpg')
     counter += 1
     img = transform.resize(img, (72, 128))
