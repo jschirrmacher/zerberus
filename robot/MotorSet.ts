@@ -95,6 +95,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       motor.throttle = 0
       setMode(motor, MotorMode.BREAK)
       return motor.speedReached(0)
+        .finally(() => setMode(motor, MotorMode.FLOAT))
     },
     
     float(): CancellableAsync {

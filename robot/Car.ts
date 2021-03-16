@@ -27,25 +27,26 @@ function clamp(min: number, max: number) {
 const clampSpeed = clamp(50, 100)
 
 export type Car = {
-  motors: Record<Direction, Motor>,
-  position: Position,
-  orientation: Orientation,
-  speed(): number,
+  motors: Record<Direction, Motor>
+  position: Position
+  orientation: Orientation
+  speed(): number
 
-  accelerate(speed: number): void,
-  stop(): Promise<void>,
-  float(): void,
-  go(distance: number, speed: number): Promise<void>,
-  turn(direction: Direction): Promise<void>,
+  accelerate(speed: number): void
+  stop(): Promise<void>
+  float(): void
+  go(distance: number, speed: number): Promise<void>
+  turn(direction: Direction): Promise<void>
 
-  turnRelative(angle: Orientation): Promise<void>,
-  turnRelative(angle: Orientation, onTheSpot): Promise<void>,
+  turnRelative(angle: Orientation): Promise<void>
+  turnRelative(angle: Orientation, onTheSpot): Promise<void>
 
-  turnTo(destination: Orientation): Promise<void>,
-  goto(position: Position): Promise<void>,
+  turnTo(destination: Orientation): Promise<void>
+  goto(position: Position): Promise<void>
+  setPos(pos: Position): void
 
-  setPositionListener(listener: Listener): void,
-  destruct(): Promise<void>,
+  setPositionListener(listener: Listener): void
+  destruct(): Promise<void>
 }
 
 async function setMotors(left: () => CancellableAsync, right: () => CancellableAsync) {
@@ -69,6 +70,24 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
     })
   }
   
+  const triggers = {} as Record<Direction, CancellableAsync>
+  function resetMotor(which: Direction, speed: number) {
+    triggers[which] && triggers[which].cancel()
+    triggers[which] = motors[which].accelerate(speed)
+  }
+
+  function reFocus(position: Position) {
+    return function (pos: Position, ori: Orientation) {
+      const angle = ori.differenceTo(createOrientation(pos.angleTo(position)))
+      const distance = pos.distanceTo(position)
+      const speed = clampSpeed(distance / 16)
+      resetMotor(Direction.left, speed + angle * 10)
+      resetMotor(Direction.right, speed - angle * 10)
+      console.log(Math.abs(distance), MINIMAL_DISTANCE)
+      return Math.abs(distance) < 100
+    }
+  }
+
   const car: Car = {
     motors,
     position: createPosition(0, 0),
@@ -213,14 +232,20 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
         const direction = createOrientation(car.position.angleTo(position))
         const angle = car.orientation.differenceTo(direction)
         logger.debug({ direction: '' + direction, angle })
-        await car.turnRelative(createOrientation(angle), true)
+        if (Math.abs(angle) > 1) {
+          await car.turnTo(direction)
+        }
 
-        const newDistance = car.position.distanceTo(position)
-        const speed = clampSpeed(newDistance / 16)
-        await car.go(newDistance, speed)
+        reFocus(position)(car.position, car.orientation)
+        await listeners.add(reFocus(position)).promise
+
         car.float()
       }
       logger.debug(`car.goto: arrived at currentPos=${this.position} ${this.orientation}`)
+    },
+
+    setPos(pos: Position) {
+      car.position = pos
     },
 
     setPositionListener(listener: Listener): void {
