@@ -24,7 +24,7 @@ function clamp(min: number, max: number) {
   return (value: number) => Math.min(max, Math.max(min, value))
 }
 
-const clampSpeed = clamp(50, 100)
+const clampSpeed = clamp(40, 100)
 
 export type Car = {
   motors: Record<Direction, Motor>
@@ -80,11 +80,16 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
     return function (pos: Position, ori: Orientation) {
       const angle = ori.differenceTo(createOrientation(pos.angleTo(position)))
       const distance = pos.distanceTo(position)
-      const speed = clampSpeed(distance / 16)
-      resetMotor(Direction.left, speed + angle * 10)
-      resetMotor(Direction.right, speed - angle * 10)
-      console.log(Math.abs(distance), MINIMAL_DISTANCE)
-      return Math.abs(distance) < 100
+      const speed = clampSpeed(Math.sqrt(distance))
+      console.log({d: distance.toFixed(), s: speed.toFixed(), a: createOrientation(angle).degreeAngle()})
+      if (Math.abs(angle) > 1) {
+        car.turn(angle > 0 ? Direction.right : Direction.left)
+      } else {
+        resetMotor(Direction.left, speed + angle * 20)
+        resetMotor(Direction.right, speed - angle * 20)
+      }
+
+      return Math.abs(distance) < MINIMAL_DISTANCE
     }
   }
 
@@ -228,13 +233,6 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
       const distance = this.position.distanceTo(position)
       if (distance > MINIMAL_DISTANCE) {
         logger.debug(`car.goto${position}, distance: ${distance}, currentPos=${this.position} ${this.orientation}`)
-
-        const direction = createOrientation(car.position.angleTo(position))
-        const angle = car.orientation.differenceTo(direction)
-        logger.debug({ direction: '' + direction, angle })
-        if (Math.abs(angle) > 1) {
-          await car.turnTo(direction)
-        }
 
         reFocus(position)(car.position, car.orientation)
         await listeners.add(reFocus(position)).promise

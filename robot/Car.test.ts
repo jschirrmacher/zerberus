@@ -122,15 +122,15 @@ describe('Car', () => {
   })
 
   describe('absolute positioning', () => {
-    it.skip('should reach the given position', async () => {
+    it('should reach the given position', async () => {
       car.setPos(createPosition(-300, 100))
       const destination = createPosition(200, 200)
       await car.goto(destination)
       car.position.distanceTo(destination).should.be.lessThanOrEqual(20)
     })
 
-    it.skip('should follow a route', async function () {
-      this.timeout(5000)
+    it('should follow a route', async function () {
+      this.timeout(15000)
       const steps = [
         createPosition(200, 200),
         createPosition(-200, 200),
