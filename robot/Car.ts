@@ -81,7 +81,7 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
       const angle = ori.differenceTo(createOrientation(pos.angleTo(position)))
       const distance = pos.distanceTo(position)
       const speed = clampSpeed(Math.sqrt(distance))
-      console.log({d: distance.toFixed(), s: speed.toFixed(), a: createOrientation(angle).degreeAngle()})
+      // console.log({d: distance.toFixed(), s: speed.toFixed(), a: createOrientation(angle).degreeAngle()})
       if (Math.abs(angle) > 1) {
         car.turn(angle > 0 ? Direction.right : Direction.left)
       } else {
