@@ -50,8 +50,9 @@
 
   function addWaypoint(x, y) {
     const waypoint = x.toFixed(0) + " " + y.toFixed(0)
-    if (waypoint !== wayPoints[wayPoints.length - 1]) {
-      wayPoints.push(waypoint)
+    if (waypoint !== wayPoints[wayPoints[0]]) {
+      wayPoints.unshift(waypoint)
+      wayPoints.splice(250)
       carPath.setAttribute("d", "M" + wayPoints.join(" L"))
     }
   }
