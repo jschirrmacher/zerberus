@@ -31,7 +31,7 @@ function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation
   return false
 }
 
-console.log('Car controller is running and waits for connections')
+console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 io.on('connection', client => {
   console.log('Client connected')
   client.emit('hi', 'Robot Simulator')

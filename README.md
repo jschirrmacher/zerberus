@@ -40,7 +40,7 @@ If you just want to test the motor control software on your local computer witho
 
     npm run simulator
 
-To run the production version which uses the actual GPIO of the Raspi, run:
+To run the production version which uses the actual GPIO and camera of the Raspi, run:
 
     sudo npm start
 
@@ -51,13 +51,9 @@ You need 'sudo' here to make sure that the program has access to the hardware.
 To view the current state of the car, open [http://localhost:10000](http://localhost:10000) or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
 To send commands to the car, press the buttons displayed right of the car visualization area.
 
-### Start the edge detection
-
-On the raspberry pi to start the python script to prevent the robot from running into walls, run `python3 use_classifier.py` in the `zerberus` directory on the raspberry pi.
-
 ## Car Control
 
-From the web frontend, you can control the car in different ways, either with manual control (pressing arrow keys and space bar to break), or by pressing some of the screen buttons running pre-defined programs (not all of them working as expected yet - remember this work is still in progress).
+From the web frontend, you can control the car in different ways, either with manual control (pressing arrow keys and space bar to break), or by pressing some of the screen buttons running pre-defined programs.
 
 ## Parts list
 
