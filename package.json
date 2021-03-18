@@ -4,7 +4,7 @@
   "description": "Software for a robot to chase racoons in your garden",
   "scripts": {
     "start": "concurrently 'npm:start-robot' 'npm:start-camera'",
-    "start-robot": "NODE_ENV=production sudo ts-node robot > robot.log",
+    "start-robot": "NODE_ENV=production sudo npx ts-node robot > robot.log",
     "start-camera": "cd image_recognition && python3 use_classifier.py > ../camera.log",
     "simulator": "ts-node-dev --nolazy --watch --inspect -- robot",
     "lint": "eslint .",
