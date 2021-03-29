@@ -57,12 +57,12 @@ From the web frontend, you can control the car in different ways, either with ma
 
 ## Parts list
 
-- Wild Thumper (Chassis and Motors)
+- [Wild Thumper (Chassis and Motors)](https://www.pololu.com/product/1566)
 - Raspberry PI 4B
-- Motor Driver
+- [Motor Driver](https://www.handsontec.com/dataspecs/module/7A-160W%20motor%20control.pdf)
 - Accumulator for Motors
-- Accumulator for Raspi
-- Night Vision Camera
+- [CHOETECH PD18W Powerbank USB C 10000mAh for Raspi](https://www.choetech.com/product/b622-10000mah-5v-2.4a-portable-power-bank-black.html)
+- [Maker Hawk 5MP Night Vision Camera](https://www.amazon.de/gp/product/B071718FDK/)
 
 ## Development
 
