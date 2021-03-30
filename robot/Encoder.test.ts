@@ -38,9 +38,9 @@ describe('Encoder', () => {
   it('should contain the current speed', () => {
     encoder.tick(1, 1)
     encoder.tick(1, 2)
-    encoder.currentSpeed.should.equal(1000000 / TICKS_PER_REV)
+    encoder.currentSpeed().should.equal(1000000 / TICKS_PER_REV)
     encoder.tick(4, 4)
-    encoder.currentSpeed.should.equal(2000000 / TICKS_PER_REV)
+    encoder.currentSpeed().should.equal(2000000 / TICKS_PER_REV)
   })
 
   it('should log in csv format if env ist set', () => {

@@ -70,6 +70,14 @@ export default function (): Motor {
     destruct(): void {
       clearInterval(timer)
     },
+
+    onBlocked() {
+      //
+    },
+
+    releaseBlock() {
+      //
+    }
   }
 
   return motor
