@@ -7,6 +7,12 @@ const logger = {
   messages: [],
   debug: (msg: string) => {
     logger.messages.push(msg)
+  },
+  warn: () => {
+    //
+  },
+  info: () => {
+    //
   }
 }
 
@@ -85,12 +91,6 @@ describe('MotorSet', () => {
     motor.mode.should.equal(MotorMode.FLOAT)
   })
 
-  it.skip('should go to BREAK mode when calling stop()', async () => {
-    await motor.accelerate(100).promise
-    await motor.stop().promise
-    motor.mode.should.equal(MotorMode.BREAK)
-  })
-
   it('should allow to wait for a position to be reached', async () => {
     const trigger = motor.positionReached(10)
     motor.accelerate(100)
@@ -116,4 +116,6 @@ describe('MotorSet', () => {
     await motor.go(100, 100).promise
     motor.getPosition().should.be.greaterThanOrEqual(100)
   })
+
+  // @todo Add tests for blocking functions
 })

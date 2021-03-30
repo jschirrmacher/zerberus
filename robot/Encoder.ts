@@ -4,14 +4,14 @@ import createListenerList, { ListenerList } from './ListenerList'
 export const TICKS_PER_REV = 544
 const SAMPLE_DURATION_MS = 3
 
-export type Encoder = {
+export interface Encoder {
   no: number,
   simulated: boolean,
   currentPosition: number,
-  currentSpeed: number,
   listeners: ListenerList,
   tick(diff: number, time: number): void,
   simulateSpeed(speed: number): void,
+  currentSpeed(): number,
 }
 
 let encoderNo = 1
@@ -32,6 +32,8 @@ const debug = (process.env.DEBUG && process.env.DEBUG.split(',').includes('encod
 export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { debug }): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
+  let lastMeasuredSpeed = undefined as number
+  let lastTickTime = undefined as number
   const notifier = gpio.createNotifier([pin_a, pin_b])
   let timer = undefined as NodeJS.Timer
 
@@ -45,21 +47,29 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
     /*
       The current speed of the motor is measured in revolutions per second
     */
-    currentSpeed: undefined as number,
+    currentSpeed(): number {
+      const timeDiff = +Date.now() - lastTickTime
+      if (lastTick === undefined || timeDiff > 50) {
+        return 0
+      }
+      
+      return lastMeasuredSpeed
+    },
 
     /*
       Handle a single tick of the motor.
-      `diff` should specify the direction, +1 is forward, -1 is backwards.
+      `diff` should specify the direction, positive is forward, negative is backwards.
       `time` is specified in microseconds.
     */
     tick(diff: number, time: number): void {
       encoder.currentPosition += diff
       if (lastTick) {
-        encoder.currentSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
+        lastMeasuredSpeed = diff / (time - lastTick) * 1000000 / TICKS_PER_REV
       }
-      logger.debug(`Encoder,${encoder.no},${encoder.currentPosition},${encoder.currentSpeed},${time - lastTick}`)
+      logger.debug(`Encoder,${encoder.no},${encoder.currentPosition},${lastMeasuredSpeed},${time - lastTick}`)
+      lastTickTime = +Date.now()
       lastTick = time
-      encoder.listeners.call(encoder.currentPosition, encoder.currentSpeed)
+      encoder.listeners.call(encoder.currentPosition, lastMeasuredSpeed)
     },
 
     simulateSpeed(speed: number): void {

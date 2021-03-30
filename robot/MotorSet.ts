@@ -1,25 +1,30 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
 import { CancellableAsync } from "./CancellableAsync"
 import { GPIO, OUTPUT, PWM } from './gpio'
+import ListenerList, { Listener } from "./ListenerList"
 
 export const DIAMETER = 120 // mm
 export const PERIMETER = DIAMETER * Math.PI
 export const TICKS_PER_MM = TICKS_PER_REV / PERIMETER
 export const MAX_ACCELERATION = 40
+export const MAX_BLOCK_COUNT = 5
 
 export interface Motor {
-  no: number,
-  throttle: number,
-  mode: MotorMode,
-  accelerate: (throttle: number) => CancellableAsync,
-  go(distance: number, throttle: number): CancellableAsync,
-  stop: () => CancellableAsync,
-  float: () => CancellableAsync,
-  getPosition: () => number,
-  getSpeed(): number,
-  positionReached(position: number): CancellableAsync,
-  speedReached(speed: number): CancellableAsync,
-  destruct(): void,
+  no: number
+  throttle: number
+  mode: MotorMode
+  accelerate: (throttle: number) => CancellableAsync
+  go(distance: number, throttle: number): CancellableAsync
+  stop: () => CancellableAsync
+  float: () => CancellableAsync
+  getPosition: () => number
+  getSpeed(): number
+  positionReached(position: number): CancellableAsync
+  speedReached(speed: number): CancellableAsync
+  destruct(): void
+
+  onBlocked(listener: Listener): void
+  releaseBlock(): void
 }
 
 export enum MotorMode {
@@ -36,14 +41,42 @@ export function getAdaptedThrottle(desired: number, current: number): number {
   return current + Math.sign(diff) * Math.min(Math.abs(diff), MAX_ACCELERATION)
 }
 
-export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = undefined as { debug: (message: string) => void }): Motor {
+interface Logger {
+  debug: (message: string) => void
+  info: (message: string) => void
+  warn: (message: string) => void
+}
+
+export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = undefined as Logger): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
-  const timer = setInterval(() => motor.throttle !== motor.currentThrottle && adaptSpeed(), 10)
+  let blockCount = 0
+  const blockListeners = ListenerList()
+  const timer = setInterval(tick, 10)
   if (!logger) {
     const debugLog = process.env.DEBUG && process.env.DEBUG.split(',').includes('motorset')
-    logger = { debug: debugLog ? console.debug : () => undefined }
+    logger = {
+      debug: debugLog ? console.debug : () => undefined,
+      info: console.info,
+      warn: console.warn,
+    }
+  }
+
+  function tick() {
+    const speed = motor.getSpeed()
+    if (!speed && motor.throttle) {
+      if (++blockCount === MAX_BLOCK_COUNT) {
+        logger.warn(`Motor,${motor.no},motor is blocked and will be set to FLOAT`)
+        motor.float()
+        blockListeners.call(motor)
+      } else {
+        logger.info(`Motor,${motor.no},motor seems to be blocked #${blockCount}`)
+      }
+    } else {
+      blockCount = 0
+    }
+    motor.throttle !== motor.currentThrottle && adaptSpeed()
   }
   
   function setMode(motor: Motor, mode: MotorMode): void {
@@ -73,6 +106,12 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     log()
   }
 
+  function assertNormalOperation() {
+    if (blockCount >= MAX_BLOCK_COUNT) {
+      throw Error(`Tried to accelerate when motor is blocked`)
+    }
+  }
+
   const motor = {
     no: motorNo++, 
     throttle: 0,
@@ -80,11 +119,13 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     mode: MotorMode.FLOAT,
 
     accelerate(throttle: number): CancellableAsync {
+      assertNormalOperation()
       motor.throttle = Math.min(Math.abs(throttle), 100) * Math.sign(throttle)
       return encoder.listeners.add(() => motor.currentThrottle === motor.throttle)
     },
 
     go(distance: number, throttle: number): CancellableAsync {
+      assertNormalOperation()
       // console.debug(`Motor #${this.no}: go(distance=${distance}, throttle=${throttle}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
       const trigger = motor.positionReached(encoder.currentPosition + distance * Math.sign(throttle))
       motor.throttle = throttle
@@ -107,8 +148,12 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       return encoder.currentPosition
     },
 
-    getSpeed(): number {
-      return encoder.currentSpeed
+    getSpeed() {
+      if (encoder) {
+        return encoder.currentSpeed()
+      } else {
+        return 0
+      }
     },
 
     /*
@@ -124,7 +169,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
 
     speedReached(desiredSpeed: number): CancellableAsync {
       // logger.debug(`Motor #${motor.no}: setting trigger to speed=${desiredSpeed}`)
-      const direction = Math.sign(desiredSpeed - (encoder.currentSpeed || 0))
+      const direction = Math.sign(desiredSpeed - (encoder.currentSpeed() || 0))
       return encoder.listeners.add((pos: number, speed: number) => {
         return direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed
       })
@@ -135,6 +180,13 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       encoder.simulateSpeed(0)
       setMode(motor, MotorMode.FLOAT)
       ena.pwmWrite(0)
+    },
+
+    onBlocked: blockListeners.add,
+
+    releaseBlock() {
+      logger.debug(`Motor #${motor.no}: Block released`)
+      blockCount = 0
     }
   }
   
