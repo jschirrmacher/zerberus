@@ -7,11 +7,11 @@ type CommandFunction = (...ags: unknown[]) => void | Promise<void>
 export default function (car: Car): Record<string, CommandFunction> {
   return {
     async runLeft() {
-      return car.motors.left.accelerate(100).promise as Promise<void>
+      return car.motors.left.accelerate(100).completed as Promise<void>
     },
 
     async runRight() {
-      return car.motors.right.accelerate(100).promise as Promise<void>
+      return car.motors.right.accelerate(100).completed as Promise<void>
     },
 
     async loop() {

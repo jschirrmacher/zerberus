@@ -51,7 +51,7 @@ export type Car = {
 
 async function setMotors(left: () => CancellableAsync, right: () => CancellableAsync) {
   const trigger = [ left(), right() ]
-  await Promise.all(trigger.map(t => t.promise))
+  await Promise.all(trigger.map(t => t.completed))
   trigger.forEach(t => t.cancel())
 }
 
@@ -193,7 +193,7 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
           )
         } else {
           motor.float()
-          await other.go(distance, speed).promise
+          await other.go(distance, speed).completed
         }
         car.float()
         logger.debug(`car.turn: arrived at ${this.position} ${this.orientation}`)
@@ -219,7 +219,7 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
       if (Math.abs(car.orientation.differenceTo(destination)) >= MINIMAL_TURN_ANGLE) {
         const trigger = createTrigger((pos: Position, ori: Orientation) => adaptSpeed(ori))
         adaptSpeed(car.orientation)
-        await trigger.promise
+        await trigger.completed
         car.float()
         logger.debug(`Turning completed at pos=${this.position} ${this.orientation}`)
       }
@@ -235,7 +235,7 @@ export default function (motors: {left: Motor, right: Motor}, logger = { debug }
         logger.debug(`car.goto${position}, distance: ${distance}, currentPos=${this.position} ${this.orientation}`)
 
         reFocus(position)(car.position, car.orientation)
-        await listeners.add(reFocus(position)).promise
+        await listeners.add(reFocus(position)).completed
 
         car.float()
       }

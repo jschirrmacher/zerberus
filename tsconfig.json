@@ -5,6 +5,7 @@
     "esModuleInterop": true,
 
     "sourceMap": true,
+    "inlineSourceMap": true,
     "downlevelIteration": true,
   },
   "include": ["frontend/server/**/*.ts", "robot/**/*.ts"],

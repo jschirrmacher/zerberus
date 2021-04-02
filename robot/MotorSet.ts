@@ -2,6 +2,7 @@ import { Encoder, TICKS_PER_REV } from "./Encoder"
 import { CancellableAsync } from "./CancellableAsync"
 import { GPIO, OUTPUT, PWM } from './gpio'
 import ListenerList, { Listener } from "./ListenerList"
+import { Logger, LogLevel } from "./Logger"
 
 export const DIAMETER = 120 // mm
 export const PERIMETER = DIAMETER * Math.PI
@@ -41,12 +42,6 @@ export function getAdaptedThrottle(desired: number, current: number): number {
   return current + Math.sign(diff) * Math.min(Math.abs(diff), MAX_ACCELERATION)
 }
 
-interface Logger {
-  debug: (message: string) => void
-  info: (message: string) => void
-  warn: (message: string) => void
-}
-
 export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: number, encoder = undefined as Encoder, logger = undefined as Logger): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
@@ -54,26 +49,29 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
   let blockCount = 0
   const blockListeners = ListenerList()
   const timer = setInterval(tick, 10)
-  if (!logger) {
-    const debugLog = process.env.DEBUG && process.env.DEBUG.split(',').includes('motorset')
-    logger = {
-      debug: debugLog ? console.debug : () => undefined,
-      info: console.info,
-      warn: console.warn,
+  const debugLog = process.env.DEBUG && process.env.DEBUG.split(',').includes('motorset')
+
+  function log(level: LogLevel, msg: string) {
+    if (level !== LogLevel.debug || debugLog) {
+      (logger || console)[level](`Motor,${motor.no},${motor.mode},${motor.currentThrottle.toFixed(0)},${msg}`)
     }
   }
 
   function tick() {
-    const speed = motor.getSpeed()
-    if (!speed && motor.throttle) {
+    if (motor.throttle && !motor.getSpeed()) {
       if (++blockCount === MAX_BLOCK_COUNT) {
-        logger.warn(`Motor,${motor.no},motor is blocked and will be set to FLOAT`)
-        motor.float()
+        log(LogLevel.warn, `motor is blocked and will be set to FLOAT`)
+        motor.throttle = 0
+        setMode(motor, MotorMode.FLOAT)
         blockListeners.call(motor)
+        return
       } else {
-        logger.info(`Motor,${motor.no},motor seems to be blocked #${blockCount}`)
+        log(LogLevel.info, `motor seems to be blocked #${blockCount}`)
       }
     } else {
+      if (blockCount) {
+        log(LogLevel.info, `motor is released automatically`)
+      }
       blockCount = 0
     }
     motor.throttle !== motor.currentThrottle && adaptSpeed()
@@ -83,10 +81,6 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
     in2.digitalWrite(mode === MotorMode.BACKWARDS || mode === MotorMode.FLOAT ? 1 : 0)
     motor.mode = mode
-  }
-
-  function log(): void {
-    logger.debug(`Motor,${motor.no},${''.padStart((motor.no - 1)* 15)}${motor.mode},${motor.currentThrottle.toFixed(0)}`)
   }
 
   function adaptSpeed(): void {
@@ -103,7 +97,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     const pwmValue = Math.max(0, Math.min(255, Math.round(Math.abs(motor.currentThrottle * 2.55))))
     ena.pwmWrite(pwmValue)
     encoder.simulateSpeed(motor.currentThrottle)
-    log()
+    log(LogLevel.debug, 'adaptSpeed')
   }
 
   function assertNormalOperation() {
@@ -120,15 +114,21 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
 
     accelerate(throttle: number): CancellableAsync {
       assertNormalOperation()
+      const trigger = encoder.listeners.add(() => motor.currentThrottle === motor.throttle)
+      blockListeners.add(() => {
+        trigger.cancel()
+        return true
+      })
       motor.throttle = Math.min(Math.abs(throttle), 100) * Math.sign(throttle)
-      return encoder.listeners.add(() => motor.currentThrottle === motor.throttle)
+      return trigger
     },
 
     go(distance: number, throttle: number): CancellableAsync {
       assertNormalOperation()
-      // console.debug(`Motor #${this.no}: go(distance=${distance}, throttle=${throttle}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
+      // log(LogLevel.debug, `go(distance=${distance}, throttle=${throttle}), trigger=${encoder.currentPosition + distance * Math.sign(speed)}`)
       const trigger = motor.positionReached(encoder.currentPosition + distance * Math.sign(throttle))
       motor.throttle = throttle
+      blockListeners.add(() => (trigger.cancel(), true))
       return trigger
     },
     
@@ -160,7 +160,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
       Installs a listener Returns a CancellableAsync with a promise for a position to be reached.
     */
     positionReached(desiredPosition: number): CancellableAsync {
-      // logger.debug(`Motor #${motor.no}: setting trigger to position=${desiredPosition}`)
+      log(LogLevel.debug, `setting trigger to position=${desiredPosition}`)
       const direction = Math.sign(desiredPosition - encoder.currentPosition)
       return encoder.listeners.add((pos: number) => {
         return direction > 0 && pos >= desiredPosition || direction < 0 && pos <= desiredPosition
@@ -168,7 +168,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     },
 
     speedReached(desiredSpeed: number): CancellableAsync {
-      // logger.debug(`Motor #${motor.no}: setting trigger to speed=${desiredSpeed}`)
+      log(LogLevel.debug, `setting trigger to speed=${desiredSpeed}`)
       const direction = Math.sign(desiredSpeed - (encoder.currentSpeed() || 0))
       return encoder.listeners.add((pos: number, speed: number) => {
         return direction > 0 && speed >= desiredSpeed || direction < 0 && speed <= desiredSpeed
@@ -185,7 +185,7 @@ export default function (gpio: GPIO, pin_in1: number, pin_in2: number, pin_ena: 
     onBlocked: blockListeners.add,
 
     releaseBlock() {
-      logger.debug(`Motor #${motor.no}: Block released`)
+      log(LogLevel.debug, `Block released`)
       blockCount = 0
     }
   }

@@ -1,5 +1,5 @@
 export type CancellableAsync = {
-  promise: Promise<unknown>,
+  completed: Promise<unknown>,
   cancel: () => void,
   finally: (func: () => void) => CancellableAsync,
 }
@@ -9,7 +9,7 @@ const voidFunc = (): void => {
 }
 
 export const resolvedCancellableAsync = {
-  promise: Promise.resolve(),
+  completed: Promise.resolve(),
   cancel: voidFunc,
   finally: (func: () => void): CancellableAsync => {
     func()
@@ -27,13 +27,13 @@ export function createCancellableAsync(func: () => Promise<unknown>): Cancellabl
       resolve()
     }
   }
-  const promise = Promise.race([
+  const completed = Promise.race([
     new Promise(resolve => cancel = createFinally(resolve)),
     new Promise(resolve => func().finally(createFinally(resolve)))
   ])
 
   const result = {
-    promise,
+    completed,
     cancel,
     finally: (func: () => void): CancellableAsync => {
       finallyFuncs.push(func)
