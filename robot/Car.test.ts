@@ -108,7 +108,8 @@ describe('Car', () => {
       car.position.y.should.be.greaterThan(0)
     })
 
-    it('should reach negative X coordinates when running west', async () => {
+    it('should reach negative X coordinates when running west', async function () {
+      this.timeout(4000)
       await car.turnTo(createOrientation(Math.PI))
       await car.go(100, 50)
       car.position.x.should.be.lessThan(0)
@@ -122,7 +123,8 @@ describe('Car', () => {
   })
 
   describe('absolute positioning', () => {
-    it('should reach the given position', async () => {
+    it('should reach the given position', async function () {
+      this.timeout(4000)
       car.setPos(createPosition(-300, 100))
       const destination = createPosition(200, 200)
       await car.goto(destination)
