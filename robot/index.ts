@@ -1,6 +1,6 @@
 import path from 'path'
-import Motor from './MotorSet'
-import Car, { Direction } from './Car'
+import MotorFactory from './MotorSet'
+import CarFactory, { Car, Direction, Reason } from './Car'
 import Encoder from './Encoder'
 import express from 'express'
 import IO from 'socket.io'
@@ -14,9 +14,9 @@ const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
 const leftEncoder = Encoder(gpio, 14, 15)
 const rightEncoder = Encoder(gpio, 19, 26)
-const leftMotorSet = Motor(gpio, 2, 3, 4, leftEncoder)
-const rightMotorSet = Motor(gpio, 17, 27, 22, rightEncoder)
-const car = Car({ left: leftMotorSet, right: rightMotorSet })
+const leftMotorSet = MotorFactory(gpio, 2, 3, 4, leftEncoder)
+const rightMotorSet = MotorFactory(gpio, 17, 27, 22, rightEncoder)
+const car = CarFactory({ left: leftMotorSet, right: rightMotorSet })
 const commands = CommandList(car)
 
 const app = express()
@@ -31,6 +31,11 @@ function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation
   return false
 }
 
+function sendCarStateChange(client: IO.Socket, car: Car, reason: Reason): boolean {
+  client.emit('state-change', { newState: car.state, reason })
+  return false
+}
+
 console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 io.on('connection', client => {
   console.log('Client connected')
@@ -39,7 +44,8 @@ io.on('connection', client => {
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
-  car.setPositionListener((pos: Position, orientation: Orientation) => sendPosition(client, pos, orientation))
+  car.addPositionListener((pos: Position, orientation: Orientation) => sendPosition(client, pos, orientation))
+  car.addCarStateHandler((car: Car, reason: Reason) => sendCarStateChange(client, car, reason))
 
   client.on('command', async (command) => {
     console.debug('Received command ' + command.name)

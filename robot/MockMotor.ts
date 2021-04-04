@@ -1,84 +1,43 @@
-import { CancellableAsync, resolvedCancellableAsync } from './CancellableAsync'
-import { Motor, MotorMode } from './MotorSet'
-import ListenerList from './ListenerList'
+import sinon, { spy } from "sinon"
+import { Motor, MotorMode } from "./MotorSet"
+import ObservableValueFactory from "./ObservableValue"
+import SubjectFactory from "./Subject"
 
-let motorId = 0
+enum MotorProp {
+  setThrottle = "setThrottle",
+  accelerate = "accelerate",
+  stop = "stop",
+  float = "float",
+  go = "go",
+  releaseBlock = "releaseBlock",
+  destruct = "destruct",
+}
 
-export default function (): Motor {
-  let currentPosition = 0
-  let currentSpeed = 0
-
-  const listeners = ListenerList()
-
-  const timer = setInterval(() => {
-    currentPosition += currentSpeed
-    listeners.call(currentPosition, currentSpeed)
-  }, 10)
-
-  const motor = {
-    no: ++motorId,
-    throttle: 0,
-    mode: MotorMode.FLOAT,
-
-    accelerate(throttle: number): CancellableAsync {
-      this.mode = throttle > 0 ? MotorMode.FORWARD : throttle < 0 ? MotorMode.BACKWARDS : MotorMode.FLOAT
-      this.throttle = throttle
-      currentSpeed = throttle / 10
-      return resolvedCancellableAsync
-    },
-
-    go(distance: number, throttle: number): CancellableAsync {
-      const trigger = this.positionReached(currentPosition + distance * Math.sign(throttle))
-      this.accelerate(throttle)
-      return trigger
-    },
-
-    stop(): CancellableAsync {
-      motor.accelerate(0)
-      this.mode = MotorMode.BREAK
-      return resolvedCancellableAsync
-    },
-    
-    float(): CancellableAsync {
-      motor.accelerate(0)
-      this.mode = MotorMode.FLOAT
-      return resolvedCancellableAsync
-    },
-    
-    getPosition(): number {
-      return currentPosition
-    },
-    
-    getSpeed(): number {
-      return currentSpeed
-    },
-
-    positionReached(position: number): CancellableAsync {
-      const direction = Math.sign(position - currentPosition)
-      return listeners.add((pos: number) => {
-        return direction > 0 && pos >= position || direction < 0 && pos <= position
-      })
-    },
-
-    speedReached(speed: number): CancellableAsync {
-      const direction = Math.sign(speed - (currentSpeed || 0))
-      return listeners.add((pos: number, spd: number) => {
-        return direction > 0 && spd >= speed || direction < 0 && spd <= speed
-      })
-    },
-
-    destruct(): void {
-      clearInterval(timer)
-    },
-
-    onBlocked() {
-      //
-    },
-
-    releaseBlock() {
-      //
-    }
+export function createMotorSpies(sandbox: sinon.SinonSandbox) {
+  return {
+    setThrottle: sandbox.spy(),
+    accelerate: sandbox.spy(),
+    stop: sandbox.spy(),
+    float: sandbox.spy(),
+    go: sandbox.spy(),
+    releaseBlock: sandbox.spy(),
+    destruct: sandbox.spy(),
   }
+}
 
+export default function (no: number, spies: Record<MotorProp, sinon.SinonSpy>): Motor {
+  const sandbox = sinon.createSandbox()
+
+  const motor: Motor = {
+    no,
+    throttle: 0,
+    currentThrottle: 0,
+    mode: ObservableValueFactory("mode", MotorMode.FLOAT),
+    position: ObservableValueFactory("position", 0),
+    speed: ObservableValueFactory("speed", 0),
+    blocked: SubjectFactory<Motor>(`MotorSet #${no} blocked`),
+
+    ...spies,
+  }
   return motor
 }

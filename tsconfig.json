@@ -3,10 +3,8 @@
     "target": "es2020",
     "module": "CommonJS",
     "esModuleInterop": true,
-
-    "sourceMap": true,
     "inlineSourceMap": true,
-    "downlevelIteration": true,
+    "downlevelIteration": true
   },
-  "include": ["frontend/server/**/*.ts", "robot/**/*.ts"],
+  "include": ["frontend/server/**/*.ts", "robot/**/*.ts"]
 }

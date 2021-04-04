@@ -6,17 +6,19 @@ export type MetricPosition = number
 export type Ticks = number
 
 export type MetricCoordinates = {
-  x: MetricPosition,
+  x: MetricPosition
   y: MetricPosition
 }
 
 export type Position = {
-  x: Ticks,
-  y: Ticks,
-  metricCoordinates(): MetricCoordinates,
-  angleTo(position: Position): RadianAngle,
-  distanceTo(position: Position): Ticks,
-  toString(): string,
+  x: Ticks
+  y: Ticks
+  metricCoordinates(): MetricCoordinates
+  angleTo(position: Position): RadianAngle
+  distanceTo(position: Position): Ticks
+  toString(): string
+  normalize(): Position
+  magnitude(): number
 }
 
 export function create(x: Ticks, y: Ticks): Position {
@@ -27,7 +29,7 @@ export function create(x: Ticks, y: Ticks): Position {
     metricCoordinates(): MetricCoordinates {
       return {
         x: this.x / TICKS_PER_MM / 1000,
-        y: this.y / TICKS_PER_MM / 1000
+        y: this.y / TICKS_PER_MM / 1000,
       }
     },
 
@@ -45,6 +47,14 @@ export function create(x: Ticks, y: Ticks): Position {
 
     toString(): string {
       return `(${this.x}, ${this.y})`
+    },
+
+    magnitude(): number {
+      return Math.sqrt(this.x * this.x + this.y * this.y)
+    },
+
+    normalize(): Position {
+      return create(this.x / this.magnitude(), this.y / this.magnitude())
     },
   }
 }
