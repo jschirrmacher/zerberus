@@ -1,4 +1,4 @@
-import { Stream } from 'stream'
+import { Stream } from "stream"
 
 export type GPIOPin = {
   currentValue: number
@@ -14,18 +14,18 @@ export type GPIONotifier = {
 
 type ListenerId = number
 export type ListenerFunction = (event: string | symbol, ...args: unknown[]) => void
-type Options  = Record<string, unknown>
+type Options = Record<string, unknown>
 
 export type GPIO = {
-  create(pin: number, options?: Options): GPIOPin,
-  createNotifier(pins: number[]): GPIONotifier,
-  addListener(listener: ListenerFunction): ListenerId,
-  removeListener(listenerId: ListenerId): void,
-  initializedPins: Record<number, Options>,
+  create(pin: number, options?: Options): GPIOPin
+  createNotifier(pins: number[]): GPIONotifier
+  addListener(listener: ListenerFunction): ListenerId
+  removeListener(listenerId: ListenerId): void
+  initializedPins: Record<number, Options>
 }
 
 const readableData = []
-export function pushStreamData(info: {flags: number, time: number, level: number}[]): void {
+export function pushStreamData(info: { flags: number; time: number; level: number }[]): void {
   const data = Buffer.alloc(12 * info.length)
   info.forEach((entry, index) => {
     data.writeInt16LE(entry.flags, index * 12 + 2)
@@ -48,7 +48,7 @@ class FakeGPIO {
 class FakeNotifer {
   simulated = true
   bits: number
-  
+
   constructor({ bits }: { bits: number }) {
     this.bits = bits
   }
@@ -68,9 +68,9 @@ class FakeNotifer {
   }
 }
 
-export const INPUT = 'IN'
-export const OUTPUT = 'OUT'
-export const PWM = 'PWM'
+export const INPUT = "IN"
+export const OUTPUT = "OUT"
+export const PWM = "PWM"
 export const PI_NTFY_FLAGS_ALIVE = 1 << 6
 
 const gpioPins = {
@@ -111,19 +111,21 @@ const gpioPins = {
   16: 36,
   26: 37,
   20: 38,
-  21: 40
+  21: 40,
 }
 
 export default function (useFake = false): GPIO {
-  const pigpio = !useFake ? require('pigpio') : {
-    Gpio: FakeGPIO,
-    Notifier: FakeNotifer,
-  }
+  const pigpio = !useFake
+    ? require("pigpio")
+    : {
+        Gpio: FakeGPIO,
+        Notifier: FakeNotifer,
+      }
   let listenerId = 0
   const listeners = {} as Record<number, (...args: unknown[]) => void>
 
   function notifyListeners(event: string | symbol, ...args: unknown[]): void {
-    Object.values(listeners).forEach(emit => emit(event, ...args))
+    Object.values(listeners).forEach((emit) => emit(event, ...args))
   }
 
   return {
@@ -132,10 +134,10 @@ export default function (useFake = false): GPIO {
     create(pin: number, options = {} as Record<string, unknown>): GPIOPin {
       const pigpioObj = new pigpio.Gpio(pin, options)
       const actualPin = gpioPins[pin]
-      
+
       this.initializedPins[pin] = options
       if (options.mode) {
-        notifyListeners('gpio-mode', { pin: actualPin, mode: options.mode })
+        notifyListeners("gpio-mode", { pin: actualPin, mode: options.mode })
       }
 
       return {
@@ -144,20 +146,20 @@ export default function (useFake = false): GPIO {
         digitalWrite(value: number): void {
           pigpioObj.digitalWrite(value)
           this.currentValue = value
-          notifyListeners('gpio-write', { pin: actualPin, value })
+          notifyListeners("gpio-write", { pin: actualPin, value })
         },
 
         pwmWrite(dutyCycle: number): void {
           const value = Math.min(255, Math.max(0, dutyCycle))
           pigpioObj.pwmWrite(value)
           this.currentValue = value
-          notifyListeners('gpio-pwm', { pin: actualPin, value })
+          notifyListeners("gpio-pwm", { pin: actualPin, value })
         },
       }
     },
 
     createNotifier(pins: number[]): GPIONotifier {
-      const bits = pins.map(pin => 1 << pin).reduce((bits, bit) => bits | bit)
+      const bits = pins.map((pin) => 1 << pin).reduce((bits, bit) => bits | bit)
       return new pigpio.Notifier({ bits })
     },
 

@@ -2,7 +2,7 @@ export enum LogLevel {
   debug = "debug",
   info = "info",
   warn = "warn",
-  error = "error"
+  error = "error",
 }
 
 export interface Logger {
@@ -19,11 +19,11 @@ type TestLogger = Logger & {
 
 function Logger(): TestLogger {
   const messages = []
-  
+
   function log(level: LogLevel, msg: string) {
     messages.push({ level, msg })
   }
-  
+
   return {
     debug: (msg: string): void => log(LogLevel.debug, msg),
     info: (msg: string): void => log(LogLevel.info, msg),
@@ -32,7 +32,7 @@ function Logger(): TestLogger {
     get: (level?: LogLevel): string[] => messages.filter((m) => !level || m.level === level).map((m) => m.msg),
     reset: (): void => {
       messages.length = 0
-    }
+    },
   }
 }
 

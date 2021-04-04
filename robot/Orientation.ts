@@ -4,10 +4,12 @@ export type DegreeAngle = number
 const twoPi = 2 * Math.PI
 
 export type Orientation = {
-  angle: RadianAngle,
-  degreeAngle(): DegreeAngle,
-  differenceTo(other: Orientation): RadianAngle,
-  toString(): string,
+  angle: RadianAngle
+  degreeAngle(): DegreeAngle
+  differenceTo(other: Orientation): Orientation
+  add(other: Orientation): Orientation
+  isCloseTo(other: Orientation, epsilon: Orientation): boolean
+  toString(): string
 }
 
 export function create(angle: RadianAngle): Orientation {
@@ -15,17 +17,25 @@ export function create(angle: RadianAngle): Orientation {
     const normalize = angle - twoPi * Math.floor(angle / twoPi)
     return normalize > Math.PI ? normalize - twoPi : normalize
   }
-  
+
   return {
     angle: normalizeAngle(angle),
 
     degreeAngle(): DegreeAngle {
-      return this.angle / Math.PI * 180
+      return (this.angle / Math.PI) * 180
     },
 
-    differenceTo(other: Orientation): RadianAngle {
+    differenceTo(other: Orientation): Orientation {
       const diff = other.angle - this.angle
-      return diff - twoPi * Math.floor((diff + Math.PI) / twoPi)
+      return create(diff - twoPi * Math.floor((diff + Math.PI) / twoPi))
+    },
+
+    add(other: Orientation): Orientation {
+      return create(angle + other.angle)
+    },
+
+    isCloseTo(other: Orientation, epsilon: Orientation) {
+      return Math.abs(angle - other.angle) <= epsilon.angle
     },
 
     toString(): string {
@@ -34,6 +44,10 @@ export function create(angle: RadianAngle): Orientation {
   }
 }
 
-export function radians(angle: DegreeAngle): RadianAngle {
-  return angle / 180 * Math.PI
+export function fromDegrees(angle: DegreeAngle): Orientation {
+  return create((angle / 180) * Math.PI)
+}
+
+export function fromRadian(angle: RadianAngle): Orientation {
+  return create(angle)
 }
