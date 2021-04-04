@@ -1,0 +1,30 @@
+import sinon, { spy } from "sinon"
+import { Encoder } from "./Encoder"
+import ObservableValueFactory from "./ObservableValue"
+import SubjectFactory from "./Subject"
+
+enum EncoderProp {
+  tick = "tick",
+  simulateSpeed = "simulateSpeed",
+}
+
+export function createEncoderSpies(sandbox: sinon.SinonSandbox) {
+  return {
+    tick: sandbox.spy(),
+    simulateSpeed: sandbox.spy(),
+  }
+}
+
+export default function MockEncoderFactory(no: number, spies: Record<EncoderProp, sinon.SinonSpy>): Encoder {
+  const sandbox = sinon.createSandbox()
+
+  const encoder: Encoder = {
+    no,
+    simulated: true,
+    position: ObservableValueFactory<number>("position", 0),
+    speed: ObservableValueFactory<number>("speed", 0),
+
+    ...spies,
+  }
+  return encoder
+}

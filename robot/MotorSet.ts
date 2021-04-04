@@ -83,11 +83,11 @@ export default function MotorSetFactory(
         blocked.notify(motor)
         return
       } else {
-        log(LogLevel.info, `motor seems to be blocked #${blockCount}`)
+        log(LogLevel.debug, `motor seems to be blocked #${blockCount}`)
       }
     } else {
       if (blockCount) {
-        log(LogLevel.info, `motor is released automatically`)
+        log(LogLevel.debug, `motor is released automatically`)
       }
       blockCount = 0
     }

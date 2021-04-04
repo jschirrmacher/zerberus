@@ -202,7 +202,6 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
           const distance = car.position.get().distanceTo(position)
           const speed = clampSpeed(Math.sqrt(distance))
           if (Math.abs(angle.angle) > 1) {
-            console.log("angle > 1")
             const direction = getTurnDirection(angle)
             const { higherSpeed, lowerSpeed } = getTurnSpeeds()
             motors[direction].setThrottle(lowerSpeed)
