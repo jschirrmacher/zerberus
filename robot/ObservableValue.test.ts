@@ -16,31 +16,42 @@ describe("Observable Value", () => {
     val.get().should.equal(4)
   })
 
-  it("should notify any observers when value changed", () => {
+  it("should notify observers when value changes", () => {
+    const val = ObservableValue("test", 1)
+    const observer = Sinon.spy()
+    val.registerObserver(observer)
+    observer.callCount.should.equal(0)
+    val.set(2)
+    observer.callCount.should.equal(1)
+  })
+
+  it("should notify all registered observers", () => {
     const val = ObservableValue("test", 1)
     const observer1 = Sinon.spy()
     const observer2 = Sinon.spy()
     val.registerObserver(observer1)
-    observer1.callCount.should.equal(0)
-    val.set(-1)
-    observer1.callCount.should.equal(1)
     val.registerObserver(observer2)
-    val.set(-1) // dont update if the value is still the same
+    val.set(2)
     observer1.callCount.should.equal(1)
-    observer2.callCount.should.equal(0)
-    val.set(1)
-    observer1.callCount.should.equal(2)
     observer2.callCount.should.equal(1)
   })
 
-  it("should respect observers unregistering", () => {
+  it("should not notify observers when set() is called with the same value", () => {
+    const val = ObservableValue("test", 1)
+    const observer = Sinon.spy()
+    val.registerObserver(observer)
+    val.set(1)
+    observer.callCount.should.equal(0)
+  })
+
+  it("should not notify unregistered observers", () => {
     const val = ObservableValue<number>("test", 1)
-    const observer1 = Sinon.spy()
-    val.registerObserver(observer1)
+    const observer = Sinon.spy()
+    val.registerObserver(observer)
     val.set(4)
-    observer1.callCount.should.equal(1)
-    val.unregisterObserver(observer1)
+    observer.callCount.should.equal(1)
+    val.unregisterObserver(observer)
     val.set(8)
-    observer1.callCount.should.equal(1)
+    observer.callCount.should.equal(1)
   })
 })
