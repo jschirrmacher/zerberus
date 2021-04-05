@@ -17,8 +17,6 @@ export type Position = {
   angleTo(position: Position): RadianAngle
   distanceTo(position: Position): Ticks
   toString(): string
-  normalize(): Position
-  magnitude(): number
 }
 
 export function create(x: Ticks, y: Ticks): Position {
@@ -47,14 +45,6 @@ export function create(x: Ticks, y: Ticks): Position {
 
     toString(): string {
       return `(${this.x}, ${this.y})`
-    },
-
-    magnitude(): number {
-      return Math.sqrt(this.x * this.x + this.y * this.y)
-    },
-
-    normalize(): Position {
-      return create(this.x / this.magnitude(), this.y / this.magnitude())
     },
   }
 }

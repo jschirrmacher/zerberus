@@ -7,7 +7,7 @@ import MockMotor, { createMotorSpies } from "./MockMotor"
 import { Motor } from "./MotorSet"
 import { ObservableValue } from "./ObservableValue"
 import { create as createOrientation, fromDegrees, fromRadian } from "./Orientation"
-import { create as createPosition } from "./Position"
+import { create as createPosition, Position } from "./Position"
 import { isPending } from "./TestHelpers"
 import TriggerFactory, { waitFor } from "./Trigger"
 
@@ -197,11 +197,10 @@ describe("Car", () => {
 
       move(2, 2)
       while (await isPending(goto)) {
-        const movement = createPosition(
-          leftMotorSpy.setThrottle.lastCall?.args[0] || 0,
-          rightMotorSpy.setThrottle.lastCall?.args[0] || 0
-        ).normalize()
-        move(2 * movement.x, 2 * movement.y)
+        const x = leftMotorSpy.setThrottle.lastCall?.args[0] || 0
+        const y = rightMotorSpy.setThrottle.lastCall?.args[0] || 0
+        const factor = Math.sqrt(x * x + y * y) / 2
+        move(x / factor, y / factor)
       }
       await goto
     }
