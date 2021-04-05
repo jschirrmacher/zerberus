@@ -23,13 +23,16 @@ const QEM = [
   [NaN, 1, -1, 0],
 ]
 
-const debug = process.env.DEBUG && process.env.DEBUG.split(",").includes("encoder") ? console.debug : () => undefined
+const defaultLogger = {
+  debug: process.env.DEBUG && process.env.DEBUG.split(",").includes("encoder") ? console.debug : () => undefined,
+  error: console.error,
+}
 
 /*
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
 */
-export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { debug }): Encoder {
+export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defaultLogger): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
   let lastMeasuredSpeed = undefined as number
@@ -81,14 +84,19 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = { de
   }
 
   function handleChunk(chunk: Buffer) {
-    if (!(chunk.readUInt16LE(2) & PI_NTFY_FLAGS_ALIVE)) {
-      const level = chunk.readUInt32LE(8)
-      const newVal = (((level >>> pin_a) & 1) << 1) | ((level >>> pin_b) & 1)
-      const diff = QEM[oldVal][newVal]
-      if (!Number.isNaN(diff) && diff !== 0) {
-        encoder.tick(diff, chunk.readUInt32LE(4))
+    try {
+      if (!(chunk.readUInt16LE(2) & PI_NTFY_FLAGS_ALIVE)) {
+        const level = chunk.readUInt32LE(8)
+        const newVal = (((level >>> pin_a) & 1) << 1) | ((level >>> pin_b) & 1)
+        const diff = QEM[oldVal][newVal]
+        if (!Number.isNaN(diff) && diff !== 0) {
+          encoder.tick(diff, chunk.readUInt32LE(4))
+        }
+        oldVal = newVal
       }
-      oldVal = newVal
+    } catch (error) {
+      logger.error(error)
+      logger.error({ buffer: chunk.toString("hex").match(/../g).join(" ") })
     }
 
     chunk.length > 12 && handleChunk(chunk.slice(12))
