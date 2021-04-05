@@ -205,13 +205,6 @@ describe("Car", () => {
       await goto
     }
 
-    it("should", async () => {
-      const destination = createPosition(200, 200)
-      const goto = car.goto(destination)
-      await approximateMovement(goto)
-      car.position.get().distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
-    })
-
     it("should follow a route", async function () {
       this.timeout(15000)
       let goto = car.goto(createPosition(200, 200))

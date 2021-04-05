@@ -32,7 +32,7 @@ function clamp(min: number, max: number) {
 
 const clampSpeed = clamp(40, 100)
 
-enum CarState {
+export enum CarState {
   NORMAL = "NORMAL",
   BLOCKED = "BLOCKED",
 }

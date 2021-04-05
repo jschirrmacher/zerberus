@@ -1,14 +1,14 @@
-import path from 'path'
-import MotorFactory from './MotorSet'
-import CarFactory, { Car, Direction, Reason } from './Car'
-import Encoder from './Encoder'
-import express from 'express'
-import IO from 'socket.io'
-import CommandList from './CommandList'
-import { Position } from './Position'
-import { Orientation } from './Orientation'
-import GPIOFactory from './gpio'
-import HTTP = require('http')
+import path from "path"
+import MotorFactory from "./MotorSet"
+import CarFactory, { Car, CarState, Direction } from "./Car"
+import Encoder from "./Encoder"
+import express from "express"
+import IO from "socket.io"
+import CommandList from "./CommandList"
+import { Position } from "./Position"
+import { Orientation } from "./Orientation"
+import GPIOFactory from "./gpio"
+import HTTP = require("http")
 
 const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
@@ -23,81 +23,85 @@ const app = express()
 const server = HTTP.createServer(app)
 const io = IO(server)
 server.listen(10000)
-app.use('/', express.static(path.resolve(__dirname, '..', 'frontend')))
-app.use('/', express.static(path.resolve(__dirname, '..', 'pictures')))
+app.use("/", express.static(path.resolve(__dirname, "..", "frontend")))
+app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
 
 function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation): boolean {
-  client.emit('car-position', { posX: pos.metricCoordinates().x, posY: pos.metricCoordinates().y, orientation: orientation.degreeAngle() })
+  client.emit("car-position", {
+    posX: pos.metricCoordinates().x,
+    posY: pos.metricCoordinates().y,
+    orientation: orientation.degreeAngle(),
+  })
   return false
 }
 
-function sendCarStateChange(client: IO.Socket, car: Car, reason: Reason): boolean {
-  client.emit('state-change', { newState: car.state, reason })
+function sendCarStateChange(client: IO.Socket, state: CarState): boolean {
+  client.emit("state-change", { newState: state })
   return false
 }
 
 console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
-io.on('connection', client => {
-  console.log('Client connected')
-  client.emit('hi', 'Robot Simulator')
-  sendPosition(client, car.position, car.orientation)
+io.on("connection", (client) => {
+  console.log("Client connected")
+  client.emit("hi", "Robot Simulator")
+  sendPosition(client, car.position.get(), car.orientation.get())
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
-  car.addPositionListener((pos: Position, orientation: Orientation) => sendPosition(client, pos, orientation))
-  car.addCarStateHandler((car: Car, reason: Reason) => sendCarStateChange(client, car, reason))
+  car.position.registerObserver((pos: Position) => sendPosition(client, pos, car.orientation.get()))
+  car.state.registerObserver((state: CarState) => sendCarStateChange(client, state))
 
-  client.on('command', async (command) => {
-    console.debug('Received command ' + command.name)
-    if (command.name === 'list-commands') {
-      client.emit('command-list', Object.keys(commands))
+  client.on("command", async (command) => {
+    console.debug("Received command " + command.name)
+    if (command.name === "list-commands") {
+      client.emit("command-list", Object.keys(commands))
     } else {
       try {
         await commands[command.name](command.args)
       } catch (error) {
         console.error(error)
-        client.emit('error', error)
+        client.emit("error", error)
       }
       await car.stop()
     }
   })
 
-  client.on('camera', (info) => {
+  client.on("camera", (info) => {
     console.log(`Camera says`, info)
   })
 
-  client.on('disconnect', () => {
+  client.on("disconnect", () => {
     gpio.removeListener(listenerId)
-    console.log('Client disconnected')
+    console.log("Client disconnected")
   })
 
-  client.on('control', async (info) => {
-    console.debug('Direct control ' + info.cmd)
+  client.on("control", async (info) => {
+    console.debug("Direct control " + info.cmd)
     switch (info.cmd) {
-      case 'forward': 
+      case "forward":
         car.accelerate(car.speed() + 25)
         break
 
-      case 'back':
+      case "back":
         car.accelerate(car.speed() - 25)
         break
 
-      case 'left':
+      case "left":
         car.turn(Direction.left)
         break
 
-      case 'right':
+      case "right":
         car.turn(Direction.right)
         break
 
-      case 'break':
+      case "break":
         car.stop()
         break
     }
   })
 })
 
-process.on('SIGINT', function() {
+process.on("SIGINT", function () {
   console.log("Caught interrupt signal")
   car.destruct()
   process.exit()
