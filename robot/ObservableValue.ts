@@ -3,6 +3,7 @@ import SubjectFactory, { Subject } from "./Subject"
 export type ObservableValue<T> = Subject<T> & {
   set(newValue: T): void
   get(): T
+  update(func: (current: T) => T)
 }
 
 export default function <T>(name: string, value?: T): ObservableValue<T> {
@@ -20,6 +21,10 @@ export default function <T>(name: string, value?: T): ObservableValue<T> {
 
     get() {
       return value
+    },
+
+    update(func) {
+      this.set(func(value))
     },
   }
 }

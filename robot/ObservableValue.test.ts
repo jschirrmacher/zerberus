@@ -4,14 +4,20 @@ import ObservableValue from "./ObservableValue"
 
 describe("Observable Value", () => {
   it("should allow updating and retrieving the stored value", () => {
-    const val = ObservableValue<number>("test", 1)
+    const val = ObservableValue("test", 1)
     val.get().should.equal(1)
     val.set(10)
     val.get().should.equal(10)
   })
 
+  it("should let me update the value with a single call", () => {
+    const val = ObservableValue("test", 1)
+    val.update((current) => current + 3)
+    val.get().should.equal(4)
+  })
+
   it("should notify any observers when value changed", () => {
-    const val = ObservableValue<number>("test", 1)
+    const val = ObservableValue("test", 1)
     const observer1 = Sinon.spy()
     const observer2 = Sinon.spy()
     val.registerObserver(observer1)

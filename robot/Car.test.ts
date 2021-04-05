@@ -1,9 +1,11 @@
 import "should"
 import "should-sinon"
+import Sinon from "sinon"
 import sinon from "sinon"
 import CarFactory, { Car, Direction, MINIMAL_DISTANCE, MINIMAL_TURN_ANGLE } from "./Car"
 import MockMotor, { createMotorSpies } from "./MockMotor"
 import { Motor } from "./MotorSet"
+import { ObservableValue } from "./ObservableValue"
 import { create as createOrientation, fromDegrees, fromRadian } from "./Orientation"
 import { create as createPosition } from "./Position"
 import { isPending } from "./TestHelpers"
@@ -188,19 +190,18 @@ describe("Car", () => {
     })
 
     async function approximateMovement(goto: Promise<void>) {
-      left.position.set(left.position.get() + 2)
-      right.position.set(right.position.get() + 2)
+      function move(stepX: number, stepY: number) {
+        left.position.update((val) => val + stepX)
+        right.position.update((val) => val + stepY)
+      }
+
+      move(2, 2)
       while (await isPending(goto)) {
         const movement = createPosition(
-          leftMotorSpy.setThrottle.callCount != 0
-            ? leftMotorSpy.setThrottle.getCall(leftMotorSpy.setThrottle.callCount - 1).args[0]
-            : 0,
-          rightMotorSpy.setThrottle.callCount != 0
-            ? rightMotorSpy.setThrottle.getCall(rightMotorSpy.setThrottle.callCount - 1).args[0]
-            : 0
+          leftMotorSpy.setThrottle.lastCall?.args[0] || 0,
+          rightMotorSpy.setThrottle.lastCall?.args[0] || 0
         ).normalize()
-        left.position.set(left.position.get() + 2 * movement.x)
-        right.position.set(right.position.get() + 2 * movement.y)
+        move(2 * movement.x, 2 * movement.y)
       }
       await goto
     }
