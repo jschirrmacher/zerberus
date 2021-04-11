@@ -18,6 +18,12 @@ describe("Position", () => {
     distance.should.equal(Math.sqrt(32))
   })
 
+  it("should add values to the current position", () => {
+    const { x, y } = Position.create(7, 2).add(3, -5)
+    x.should.equal(10)
+    y.should.equal(-3)
+  })
+
   describe("angle calculation", () => {
     it("should calculate the angle to another position", () => {
       origin.angleTo(Position.create(4, 4)).should.equal(-Math.PI / 4)
