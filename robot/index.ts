@@ -29,9 +29,10 @@ app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
 
 function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation): boolean {
   client.emit("car-position", {
-    posX: pos.metricCoordinates().x,
-    posY: pos.metricCoordinates().y,
-    orientation: orientation.degreeAngle(),
+    posX: pos.metricCoordinates().x.toFixed(3),
+    posY: pos.metricCoordinates().y.toFixed(3),
+    orientation: Math.round(orientation.degreeAngle()),
+    speed: car.speed(),
   })
   return false
 }
