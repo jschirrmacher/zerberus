@@ -44,11 +44,11 @@ console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and wai
 io.on("connection", (client) => {
   console.log("Client connected")
   client.emit("hi", "Robot Simulator")
-  sendPosition(client, car.position.get(), car.orientation.get())
+  sendPosition(client, car.position.value, car.orientation.value)
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
-  car.position.registerObserver((pos: Position) => sendPosition(client, pos, car.orientation.get()))
+  car.position.registerObserver((pos: Position) => sendPosition(client, pos, car.orientation.value))
   car.state.registerObserver((state: CarState) => sendCarStateChange(client, state))
 
   client.on("command", async (command) => {
