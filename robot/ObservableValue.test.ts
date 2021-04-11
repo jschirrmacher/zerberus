@@ -54,4 +54,9 @@ describe("Observable Value", () => {
     val.value = 8
     observer.callCount.should.equal(1)
   })
+
+  it("should be usable as primitive value", () => {
+    const val = ObservableValue("test", 42)
+    ;(+val + 5).should.equal(47)
+  })
 })

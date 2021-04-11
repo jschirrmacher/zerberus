@@ -2,7 +2,7 @@ import SubjectFactory, { Subject, Observer } from "./Subject"
 
 export type ObservableValue<T> = Subject<T> & {
   value: T
-  toValue(): T
+  valueOf(): T
   toString(): string
 }
 
@@ -27,7 +27,7 @@ export default function <T>(name: string, value: T): ObservableValue<T> {
       return "" + value
     },
 
-    toValue() {
+    valueOf() {
       return value
     },
   }
