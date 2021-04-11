@@ -37,6 +37,8 @@ export enum CarState {
   BLOCKED = "BLOCKED",
 }
 
+type MotorThrottle = { left: number; right: number }
+
 export type Car = {
   motors: Record<Direction, Motor>
   position: ObservableValue<Position>
@@ -46,6 +48,7 @@ export type Car = {
   events: Subject<CarEvent>
 
   accelerate(speed: number): Promise<void>
+  throttle({ left, right }: MotorThrottle): Promise<void>
   stop(): Promise<void>
   float(): Promise<void>
   go(distance: number, speed: number): Promise<void>
@@ -113,6 +116,10 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     */
     async accelerate(throttle: number) {
       await Promise.all([motors.left.accelerate(throttle), motors.right.accelerate(throttle)])
+    },
+
+    async throttle({ left, right }: MotorThrottle) {
+      await Promise.all([motors.left.accelerate(left), motors.right.accelerate(right)])
     },
 
     /*

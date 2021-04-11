@@ -1,0 +1,45 @@
+html,
+body,
+#app {
+  width: 100vh;
+  height: 100wh;
+  margin: 0;
+  padding: 0;
+}
+
+@viewport {  
+  orientation: portrait;  
+}
+
+#pad {
+  width: 320px;
+  height: 320px;
+  margin: auto;
+  position: relative;
+  border: 1px solid #aaa;
+  background: radial-gradient(#2d383a, black);
+}
+
+#pad-handle {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: #ed0a3f;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#pad-handle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  box-shadow: inset -20px -20px 20px 2px #2d383a, inset 20px 20px 20px 5px rgba(135, 56, 58, 0.1);
+}
+
+#pos {
+  text-align: center;
+}

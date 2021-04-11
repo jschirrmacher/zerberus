@@ -9,6 +9,7 @@ import { Position } from "./Position"
 import { Orientation } from "./Orientation"
 import GPIOFactory from "./gpio"
 import HTTP = require("http")
+import { throttleFromJoystickValues } from "./CarThrottle"
 
 const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
@@ -98,6 +99,10 @@ io.on("connection", (client) => {
         car.stop()
         break
     }
+  })
+
+  client.on("joystick", (values) => {
+    car.throttle(throttleFromJoystickValues(values))
   })
 })
 
