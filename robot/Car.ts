@@ -1,7 +1,7 @@
 import { Motor, TICKS_PER_MM } from "./MotorSet"
 import { Position, create as createPosition } from "./Position"
 import { create as createOrientation, fromRadian, Orientation } from "./Orientation"
-import ObservableValueFactory, { ObservableValue } from "./ObservableValue"
+import ObservableFactory, { ObservableValue } from "./ObservableValue"
 import SubjectFactory, { Subject } from "./Subject"
 import { waitFor } from "./Trigger"
 
@@ -67,7 +67,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
   motors.right.blocked.registerObserver(() => handleBlocking(motors.right))
 
   function handleBlocking(motor: Motor): boolean {
-    car.state.set(CarState.BLOCKED)
+    car.state.value = CarState.BLOCKED
     // @todo currentAction.cancel()
     motors.left.float()
     motors.right.float()
@@ -94,9 +94,9 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
 
   const car: Car = {
     motors,
-    position: ObservableValueFactory("position", createPosition(0, 0)),
-    orientation: ObservableValueFactory("orientation", createOrientation(0)),
-    state: ObservableValueFactory<CarState>("state", CarState.NORMAL),
+    position: ObservableFactory("position", createPosition(0, 0)),
+    orientation: ObservableFactory("orientation", createOrientation(0)),
+    state: ObservableFactory("state", CarState.NORMAL),
     events: SubjectFactory<CarEvent>("events"),
 
     /*
@@ -161,7 +161,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     async turnRelative(angle: Orientation): Promise<void> {
       logger.debug(`Turn car ${angle}`)
       if (Math.abs(angle.angle) >= MINIMAL_TURN_ANGLE.angle) {
-        const destination = car.orientation.get().add(angle)
+        const destination = car.orientation.value.add(angle)
         const trigger = waitFor(car.orientation, (orientation) =>
           orientation.isCloseTo(destination, MINIMAL_TURN_ANGLE)
         )
@@ -178,7 +178,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
       Turn car to the given destination angle.
     */
     async turnTo(destination: Orientation): Promise<void> {
-      const diff = car.orientation.get().differenceTo(destination)
+      const diff = car.orientation.value.differenceTo(destination)
       await car.turnRelative(diff)
     },
 
@@ -187,19 +187,15 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
       After reaching the position, the car is switched to floating mode.
     */
     async goto(position: Position): Promise<void> {
-      const distance = car.position.get().distanceTo(position)
+      const distance = car.position.value.distanceTo(position)
       if (distance > MINIMAL_DISTANCE) {
-        logger.debug(
-          `car.goto${position}, distance: ${distance}, currentPos=${this.position
-            .get()
-            .toString()} ${this.orientation.get().toString()}`
-        )
+        logger.debug(`car.goto${position}, distance: ${distance}, currentPos=${this.position} ${this.orientation}`)
 
         const trigger = waitFor(car.position, (pos) => Math.abs(pos.distanceTo(position)) < MINIMAL_DISTANCE)
         const observer = (orientation: Orientation) => {
-          const angle = orientation.differenceTo(createOrientation(car.position.get().angleTo(position)))
+          const angle = orientation.differenceTo(createOrientation(car.position.value.angleTo(position)))
           // console.log(`should be ${angle.toString()}`)
-          const distance = car.position.get().distanceTo(position)
+          const distance = car.position.value.distanceTo(position)
           const speed = clampSpeed(Math.sqrt(distance))
           if (Math.abs(angle.angle) > 1) {
             const direction = getTurnDirection(angle)
@@ -217,7 +213,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
 
         car.float()
       }
-      logger.debug(`car.goto: arrived at currentPos=${this.position.get()} ${this.orientation.get()}`)
+      logger.debug(`car.goto: arrived at currentPos=${this.position} ${this.orientation}`)
     },
 
     async destruct(): Promise<void> {
@@ -227,12 +223,12 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     },
   }
 
-  let oldLeftPos = motors.left.position.get()
-  let oldRightPos = motors.right.position.get()
+  let oldLeftPos = motors.left.position.value
+  let oldRightPos = motors.right.position.value
 
   function updatePosition() {
-    const leftPos = motors.left.position.get()
-    const rightPos = motors.right.position.get()
+    const leftPos = motors.left.position.value
+    const rightPos = motors.right.position.value
     const a = leftPos - oldLeftPos
     const b = rightPos - oldRightPos
     oldLeftPos = leftPos
@@ -248,16 +244,13 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
         : a + b
       const dX = (1 - Math.cos(theta)) * radius
 
-      const delta = Math.PI / 2 - car.orientation.get().angle
-      const position = car.position.get()
-      const orientation = car.orientation.get()
-      // console.log("actual: " + orientation.toString())
-      const pos = createPosition(
-        position.x + dY * Math.cos(orientation.angle) + dX * Math.cos(delta),
-        position.y - dY * Math.sin(orientation.angle) + dX * Math.sin(delta)
+      const angle = car.orientation.value.angle
+      const delta = Math.PI / 2 - angle
+      car.position.value = car.position.value.add(
+        dY * Math.cos(angle) + dX * Math.cos(delta),
+        -dY * Math.sin(angle) + dX * Math.sin(delta)
       )
-      car.position.set(pos)
-      car.orientation.set(createOrientation(car.orientation.get().angle + theta))
+      car.orientation.value = fromRadian(angle + theta)
     }
   }
 

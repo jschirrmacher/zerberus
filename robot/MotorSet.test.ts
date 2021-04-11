@@ -45,18 +45,18 @@ describe("MotorSet", () => {
 
   it("should be in FORWARD mode after being accelerated", async () => {
     motor.accelerate(100)
-    motor.mode.get().should.equal(MotorMode.FORWARD)
+    motor.mode.value.should.equal(MotorMode.FORWARD)
   })
 
   it("should be in BACKWARDS mode after being accelerated with negative speed", async () => {
     motor.accelerate(-100)
-    motor.mode.get().should.equal(MotorMode.BACKWARDS)
+    motor.mode.value.should.equal(MotorMode.BACKWARDS)
   })
 
   it("should go to FLOAT mode when decelerated to 0", async () => {
     motor.accelerate(10)
     motor.accelerate(0)
-    motor.mode.get().should.equal(MotorMode.FLOAT)
+    motor.mode.value.should.equal(MotorMode.FLOAT)
   })
 
   it("should reflect the throttle", async () => {
@@ -92,9 +92,9 @@ describe("MotorSet", () => {
     const acceleration = motor.accelerate(100)
     let c = 0
     while (c++ != 100 && motor.currentThrottle != 100) {
-      notify(motor.position.get() + 1, motor.currentThrottle)
+      notify(motor.position.value + 1, motor.currentThrottle)
     }
-    notify(motor.position.get() + 1, 100)
+    notify(motor.position.value + 1, 100)
     await acceleration
     motor.currentThrottle.should.equal(100)
     const float = motor.float()
@@ -102,15 +102,15 @@ describe("MotorSet", () => {
     notify(40, 0)
     await float
     motor.currentThrottle.should.equal(0)
-    motor.mode.get().should.equal(MotorMode.FLOAT)
+    motor.mode.value.should.equal(MotorMode.FLOAT)
   })
 
   it("should allow to run the motor a given distance", async () => {
     const go = motor.go(100, 100)
     notify(110, 1)
-    encoder.position.set(110)
+    encoder.position.value = 110
     await go
-    motor.position.get().should.be.greaterThanOrEqual(100)
+    motor.position.value.should.be.greaterThanOrEqual(100)
   })
 
   describe("with blocked motor", () => {
@@ -127,7 +127,7 @@ describe("MotorSet", () => {
 
     it("should set motor to float if it blocks", async () => {
       await blockMotor()
-      motor.mode.get().should.equal(MotorMode.FLOAT)
+      motor.mode.value.should.equal(MotorMode.FLOAT)
       motor.throttle.should.equal(0)
     })
 

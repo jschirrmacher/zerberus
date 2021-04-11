@@ -1,7 +1,7 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
 import { GPIO, OUTPUT, PWM } from "./gpio"
 import { Logger, LogLevel } from "./Logger"
-import ObservableValueFactory, { ObservableValue } from "./ObservableValue"
+import createObservable, { ObservableValue } from "./ObservableValue"
 import SubjectFactory, { Subject } from "./Subject"
 import TriggerFactory, { waitFor } from "./Trigger"
 
@@ -65,7 +65,7 @@ export default function MotorSetFactory(
 
   function log(level: LogLevel, msg: string) {
     if (level !== LogLevel.debug || debugLog) {
-      ;(logger || console)[level](`Motor,${motor.no},${motor.mode.get()},${motor.currentThrottle.toFixed(0)},${msg}`)
+      ;(logger || console)[level](`Motor,${motor.no},${motor.mode},${motor.currentThrottle.toFixed(0)},${msg}`)
     }
   }
 
@@ -98,12 +98,12 @@ export default function MotorSetFactory(
     log(LogLevel.debug, `Changing mode to ${mode}`)
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
     in2.digitalWrite(mode === MotorMode.BACKWARDS || mode === MotorMode.FLOAT ? 1 : 0)
-    motor.mode.set(mode)
+    motor.mode.value = mode
   }
 
   function adaptSpeed(): void {
     motor.currentThrottle = getAdaptedThrottle(motor.throttle, motor.currentThrottle)
-    const mode = motor.mode.get()
+    const mode = motor.mode.value
     if (mode !== MotorMode.BREAK) {
       if (motor.currentThrottle < 0 && mode !== MotorMode.BACKWARDS) {
         setMode(motor, MotorMode.BACKWARDS)
@@ -128,7 +128,7 @@ export default function MotorSetFactory(
     no: motorNo++,
     throttle: 0,
     currentThrottle: 0,
-    mode: ObservableValueFactory("mode", MotorMode.FLOAT),
+    mode: createObservable("mode", MotorMode.FLOAT),
     position: encoder.position,
     speed: encoder.speed,
     blocked,
@@ -151,9 +151,8 @@ export default function MotorSetFactory(
 
     async go(distance: number, throttle: number): Promise<void> {
       assertNormalOperation()
-      const currentPos = encoder.position.get()
-      const desiredPosition = currentPos + distance * Math.sign(throttle)
-      const direction = Math.sign(desiredPosition - currentPos)
+      const desiredPosition = encoder.position.value + distance * Math.sign(throttle)
+      const direction = Math.sign(desiredPosition - encoder.position.value)
 
       const trigger = TriggerFactory()
       trigger.waitFor(encoder.position, (pos: number) => direction * pos >= desiredPosition * direction)

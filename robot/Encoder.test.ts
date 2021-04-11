@@ -1,6 +1,7 @@
 import "should"
 import EncoderFactory, { Encoder, TICKS_PER_REV } from "./Encoder"
 import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE, pushStreamData } from "./gpio"
+import Logger from "./Logger"
 
 describe("Encoder", () => {
   let gpio: GPIO
@@ -30,30 +31,27 @@ describe("Encoder", () => {
   })
 
   it("should contain the current position", () => {
-    encoder.position.get().should.equal(0)
+    encoder.position.value.should.equal(0)
     encoder.tick(1, 1)
-    encoder.position.get().should.equal(1)
+    encoder.position.value.should.equal(1)
   })
 
   it("should contain the current speed", () => {
     encoder.tick(1, 1)
     encoder.tick(1, 2)
-    encoder.speed.get().should.equal(1000000 / TICKS_PER_REV)
+    encoder.speed.value.should.equal(1000000 / TICKS_PER_REV)
     encoder.tick(4, 4)
-    encoder.speed.get().should.equal(2000000 / TICKS_PER_REV)
+    encoder.speed.value.should.equal(2000000 / TICKS_PER_REV)
   })
 
   it("should log in csv format if env ist set", () => {
-    const console = {
-      messages: [],
-      debug: (msg: string) => console.messages.push(msg),
-    }
+    const console = Logger()
     process.env.LOG = "encoder"
     encoder = EncoderFactory(gpio, 1, 2, console)
     encoder.tick(1, 1)
     encoder.tick(1, 2)
-    console.messages.length.should.equal(2)
-    const entry = console.messages[1].split(",")
+    console.get().length.should.equal(2)
+    const entry = console.get()[1].split(",")
     entry.length.should.equal(5)
     entry.should.containDeep(["Encoder", "2", "1838.235294117647", "1"])
     delete process.env.LOG_ENCODER
@@ -62,7 +60,7 @@ describe("Encoder", () => {
   it("should read from stream", (done) => {
     pushStreamData([{ flags: 0, level: 2, time: 10000 }])
     setImmediate(() => {
-      encoder.position.get().should.equal(1)
+      encoder.position.value.should.equal(1)
       done()
     })
   })
@@ -73,7 +71,7 @@ describe("Encoder", () => {
       { flags: 0, level: 6, time: 20000 },
     ])
     setImmediate(() => {
-      encoder.position.get().should.equal(2)
+      encoder.position.value.should.equal(2)
       done()
     })
   })
@@ -84,7 +82,7 @@ describe("Encoder", () => {
       { flags: PI_NTFY_FLAGS_ALIVE, level: 6, time: 20000 },
     ])
     setImmediate(() => {
-      encoder.position.get().should.equal(1)
+      encoder.position.value.should.equal(1)
       done()
     })
   })
@@ -92,7 +90,7 @@ describe("Encoder", () => {
   it("should allow to simulate motion", (done) => {
     encoder.simulateSpeed(100)
     setTimeout(() => {
-      encoder.position.get().should.be.greaterThan(0)
+      encoder.position.value.should.be.greaterThan(0)
       done()
     }, 100)
   })

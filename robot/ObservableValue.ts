@@ -1,30 +1,34 @@
-import SubjectFactory, { Subject } from "./Subject"
+import SubjectFactory, { Subject, Observer } from "./Subject"
 
 export type ObservableValue<T> = Subject<T> & {
-  set(newValue: T): void
-  get(): T
-  update(func: (current: T) => T)
+  value: T
+  toValue(): T
+  toString(): string
 }
 
-export default function <T>(name: string, value?: T): ObservableValue<T> {
+export default function <T>(name: string, value: T): ObservableValue<T> {
   const subject = SubjectFactory<T>(name)
 
   return {
     ...subject,
 
-    set(newValue: T) {
+    set value(newValue: T) {
       if (value !== newValue) {
         value = newValue
-        this.notify(value)
+        subject.notify(value)
       }
     },
 
-    get() {
+    get value() {
       return value
     },
 
-    update(func) {
-      this.set(func(value))
+    toString() {
+      return "" + value
+    },
+
+    toValue() {
+      return value
     },
   }
 }

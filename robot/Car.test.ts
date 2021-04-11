@@ -91,54 +91,54 @@ describe("Car", () => {
       const turned = car.turnRelative(createOrientation(1))
       leftMotorSpy.accelerate.should.be.calledWith(50)
       rightMotorSpy.accelerate.should.be.calledWith(-50)
-      car.orientation.set(createOrientation(1))
+      car.orientation.value = createOrientation(1)
       await turned
     })
 
     it("should stop when relative angle is reached", async () => {
       await car.accelerate(50)
       const turn = car.turnRelative(createOrientation(Math.PI / 4))
-      car.orientation.set(fromDegrees(20))
+      car.orientation.value = fromDegrees(20)
       ;(await isPending(turn)).should.be.true()
-      car.orientation.set(fromDegrees(45))
+      car.orientation.value = fromDegrees(45)
       ;(await isPending(turn)).should.be.false()
     })
 
     it("should not turn if angle is too small", async () => {
       await car.turnRelative(createOrientation(MINIMAL_TURN_ANGLE.angle * 0.99))
-      car.orientation.get().degreeAngle().should.equal(0)
+      car.orientation.value.degreeAngle().should.equal(0)
     })
   })
 
   describe("turning to an absolute angle", () => {
     it("should stop when angle is reached", async () => {
       const turn = car.turnTo(createOrientation(Math.PI / 4))
-      car.orientation.set(fromDegrees(20))
+      car.orientation.value = fromDegrees(20)
       ;(await isPending(turn)).should.be.true()
-      car.orientation.set(fromDegrees(45))
+      car.orientation.value = fromDegrees(45)
       ;(await isPending(turn)).should.be.false()
     })
 
     it("should turn left", async () => {
       const turn = car.turnTo(createOrientation((-Math.PI * 3) / 4))
       while (await isPending(turn)) {
-        car.orientation.set(car.orientation.get().add(fromDegrees(-1)))
+        car.orientation.value = car.orientation.value.add(fromDegrees(-1))
       }
       await turn
-      Math.abs(car.orientation.get().degreeAngle() + 135).should.lessThanOrEqual(4)
+      Math.abs(car.orientation.value.degreeAngle() + 135).should.lessThanOrEqual(4)
     })
 
     it("should not turn if angle is too small", async () => {
       await car.turnTo(createOrientation(MINIMAL_TURN_ANGLE.angle * 0.99))
-      car.orientation.get().degreeAngle().should.equal(0)
+      car.orientation.value.degreeAngle().should.equal(0)
     })
   })
 
   describe("directions", () => {
     async function fakeMotorMovement() {
       const go = car.go(100, 50)
-      left.position.set(100)
-      right.position.set(100)
+      left.position.value = 100
+      right.position.value = 100
       await go
     }
 
@@ -150,25 +150,25 @@ describe("Car", () => {
 
     it("should reach positive X coordinates when running east", async () => {
       await fakeMotorMovement()
-      car.position.get().x.should.be.greaterThan(0)
+      car.position.value.x.should.be.greaterThan(0)
     })
 
     it("should reach positive Y coordinates when running north°", async () => {
-      car.orientation.set(fromRadian(-Math.PI / 2))
+      car.orientation.value = fromRadian(-Math.PI / 2)
       await fakeMotorMovement()
-      car.position.get().y.should.be.greaterThan(0)
+      car.position.value.y.should.be.greaterThan(0)
     })
 
     it("should reach negative X coordinates when running west", async function () {
-      car.orientation.set(fromRadian(Math.PI))
+      car.orientation.value = fromRadian(Math.PI)
       await fakeMotorMovement()
-      car.position.get().x.should.be.lessThan(0)
+      car.position.value.x.should.be.lessThan(0)
     })
 
     it("should reach negative Y coordinates when running south", async () => {
-      car.orientation.set(fromRadian(Math.PI / 2))
+      car.orientation.value = fromRadian(Math.PI / 2)
       await fakeMotorMovement()
-      car.position.get().y.should.be.lessThan(0)
+      car.position.value.y.should.be.lessThan(0)
     })
   })
 
@@ -178,21 +178,21 @@ describe("Car", () => {
       const goto = car.goto(destination)
       await approximateMovement(goto)
 
-      car.position.get().distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
+      car.position.value.distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
     })
 
     it("should reach the given position", async function () {
-      car.position.set(createPosition(-300, 100))
+      car.position.value = createPosition(-300, 100)
       const destination = createPosition(200, 200)
       const goto = car.goto(destination)
       await approximateMovement(goto)
-      car.position.get().distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
+      car.position.value.distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
     })
 
     async function approximateMovement(goto: Promise<void>) {
       function move(stepX: number, stepY: number) {
-        left.position.update((val) => val + stepX)
-        right.position.update((val) => val + stepY)
+        left.position.value += stepX
+        right.position.value += stepY
       }
 
       move(2, 2)
@@ -213,7 +213,7 @@ describe("Car", () => {
       await approximateMovement(goto)
       goto = car.goto(createPosition(-200, -200))
       await approximateMovement(goto)
-      car.position.get().distanceTo(createPosition(-200, -200)).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
+      car.position.value.distanceTo(createPosition(-200, -200)).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
     })
   })
 })

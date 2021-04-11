@@ -1,6 +1,5 @@
 import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "./gpio"
-import ObservableValueFactory, { ObservableValue } from "./ObservableValue"
-import SubjectFactory, { Subject } from "./Subject"
+import createObservable, { ObservableValue } from "./ObservableValue"
 
 export const TICKS_PER_REV = 544
 const SAMPLE_DURATION_MS = 3
@@ -35,8 +34,6 @@ const defaultLogger = {
 export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defaultLogger): Encoder {
   let oldVal = 0
   let lastTick = undefined as number
-  let lastMeasuredSpeed = undefined as number
-  let lastTickTime = undefined as number
   const notifier = gpio.createNotifier([pin_a, pin_b])
   let timer = undefined as NodeJS.Timer
   let zeroSent = false
@@ -45,8 +42,8 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defa
   const encoder = {
     no: encoderNo++,
     simulated: notifier.simulated,
-    position: ObservableValueFactory<number>("position", 0),
-    speed: ObservableValueFactory<number>("speed", 0),
+    position: createObservable("position", 0),
+    speed: createObservable("speed", 0),
 
     /*
       Handle a single tick of the motor.
@@ -54,20 +51,13 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defa
       `time` is specified in microseconds.
     */
     tick(diff: number, time: number): void {
-      encoder.position.set(encoder.position.get() + diff)
-      if (lastTick) {
-        lastMeasuredSpeed = ((diff / (time - lastTick)) * 1000000) / TICKS_PER_REV
-      }
-      logger.debug(`Encoder,${encoder.no},${encoder.position.get()},${lastMeasuredSpeed},${time - lastTick}`)
-      lastTickTime = +Date.now()
+      encoder.position.value += diff
+      const timeDiff = lastTick ? time - lastTick : 0
+      encoder.speed.value = timeDiff ? ((diff / timeDiff) * 1000000) / TICKS_PER_REV : 0
+      logger.debug(`Encoder,${encoder.no},${encoder.position},${encoder.speed},${timeDiff}`)
       lastTick = time
-      encoder.speed.set(lastMeasuredSpeed)
-      if (zeroTimeOut) {
-        clearTimeout(zeroTimeOut)
-      }
-      zeroTimeOut = setTimeout(() => {
-        encoder.speed.set(0)
-      }, 50)
+      zeroTimeOut && clearTimeout(zeroTimeOut)
+      zeroTimeOut = setTimeout(() => (encoder.speed.value = 0), 50)
     },
 
     simulateSpeed(speed: number): void {
