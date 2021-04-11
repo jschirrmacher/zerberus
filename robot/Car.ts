@@ -225,6 +225,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
 
     async destruct(): Promise<void> {
       await car.stop()
+      console.log("Car stopped")
       motors.left.destruct()
       motors.right.destruct()
     },

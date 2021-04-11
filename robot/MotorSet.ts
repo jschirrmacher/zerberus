@@ -177,7 +177,9 @@ export default function MotorSetFactory(
     destruct(): void {
       encoder.simulateSpeed(0)
       setMode(motor, MotorMode.FLOAT)
+      console.log(`Motor #${motor.no} set to FLOAT`)
       ena.pwmWrite(0)
+      console.log(`Motor #${motor.no} set throttle to 0`)
     },
 
     releaseBlock() {

@@ -109,5 +109,6 @@ io.on("connection", (client) => {
 process.on("SIGINT", function () {
   console.log("Caught interrupt signal")
   car.destruct()
+  console.log("Motor controller discarded")
   process.exit()
 })
