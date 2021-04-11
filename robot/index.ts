@@ -10,6 +10,7 @@ import { Orientation } from "./Orientation"
 import GPIOFactory from "./gpio"
 import HTTP = require("http")
 import { throttleFromJoystickValues } from "./CarThrottle"
+import { throttle } from "./lib/throttle"
 
 const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
@@ -32,7 +33,7 @@ function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation
     posX: pos.metricCoordinates().x.toFixed(3),
     posY: pos.metricCoordinates().y.toFixed(3),
     orientation: Math.round(orientation.degreeAngle()),
-    speed: car.speed(),
+    speed: Math.round(car.speed()),
   })
   return false
 }
@@ -50,7 +51,7 @@ io.on("connection", (client) => {
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
-  car.position.registerObserver((pos: Position) => sendPosition(client, pos, car.orientation.value))
+  car.position.registerObserver(throttle((pos: Position) => sendPosition(client, pos, car.orientation.value), 20))
   car.state.registerObserver((state: CarState) => sendCarStateChange(client, state))
 
   client.on("command", async (command) => {

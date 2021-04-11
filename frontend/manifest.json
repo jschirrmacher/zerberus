@@ -1,0 +1,14 @@
+{
+  "short_name": "Zerberus",
+  "name": "Zerberus Remote Control",
+  "icons": [
+    {
+      "src": "wheel.svg",
+      "type": "image/svg"
+    }
+  ],
+  "start_url": "remote.html",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#000000"
+}

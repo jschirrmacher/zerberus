@@ -7,13 +7,19 @@ body,
   padding: 0;
 }
 
-@viewport {  
-  orientation: portrait;  
+@viewport {
+  orientation: portrait;
+}
+
+#app {
+  max-width: 375px;
+  max-height: 375px;
+  margin: 0 auto;
 }
 
 #pad {
-  width: 100vw;
-  height: 100vw;
+  width: 100%;
+  height: 100%;
   margin: auto;
   position: relative;
   border: 1px solid #aaa;
@@ -40,6 +46,27 @@ body,
   box-shadow: inset -20px -20px 20px 2px #2d383a, inset 20px 20px 20px 5px rgba(135, 56, 58, 0.1);
 }
 
-#pos {
-  text-align: center;
+#car-info {
+  background-color: #2d383a;
+  display: flex;
+}
+
+#speedometer {
+  flex-grow: 1;
+  font: 90px Arial, Helvetica, sans-serif;
+  text-align: right;
+  color: #ed0a3f;
+  padding: 35px 8px;
+}
+
+#compass {
+  width: 150px;
+  height: 150px;
+  border: 15px solid #ed0a3f;
+  border-radius: 50%;
+}
+
+#needle {
+  stroke: #ed0a3f;
+  stroke-width: 10px;
 }
