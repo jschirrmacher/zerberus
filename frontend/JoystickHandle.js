@@ -25,8 +25,11 @@ export default function JoystickHandle(handle) {
   }
 
   function handleMove(event) {
-    pos.x = Math.round(((clampX(event.clientX - padPos.x - handleCenter.x) / padSize.x) * 2 - 1) * 100)
-    pos.y = -Math.round(((clampY(event.clientY - padPos.y - handleCenter.y) / padSize.y) * 2 - 1) * 100)
+    event.preventDefault()
+    const clientX = event.clientX || event.touches[0].clientX
+    const clientY = event.clientY || event.touches[0].clientY
+    pos.x = Math.round(((clampX(clientX - padPos.x - handleCenter.x) / padSize.x) * 2 - 1) * 100)
+    pos.y = -Math.round(((clampY(clientY - padPos.y - handleCenter.y) / padSize.y) * 2 - 1) * 100)
     update()
   }
 
@@ -50,10 +53,10 @@ export default function JoystickHandle(handle) {
 
     snapBackTimer && clearTimeout(snapBackTimer)
     snapBackTimer = undefined
-    document.addEventListener("mousemove", handleMove, { passive: true })
-    document.addEventListener("touchmove", handleMove, { passive: true })
+    document.addEventListener("mousemove", handleMove, { passive: false })
+    document.addEventListener("touchmove", handleMove, { passive: false })
     document.addEventListener("mouseup", removeHandler, { passive: true, once: true })
-    document.addEventListener("touchup", removeHandler, { passive: true, once: true })
+    document.addEventListener("touchend", removeHandler, { passive: true, once: true })
   }
 
   return {

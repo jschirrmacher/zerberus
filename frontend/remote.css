@@ -1,8 +1,8 @@
 html,
 body,
 #app {
-  width: 100vh;
-  height: 100wh;
+  width: 100vw;
+  height: 100vh;
   margin: 0;
   padding: 0;
 }
@@ -12,8 +12,8 @@ body,
 }
 
 #pad {
-  width: 320px;
-  height: 320px;
+  width: 100vw;
+  height: 100vw;
   margin: auto;
   position: relative;
   border: 1px solid #aaa;
