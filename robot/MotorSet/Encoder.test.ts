@@ -1,7 +1,7 @@
 import "should"
 import EncoderFactory, { Encoder, TICKS_PER_REV } from "./Encoder"
-import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE, pushStreamData } from "./gpio"
-import Logger from "./Logger"
+import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE, pushStreamData } from "../Hardware/gpio"
+import Logger from "../lib/Logger"
 
 describe("Encoder", () => {
   let gpio: GPIO

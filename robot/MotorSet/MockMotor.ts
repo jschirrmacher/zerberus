@@ -1,7 +1,7 @@
 import sinon, { spy } from "sinon"
-import { Motor, MotorMode } from "./MotorSet"
-import ObservableValueFactory from "./ObservableValue"
-import SubjectFactory from "./Subject"
+import { Motor, MotorMode } from "./Motor"
+import ObservableValueFactory from "../lib/ObservableValue"
+import SubjectFactory from "../lib/Subject"
 
 enum MotorProp {
   setThrottle = "setThrottle",

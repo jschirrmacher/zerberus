@@ -1,15 +1,12 @@
 import "should"
 import "should-sinon"
-import Sinon from "sinon"
 import sinon from "sinon"
 import CarFactory, { Car, Direction, MINIMAL_DISTANCE, MINIMAL_TURN_ANGLE } from "./Car"
-import MockMotor, { createMotorSpies } from "./MockMotor"
-import { Motor } from "./MotorSet"
-import { ObservableValue } from "./ObservableValue"
+import MockMotor, { createMotorSpies } from "../MotorSet/MockMotor"
+import { Motor } from "../MotorSet/Motor"
 import { create as createOrientation, fromDegrees, fromRadian } from "./Orientation"
-import { create as createPosition, Position } from "./Position"
-import { isPending } from "./TestHelpers"
-import TriggerFactory, { waitFor } from "./Trigger"
+import { create as createPosition } from "./Position"
+import { isPending } from "../lib/TestHelpers"
 
 const sandbox = sinon.createSandbox()
 

@@ -1,9 +1,9 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
-import { GPIO, OUTPUT, PWM } from "./gpio"
-import { Logger, LogLevel } from "./Logger"
-import createObservable, { ObservableValue } from "./ObservableValue"
-import SubjectFactory, { Subject } from "./Subject"
-import TriggerFactory, { waitFor } from "./Trigger"
+import { GPIO, OUTPUT, PWM } from "../Hardware/gpio"
+import { Logger, LogLevel } from "../lib/Logger"
+import createObservable, { ObservableValue } from "../lib/ObservableValue"
+import SubjectFactory, { Subject } from "../lib/Subject"
+import TriggerFactory, { waitFor } from "../lib/Trigger"
 
 export const DIAMETER = 120 // mm
 export const PERIMETER = DIAMETER * Math.PI

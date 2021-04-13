@@ -1,9 +1,9 @@
-import { Motor, TICKS_PER_MM } from "./MotorSet"
+import { Motor, TICKS_PER_MM } from "../MotorSet/Motor"
 import { Position, create as createPosition } from "./Position"
 import { create as createOrientation, fromRadian, Orientation } from "./Orientation"
-import ObservableFactory, { ObservableValue } from "./ObservableValue"
-import SubjectFactory, { Subject } from "./Subject"
-import { waitFor } from "./Trigger"
+import ObservableFactory, { ObservableValue } from "../lib/ObservableValue"
+import SubjectFactory, { Subject } from "../lib/Subject"
+import { waitFor } from "../lib/Trigger"
 
 export const WIDTH_OF_AXIS = 270 // mm
 export const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM

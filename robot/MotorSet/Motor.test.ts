@@ -1,6 +1,6 @@
 import "should"
-import MotorFactory, { getAdaptedThrottle, Motor, MotorMode, MAX_ACCELERATION } from "./MotorSet"
-import GPIOFactory, { GPIO, INPUT, OUTPUT, PWM } from "./gpio"
+import MotorFactory, { getAdaptedThrottle, Motor, MotorMode, MAX_ACCELERATION } from "./Motor"
+import GPIOFactory, { GPIO, INPUT, OUTPUT, PWM } from "../Hardware/gpio"
 import { Encoder } from "./Encoder"
 import MockEncoderFactory, { createEncoderSpies } from "./MockEncoder"
 import { createSandbox } from "sinon"

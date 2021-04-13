@@ -1,7 +1,6 @@
 import sinon, { spy } from "sinon"
 import { Encoder } from "./Encoder"
-import ObservableValueFactory from "./ObservableValue"
-import SubjectFactory from "./Subject"
+import ObservableValueFactory from "../lib/ObservableValue"
 
 enum EncoderProp {
   tick = "tick",

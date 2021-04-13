@@ -1,5 +1,5 @@
-import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "./gpio"
-import createObservable, { ObservableValue } from "./ObservableValue"
+import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
+import createObservable, { ObservableValue } from "../lib/ObservableValue"
 
 export const TICKS_PER_REV = 544
 const SAMPLE_DURATION_MS = 3

@@ -1,15 +1,15 @@
 import path from "path"
-import MotorFactory from "./MotorSet"
-import CarFactory, { Car, CarState, Direction } from "./Car"
-import Encoder from "./Encoder"
+import MotorFactory from "./MotorSet/Motor"
+import CarFactory, { Car, CarState, Direction } from "./Car/Car"
+import Encoder from "./MotorSet/Encoder"
 import express from "express"
 import IO from "socket.io"
 import CommandList from "./CommandList"
-import { Position } from "./Position"
-import { Orientation } from "./Orientation"
-import GPIOFactory from "./gpio"
+import { Position } from "./Car/Position"
+import { Orientation } from "./Car/Orientation"
+import GPIOFactory from "./Hardware/gpio"
 import HTTP = require("http")
-import { throttleFromJoystickValues } from "./CarThrottle"
+import { throttleFromJoystickValues } from "./Car/CarThrottle"
 import { throttle } from "./lib/throttle"
 
 const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
