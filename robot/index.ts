@@ -28,12 +28,13 @@ server.listen(10000)
 app.use("/", express.static(path.resolve(__dirname, "..", "frontend")))
 app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
 
-function sendPosition(client: IO.Socket, pos: Position, orientation: Orientation): boolean {
+function sendInfo(client: IO.Socket, car: Car): boolean {
+  const pos = car.position.value.metricCoordinates()
   client.emit("car-position", {
-    posX: pos.metricCoordinates().x.toFixed(3),
-    posY: pos.metricCoordinates().y.toFixed(3),
-    orientation: Math.round(orientation.degreeAngle()),
-    speed: Math.round(car.speed()),
+    posX: pos.x.toFixed(3),
+    posY: pos.y.toFixed(3),
+    orientation: Math.round(car.orientation.value.degreeAngle()),
+    speed: car.speed.value.toFixed(1),
   })
   return false
 }
@@ -47,11 +48,13 @@ console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and wai
 io.on("connection", (client) => {
   console.log("Client connected")
   client.emit("hi", "Robot Simulator")
-  sendPosition(client, car.position.value, car.orientation.value)
+  sendInfo(client, car)
 
   const listenerId = gpio.addListener((...args) => client.emit(...args))
 
-  car.position.registerObserver(throttle((pos: Position) => sendPosition(client, pos, car.orientation.value), 20))
+  const throttledInfoFunc = throttle(() => sendInfo(client, car), 20)
+  car.position.registerObserver(throttledInfoFunc)
+  car.speed.registerObserver(throttledInfoFunc)
   car.state.registerObserver((state: CarState) => sendCarStateChange(client, state))
 
   client.on("command", async (command) => {
@@ -82,11 +85,11 @@ io.on("connection", (client) => {
     console.debug("Direct control " + info.cmd)
     switch (info.cmd) {
       case "forward":
-        car.accelerate(car.speed() + 25)
+        car.accelerate(car.getCurrentThrottle() + 25)
         break
 
       case "back":
-        car.accelerate(car.speed() - 25)
+        car.accelerate(car.getCurrentThrottle() - 25)
         break
 
       case "left":

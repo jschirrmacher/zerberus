@@ -30,7 +30,7 @@ function clamp(min: number, max: number) {
   return (value: number) => Math.min(max, Math.max(min, value))
 }
 
-const clampSpeed = clamp(40, 100)
+const clampThrottle = clamp(40, 100)
 
 export enum CarState {
   NORMAL = "NORMAL",
@@ -43,15 +43,16 @@ export type Car = {
   motors: Record<Direction, Motor>
   position: ObservableValue<Position>
   orientation: ObservableValue<Orientation>
-  speed(): number
+  speed: ObservableValue<number>
   state: ObservableValue<CarState>
   events: Subject<CarEvent>
 
-  accelerate(speed: number): Promise<void>
+  getCurrentThrottle(): number
+  accelerate(throttle: number): Promise<void>
   throttle({ left, right }: MotorThrottle): Promise<void>
   stop(): Promise<void>
   float(): Promise<void>
-  go(distance: number, speed: number): Promise<void>
+  go(distance: number, throttle: number): Promise<void>
   turn(direction: Direction): Promise<void>
 
   turnRelative(angle: Orientation): Promise<void>
@@ -80,14 +81,14 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     return false
   }
 
-  function getTurnSpeeds() {
-    const currentSpeed = car.speed()
-    if (Math.abs(currentSpeed) < 50) {
-      return { lowerSpeed: -50, higherSpeed: 50 }
+  function getTurnThrottles() {
+    const currentThrottle = car.getCurrentThrottle()
+    if (Math.abs(currentThrottle) < 50) {
+      return { lowerThrottle: -50, higherThrottle: 50 }
     } else {
-      const higherSpeed = Math.min(currentSpeed + 25, 100)
-      const lowerSpeed = Math.max(higherSpeed - 50, -100)
-      return { lowerSpeed, higherSpeed }
+      const higherThrottle = Math.min(currentThrottle + 25, 100)
+      const lowerThrottle = Math.max(higherThrottle - 50, -100)
+      return { lowerThrottle, higherThrottle }
     }
   }
 
@@ -101,12 +102,10 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     orientation: ObservableFactory("orientation", createOrientation(0)),
     state: ObservableFactory("state", CarState.NORMAL),
     events: SubjectFactory<CarEvent>("events"),
+    speed: ObservableFactory("speed", 0),
 
-    /*
-      Returns the current throttle of the car
-    */
-    speed() {
-      return (motors.left.throttle + motors.right.throttle) / 2
+    getCurrentThrottle() {
+      return (car.motors.left.throttle + car.motors.right.throttle) / 2
     },
 
     /*
@@ -127,6 +126,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     */
     async stop() {
       await Promise.all([motors.left.stop(), motors.right.stop()])
+      car.speed.value = 0
     },
 
     /*
@@ -134,16 +134,17 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     */
     async float() {
       await Promise.all([motors.left.float(), motors.right.float()])
+      car.speed.value = 0
     },
 
     /*
-      Move the car a given distance (measured in motor ticks) in the specified speed.
-      The speed is a percentage, with 100% being the maximal capacity of the motors.
+      Move the car a given distance (measured in motor ticks) with the specified throttle.
+      The throttle is a percentage, with 100% being the maximal capacity of the motors.
       After reaching the position, the car is switched to floating mode.
     */
-    async go(distance: number, speed: number): Promise<void> {
+    async go(distance: number, throttle: number): Promise<void> {
       if (Math.abs(distance) >= MINIMAL_DISTANCE) {
-        await Promise.all([motors.left.go(distance, speed), motors.right.go(distance, speed)]).finally(car.float)
+        await Promise.all([motors.left.go(distance, throttle), motors.right.go(distance, throttle)]).finally(car.float)
       }
     },
 
@@ -153,11 +154,11 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
       the other side the same amount. In case the car was standing, it turns on spot.
     */
     async turn(direction: Direction): Promise<void> {
-      const { higherSpeed, lowerSpeed } = getTurnSpeeds()
-      // logger.debug(`Turn car ${direction}, speed=(${higherSpeed}, ${lowerSpeed})`)
+      const { higherThrottle, lowerThrottle } = getTurnThrottles()
+      // logger.debug(`Turn car ${direction}, throttle=(${higherThrottle}, ${lowerThrottle})`)
       await Promise.all([
-        motors[direction].accelerate(lowerSpeed),
-        motors[otherDirection(direction)].accelerate(higherSpeed),
+        motors[direction].accelerate(lowerThrottle),
+        motors[otherDirection(direction)].accelerate(higherThrottle),
       ])
     },
 
@@ -190,7 +191,7 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     },
 
     /*
-      Move car to the given position with the specified speed.
+      Move car to the given position.
       After reaching the position, the car is switched to floating mode.
     */
     async goto(position: Position): Promise<void> {
@@ -203,15 +204,15 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
           const angle = orientation.differenceTo(createOrientation(car.position.value.angleTo(position)))
           // console.log(`should be ${angle.toString()}`)
           const distance = car.position.value.distanceTo(position)
-          const speed = clampSpeed(Math.sqrt(distance))
+          const throttle = clampThrottle(Math.sqrt(distance))
           if (Math.abs(angle.angle) > 1) {
             const direction = getTurnDirection(angle)
-            const { higherSpeed, lowerSpeed } = getTurnSpeeds()
-            motors[direction].setThrottle(lowerSpeed)
-            motors[otherDirection(direction)].setThrottle(higherSpeed)
+            const { higherThrottle, lowerThrottle } = getTurnThrottles()
+            motors[direction].setThrottle(lowerThrottle)
+            motors[otherDirection(direction)].setThrottle(higherThrottle)
           } else {
-            car.motors.left.setThrottle(speed + angle.angle * 40)
-            car.motors.right.setThrottle(speed - angle.angle * 40)
+            car.motors.left.setThrottle(throttle + angle.angle * 40)
+            car.motors.right.setThrottle(throttle - angle.angle * 40)
           }
         }
         car.orientation.registerObserver(observer)
@@ -259,6 +260,8 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
         -dY * Math.sin(angle) + dX * Math.sin(delta)
       )
       car.orientation.value = fromRadian(angle + theta)
+      car.speed.value =
+        (((car.motors.left.speed.value + car.motors.right.speed.value) / 2 / TICKS_PER_MM / 1000) * 3600) / 1000
     }
   }
 
