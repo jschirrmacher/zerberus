@@ -1,7 +1,16 @@
+function absolutePosition(el) {
+  let pos = { x: 0, y: 0 }
+  while ((el = el.parentNode) !== document) {
+    pos.x += el.offsetLeft
+    pos.y += el.offsetTop
+  }
+  return pos
+}
+
 export default function JoystickHandle(handle) {
   const handleSize = { x: handle.clientWidth, y: handle.clientHeight }
   const handleCenter = { x: handleSize.x / 2, y: handleSize.y / 2 }
-  const padPos = { x: handle.parentNode.offsetLeft, y: handle.parentNode.offsetTop }
+  const padPos = absolutePosition(handle)
   const padSize = { x: handle.parentNode.clientWidth - handleSize.x, y: handle.parentNode.clientHeight - handleSize.y }
   const padCenter = { x: padSize.x / 2, y: padSize.y / 2 }
   const clamp = (min, max) => (val) => Math.floor(Math.min(Math.max(val, min), max))
