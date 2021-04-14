@@ -1,12 +1,16 @@
 type JoyStickValues = { x: number; y: number }
 
+function squarePercent(value: number) {
+  return Math.sign(value) * Math.round((value / 100) * (value / 100) * 100)
+}
+
 export function throttleFromJoystickValues(value: JoyStickValues) {
-  const offset = Math.max(value.y + value.x - 100, 0) + Math.min(value.y + value.x + 100, 0)
-  const left = value.y + value.x - offset
-  const right = value.y - value.x - offset
+  const x = squarePercent(value.x)
+  const y = squarePercent(value.y)
+  const offset = Math.max(y + x - 100, 0) + Math.min(y + x + 100, 0)
 
   return {
-    left: left,
-    right: right,
+    left: y + x - offset,
+    right: y - x - offset,
   }
 }
