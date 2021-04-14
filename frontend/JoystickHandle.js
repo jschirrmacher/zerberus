@@ -9,8 +9,8 @@ export default function JoystickHandle(handle) {
   const clampY = clamp(0, padSize.y)
   const listeners = []
 
-  handle.addEventListener("mousedown", touchstart)
-  handle.addEventListener("touchstart", touchstart)
+  handle.addEventListener("mousedown", touchstart, { passive: true })
+  handle.addEventListener("touchstart", touchstart, { passive: true })
 
   let snapBackTimer
   const center = { x: padSize.x / 2, y: padSize.y / 2 }
