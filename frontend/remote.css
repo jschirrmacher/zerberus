@@ -26,6 +26,12 @@ body,
   justify-content: flex-end;
 }
 
+#camera-preview {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
 #pad {
   height: 375px;
   position: relative;

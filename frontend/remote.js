@@ -1,6 +1,8 @@
 /* global io */
 
 import JoystickHandle from "./JoystickHandle.js"
+import "./CameraPreview.js"
+
 const speedometer = document.getElementById("speedometer")
 const compass = document.getElementById("compass")
 
