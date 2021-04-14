@@ -7,6 +7,18 @@ export type DataSeries<T> = {
   add(point: DataPoint<T>): void
   listen(subject: Subject<T>): void
   getValues(): DataPoint<T>[]
+  getStrings(formatter?: (T) => string): string[]
+}
+
+export function fromStrings<T>(name: string, raw: string[], transformation: (string) => T): DataSeries<T> {
+  const series = DataSeriesFactory<T>(name)
+  raw.forEach((r) => {
+    const parts = r.split(" ", 2)
+    const time = Number.parseFloat(parts[0])
+    const value = transformation(parts[1])
+    series.add(DataPointFactory(time, value))
+  })
+  return series
 }
 
 export type DataPoint<T> = {
@@ -18,6 +30,9 @@ export default function DataSeriesFactory<T>(name: string, time: () => number = 
   let values: DataPoint<T>[] = []
 
   function add(point: DataPoint<T>) {
+    if (point.value == null) {
+      throw new Error("Tried to add a null value")
+    }
     values.push(point)
   }
 
@@ -42,11 +57,17 @@ export default function DataSeriesFactory<T>(name: string, time: () => number = 
     return values
   }
 
+  function getStrings(formatter?: (T) => string): string[] {
+    formatter = formatter || ((v: T) => v.toString())
+    return getValues().map((v) => `${v.time} ${formatter(v.value)}`)
+  }
+
   const dataSeries: DataSeries<T> = {
     name,
     getValues,
     add,
     listen,
+    getStrings,
   }
 
   return dataSeries
