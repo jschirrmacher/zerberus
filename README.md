@@ -22,6 +22,7 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - Enable camera using `sudo raspi-config`
 - `curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -`
 - `sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev nodejs`
+- `pip3 install --upgrade pip setuptools wheel`
 - `sudo pip3 install scikit-build`
 - `sudo pip3 install opencv-python`
 - `sudo pip3 install scikit-image`
