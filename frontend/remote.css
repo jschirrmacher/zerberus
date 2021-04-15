@@ -64,7 +64,7 @@ body,
 
 #speedometer {
   flex-grow: 1;
-  font: 90px Arial, Helvetica, sans-serif;
+  font: 50px Arial, Helvetica, sans-serif;
   text-align: right;
   color: #ed0a3f;
 }
