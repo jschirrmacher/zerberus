@@ -60,7 +60,7 @@ If you just want to test the motor control software on your local computer witho
 There are two URLs with different use cases, which can be opened in your browser:
 
 - [http://localhost:10000/remote.html](http://localhost:10000/remote.html) - A remote control, which lets you directly control the car.
-- [http://localhost:10000](http://localhost:10000) - this older frontend containing a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
+- [http://localhost:10000](http://localhost:10000) - this older frontend contains a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
 
 ### Remote control mode
 
