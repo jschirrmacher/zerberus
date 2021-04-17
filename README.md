@@ -27,9 +27,16 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - `sudo pip3 install opencv-python`
 - `sudo pip3 install scikit-image`
 
+### Setup local Wifi network
+
+We use [RaspAP](https://raspap.com/) to have a local Wifi network on the Raspberry Pi, which is available
+even when using the car outdoor.
+
+Currently, we don't got the AP-STA-mode working, so that it is possible to have internet access as well, if the car is at home. This will be further investigated.
+
 ### Install robot software
 
-Then, install the robot software:
+As a final step, install the robot software:
 
     git clone https://github.com/jschirrmacher/zerberus.git
     cd zerberus
@@ -37,24 +44,28 @@ Then, install the robot software:
 
 ## Start
 
-If you just want to test the motor control software on your local computer without actual motors connected, you can call
-
-    npm run simulator
 
 To run the production version which uses the actual GPIO and camera of the Raspi, run:
 
     sudo npm start
 
-You need 'sudo' here to make sure that the program has access to the hardware.
+You need 'sudo' here to make sure that the program can access the hardware.
 
-### Start the viewer / controller
+### Simulation mode
 
-To view the current state of the car, open [http://localhost:10000](http://localhost:10000) or use the IP address or host name of your Raspi instead of 'localhost', if you started the motor control software there.
-To send commands to the car, press the buttons displayed right of the car visualization area.
+If you just want to test the motor control software on your local computer without actual motors connected, you can call
 
-## Car Control
+    npm run simulator
 
-From the web frontend, you can control the car in different ways, either with manual control (pressing arrow keys and space bar to break), or by pressing some of the screen buttons running pre-defined programs.
+There are two URLs with different use cases, which can be opened in your browser:
+
+- [http://localhost:10000/remote.html](http://localhost:10000/remote.html) - A remote control, which lets you directly control the car.
+- [http://localhost:10000](http://localhost:10000) - this older frontend containing a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
+
+### Remote control mode
+
+To control the actual car manually, open `http://<raspberry-address>:10000/remote.html`. You should use this on your smartphone to be more flexible when running the car outdoors. Put it on your home screen
+for easier access and to get rid of the browser controls.
 
 ## Parts list
 
