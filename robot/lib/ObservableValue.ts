@@ -6,9 +6,12 @@ export type ObservableValue<T> = Subject<T> & {
   toString(): string
 }
 
-export default function <T>(name: string, value: T): ObservableValue<T> {
+export default function ObservableFactory<T>(name: string, value: T): ObservableValue<T> {
   const subject = SubjectFactory<T>(name)
+  return createObservable(subject, value)
+}
 
+export function createObservable<T>(subject: Subject<T>, value: T): ObservableValue<T> {
   return {
     ...subject,
 
@@ -31,4 +34,18 @@ export default function <T>(name: string, value: T): ObservableValue<T> {
       return value
     },
   }
+}
+
+export function addObservableProperty<T>(object: Object, propertyName: string, subject: Subject<T>, initialValue: T) {
+  const observable = createObservable(subject, initialValue)
+
+  Object.defineProperty(object, propertyName, {
+    get() {
+      return observable.value
+    },
+
+    set(value: T) {
+      observable.value = value
+    },
+  })
 }
