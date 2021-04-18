@@ -1,6 +1,6 @@
-import { Car } from "./Car/Car"
-import { create as createPosition } from "./Car/Position"
-import { fromDegrees } from "./Car/Orientation"
+import { Car } from "../Car/Car"
+import { create as createPosition } from "../Car/Position"
+import { fromDegrees } from "../Car/Orientation"
 
 type CommandFunction = (...ags: unknown[]) => void | Promise<void>
 

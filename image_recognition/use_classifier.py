@@ -34,6 +34,7 @@ sio = socketio.Client()
 try:
     sio.connect('ws://localhost:10000')
     connected = True
+    sio.emit('hi', {'type': 'CAMERA'})
     print("Initialised websocket connection")
 except:
     connected = False

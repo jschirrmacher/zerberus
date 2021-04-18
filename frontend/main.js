@@ -15,6 +15,7 @@
       pin.classList.toggle("on", false)
       pin.classList = Array.from(pin.classList).filter((c) => !c.match(/^mode-/))
     })
+    socket.emit("hi", { types: ["REMOTE_CONTROL", "COCKPIT", "GPIO_VIEWER"] })
   })
 
   socket.on("gpio-mode", (msg) => {

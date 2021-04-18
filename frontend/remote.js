@@ -2,11 +2,13 @@
 
 import JoystickHandle from "./JoystickHandle.js"
 import "./CameraPreview.js"
+import { CLIENT_TYPE } from "../types"
 
 const speedometer = document.getElementById("speedometer")
 const compass = document.getElementById("compass")
 
 const socket = io()
+socket.emit("hi", { types: [CLIENT_TYPE.REMOTE_CONTROL, CLIENT_TYPE.COCKPIT] })
 
 JoystickHandle(document.getElementById("pad-handle")).on("change", (pos) => {
   socket.emit("joystick", pos)
