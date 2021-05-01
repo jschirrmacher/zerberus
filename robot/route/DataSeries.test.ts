@@ -33,6 +33,13 @@ describe("DataSeries", () => {
     ds.getValues().should.be.deepEqual([DataPointFactory(1, 1), DataPointFactory(10, 5), DataPointFactory(12, 0)])
   })
 
+  it("should handle adding values with the time stamp fine", () => {
+    const ds = DataSeriesFactory<number>("DS")
+    ds.add(DataPointFactory(10, 5))
+    ds.add(DataPointFactory(10, 3))
+    ds.getValues().length.should.equal(2) // the order doesnt matter
+  })
+
   it("should allow loading from a string list", () => {
     const strings = ["0 10", "1 -1", "2 20"]
     const ds = fromStrings("integers", strings, (v) => Number.parseInt(v))
@@ -56,6 +63,9 @@ describe("DataSeries", () => {
     const ds = DataSeriesFactory<number>("DS")
     ds.add(DataPointFactory(10, 5))
     ds.add(DataPointFactory(11, 20))
-    ds.getStrings((v) => "a").should.deepEqual(["10 a", "11 a"])
+    ds.setFormatter((v) => "a")
+    ds.getStrings().should.deepEqual(["10 a", "11 a"])
+    ds.setFormatter((v) => "b")
+    ds.getStrings().should.deepEqual(["10 b", "11 b"])
   })
 })

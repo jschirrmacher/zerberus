@@ -1,13 +1,22 @@
 import { Subject } from "../Subject"
 
+export enum DataStorageFormat {
+  SingleFile = "SingleFile",
+  MultiFile = "MultiFile",
+}
+
 export type DataSeries<T> = {
   name: string
+  bufferSize: number
+  write: (T) => Promise<void>
+  type: DataStorageFormat
 
   // Add the data point so it fits timewise
   add(point: DataPoint<T>): void
   listen(subject: Subject<T>): void
   getValues(): DataPoint<T>[]
-  getStrings(formatter?: (T) => string): string[]
+  setFormatter(formatter: (T) => string)
+  getStrings(): string[]
 }
 
 export function fromStrings<T>(name: string, raw: string[], transformation: (string) => T): DataSeries<T> {
@@ -28,6 +37,7 @@ export type DataPoint<T> = {
 
 export default function DataSeriesFactory<T>(name: string, time: () => number = null): DataSeries<T> {
   let values: DataPoint<T>[] = []
+  let formatter = (v: T) => v.toString()
 
   function add(point: DataPoint<T>) {
     if (point.value == null) {
@@ -57,9 +67,12 @@ export default function DataSeriesFactory<T>(name: string, time: () => number = 
     return values
   }
 
-  function getStrings(formatter?: (T) => string): string[] {
-    formatter = formatter || ((v: T) => v.toString())
+  function getStrings(): string[] {
     return getValues().map((v) => `${v.time} ${formatter(v.value)}`)
+  }
+
+  function setFormatter(newFormatter?: (T) => string) {
+    formatter = newFormatter
   }
 
   const dataSeries: DataSeries<T> = {
@@ -68,6 +81,7 @@ export default function DataSeriesFactory<T>(name: string, time: () => number = 
     add,
     listen,
     getStrings,
+    setFormatter,
   }
 
   return dataSeries
