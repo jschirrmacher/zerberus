@@ -44,7 +44,6 @@ As a final step, install the robot software:
 
 ## Start
 
-
 To run the production version which uses the actual GPIO and camera of the Raspi, run:
 
     sudo npm start
@@ -62,6 +61,8 @@ There are two URLs with different use cases, which can be opened in your browser
 - [http://localhost:10000/remote.html](http://localhost:10000/remote.html) - A remote control, which lets you directly control the car.
 - [http://localhost:10000](http://localhost:10000) - this older frontend contains a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
 
+The older frontend also listens to the "t" key, which toggles route tracking. Tracked routes currently reside in CSV files on the server in `data/routes`. The name of each CSV file is the unix time stamp, the tracking was started. Each entry starts with the time in millseconds relative to this start time.
+
 ### Remote control mode
 
 To control the actual car manually, open `http://<raspberry-address>:10000/remote.html`. You should use this on your smartphone to be more flexible when running the car outdoors. Put it on your home screen
@@ -77,6 +78,10 @@ for easier access and to get rid of the browser controls.
 - [Maker Hawk 5MP Night Vision Camera](https://www.amazon.de/gp/product/B071718FDK/)
 
 ## Development
+
+If you change anything in `types.ts` (which is shared by server and frontend), be sure to run `npm run build:types` to update the transpiled version as well. The generated `frontend/types.js` file should be committed together with the changed `types.ts`.
+
+### Log output
 
 To get debug log output, use environment variable "DEBUG" and add the names of the components to get debug output for, like in this example:
 
