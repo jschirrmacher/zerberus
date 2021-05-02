@@ -1,5 +1,5 @@
 /* global io */
-import { CLIENT_TYPE } from "../types"
+import { CLIENT_TYPE } from "./types.js"
 ;(function () {
   const canvas = document.querySelector("#car-area")
   const car = document.querySelector("#car")
@@ -16,7 +16,7 @@ import { CLIENT_TYPE } from "../types"
       pin.classList.toggle("on", false)
       pin.classList = Array.from(pin.classList).filter((c) => !c.match(/^mode-/))
     })
-    socket.emit("hi", { types: [CLIENT_TYPE.REMOTE_CONTROL, CLIENT_TYPE.COCKPIT, CLIENT_TYPE.GPIO_VIEWER] })
+    socket.emit("hi", [CLIENT_TYPE.REMOTE_CONTROL, CLIENT_TYPE.COCKPIT, CLIENT_TYPE.GPIO_VIEWER])
   })
 
   socket.on("gpio-mode", (msg) => {
@@ -64,7 +64,7 @@ import { CLIENT_TYPE } from "../types"
     const y = center.y - msg.posY * 150
     car.setAttribute("style", `transform: translate(${x}px, ${y}px) rotate(${msg.orientation}deg) scale(.5)`)
     addWaypoint(x, y)
-    carPos.innerHTML = `x: ${msg.posX.toFixed(1)}<br>y: ${msg.posY.toFixed(1)}<br>o: ${msg.orientation.toFixed(0)}`
+    carPos.innerHTML = `x: ${msg.posX}<br>y: ${msg.posY}<br>o: ${msg.orientation}`
   }
 
   socket.on("connect", () => socket.emit("command", { name: "list-commands" }))
