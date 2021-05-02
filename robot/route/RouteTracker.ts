@@ -11,7 +11,7 @@ export type RouteTracker = {
   start: number
   end: number
 
-  track<T>(trackedSubject: Subject<T>, type: DataType): void
+  track<T>(trackedSubject: Subject<T>, type: DataType, mapper: (value: T) => unknown): void
   endRecording(): void
 } & Subject<DataPoint>
 
@@ -36,14 +36,14 @@ export default function RouteTrackerFactory(name: string, getTime = () => Date.n
   function endRecording() {
     end = getTime()
     subjectHandlers.forEach((s) => s.subject.unregisterObserver(s.observer))
-    subject.notify({ time: end, type: DataType.ROUTE_END })
+    subject.notify({ time: end - start, type: DataType.ROUTE_END })
   }
 
-  function track<T>(trackedSubject: Subject<T>, type: DataType) {
+  function track<T>(trackedSubject: Subject<T>, type: DataType, mapper: (value: T) => unknown) {
     const handler = {
       subject: subject,
       observer: (value: T) => {
-        subject.notify({ time: getTime(), type, value })
+        subject.notify({ time: getTime() - start, type, value: mapper(value) })
       },
     }
     trackedSubject.registerObserver(handler.observer)

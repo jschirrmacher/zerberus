@@ -23,7 +23,7 @@ describe("RouteTracker", () => {
     const value = ObservableValue("orientation", 0)
     const spy = Sinon.spy()
     tracker.registerObserver(spy)
-    tracker.track(value, DataType.CAR_ORIENTATION)
+    tracker.track(value, DataType.CAR_ORIENTATION, (value) => value)
     value.notify(5)
     tracker.endRecording()
     spy.should.be.calledWith({ time, type: DataType.CAR_ORIENTATION, value: 5 })
