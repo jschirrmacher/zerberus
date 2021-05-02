@@ -1,8 +1,8 @@
 import { Subject } from "../Subject"
-import { Route } from "./Route"
+import { RouteTracker } from "./RouteTracker"
 
 export type Replayer = {
-  route: Route
+  route: RouteTracker
   getSubjects(): Subject<unknown>[]
   replay(): Promise<void>
   cancel(): void
