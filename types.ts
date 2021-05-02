@@ -3,4 +3,5 @@ export enum CLIENT_TYPE {
   COCKPIT = "COCKPIT", // shows camera image, car speed and similar properties
   CAMERA = "CAMERA", // is a camera
   GPIO_VIEWER = "GPIO_VIEWER", // shows pin values of GPIO
+  ACCELEROMETER = "ACCELEROMETER", // Sends data on the acceleration of the car
 }

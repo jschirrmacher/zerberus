@@ -4,9 +4,9 @@ import CarFactory from "./Car/Car"
 import Encoder from "./MotorSet/Encoder"
 import express from "express"
 import IO from "socket.io"
-import GPIOFactory, { GPIO } from "./Hardware/gpio"
+import GPIOFactory from "./Hardware/gpio"
 import HTTP = require("http")
-import { CLIENT_TYPE } from "../types.js"
+import { CLIENT_TYPE } from "../types"
 import { connectCockpit } from "./ClientHandler/Cockpit"
 import { connectRemoteControl } from "./ClientHandler/RemoteControl"
 import { connectCamera } from "./ClientHandler/Camera"
@@ -27,7 +27,7 @@ server.listen(10000)
 app.use("/", express.static(path.resolve(__dirname, "..", "frontend")))
 app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
 
-function clientHasRegistered(client: IO.Socket, types: string): void {
+function clientHasRegistered(client: IO.Socket, types: string[]): void {
   if (types.includes(CLIENT_TYPE.REMOTE_CONTROL)) {
     connectRemoteControl(client, car)
   }
@@ -48,7 +48,7 @@ function clientHasRegistered(client: IO.Socket, types: string): void {
 console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 io.on("connection", (client) => {
   console.log("Client connected")
-  client.on("hi", (type) => clientHasRegistered(client, type))
+  client.on("hi", (types) => clientHasRegistered(client, types))
   client.on("disconnect", () => console.log("Client has disconnected"))
   client.emit("hi", "Zerberus")
 })

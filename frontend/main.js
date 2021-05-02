@@ -1,4 +1,5 @@
 /* global io */
+import { CLIENT_TYPE } from "../types"
 ;(function () {
   const canvas = document.querySelector("#car-area")
   const car = document.querySelector("#car")
@@ -15,7 +16,7 @@
       pin.classList.toggle("on", false)
       pin.classList = Array.from(pin.classList).filter((c) => !c.match(/^mode-/))
     })
-    socket.emit("hi", { types: ["REMOTE_CONTROL", "COCKPIT", "GPIO_VIEWER"] })
+    socket.emit("hi", { types: [CLIENT_TYPE.REMOTE_CONTROL, CLIENT_TYPE.COCKPIT, CLIENT_TYPE.GPIO_VIEWER] })
   })
 
   socket.on("gpio-mode", (msg) => {

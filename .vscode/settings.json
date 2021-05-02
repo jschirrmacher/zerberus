@@ -5,4 +5,5 @@
   "mochaExplorer.require": "ts-node/register",
   "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   "editor.formatOnSave": true,
+  "files.eol": "\n"
 }
