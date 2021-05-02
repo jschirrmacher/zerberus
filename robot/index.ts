@@ -11,6 +11,7 @@ import { connectCockpit } from "./ClientHandler/Cockpit"
 import { connectRemoteControl } from "./ClientHandler/RemoteControl"
 import { connectCamera } from "./ClientHandler/Camera"
 import { connectGPIOViewer } from "./ClientHandler/GPIOViewer"
+import RouteTrackerFactory, { DataType } from "./route/RouteTracker"
 
 const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
@@ -19,6 +20,12 @@ const rightEncoder = Encoder(gpio, 19, 26)
 const leftMotorSet = MotorFactory(gpio, 2, 3, 4, leftEncoder)
 const rightMotorSet = MotorFactory(gpio, 17, 27, 22, rightEncoder)
 const car = CarFactory({ left: leftMotorSet, right: rightMotorSet })
+
+const tracker = RouteTrackerFactory("route")
+tracker.registerObserver((event) => console.info(event))
+tracker.track(car.position, DataType.CAR_POSITION)
+tracker.track(car.orientation, DataType.CAR_ORIENTATION)
+tracker.track(car.events, DataType.CAR_STATUS)
 
 const app = express()
 const server = HTTP.createServer(app)

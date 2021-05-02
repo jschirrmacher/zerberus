@@ -1,4 +1,4 @@
-import SubjectFactory, { Observer, Subject } from "../Subject"
+import SubjectFactory, { Observer, Subject } from "../lib/Subject"
 
 export type DataPoint = {
   time: number
@@ -23,6 +23,7 @@ type SubjectWatcher = {
 export enum DataType {
   CAR_POSITION = 1,
   CAR_ORIENTATION = 2,
+  CAR_STATUS = 3,
   ROUTE_END = 999,
 }
 

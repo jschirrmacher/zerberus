@@ -2,7 +2,7 @@ import "should"
 import should from "should"
 import RouteTrackerFactory, { DataType, RouteTracker } from "./RouteTracker"
 import path from "path"
-import ObservableValue from "../ObservableValue"
+import ObservableValue from "../lib/ObservableValue"
 import Sinon from "sinon"
 
 describe("RouteTracker", () => {
