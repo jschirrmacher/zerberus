@@ -97,6 +97,7 @@ import { CLIENT_TYPE } from "./types.js"
       ArrowLeft: "left",
       ArrowRight: "right",
       Space: "break",
+      KeyT: "track",
     }
     if (keys[event.code]) {
       socket.emit("control", { cmd: keys[event.code] })
