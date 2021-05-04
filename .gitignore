@@ -3,6 +3,7 @@
 /coverage
 /*.log
 /pictures
+/data
 /image_recognition/data/all_images
 /image_recognition/pictures
 /image_recognition/data/break/
