@@ -1,0 +1,14 @@
+[Unit]
+Description=Zerberus motor control
+After=network-online.target
+ 
+[Service]
+ExecStart=/bin/bash /home/pi/zerberus/start.sh
+WorkingDirectory=/home/pi/zerberus/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+ 
+[Install]
+WantedBy=multi-user.target

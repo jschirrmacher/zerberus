@@ -16,12 +16,22 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 
 ### Setup raspberry pi
 
-- [Install raspbian 64bit OS](https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-08-24/)
+- [Download raspbian 64bit OS](https://downloads.raspberrypi.org/raspios_arm64/images/)
+- Install on SD Card by using [Rasperry Pi Imager](https://www.raspberrypi.org/software/) with option "Own image"
+- Copy `wpa_supplicant.conf.template` file from this repository to SD card, rename it to `wpa_supplicant.conf` and insert your WLAN configuration parameters
+- Create an empty `ssh` file on the SD card to enable ssh access
+- Put SD card into Raspi and boot, the Raspi should appear in your WLAN after a short while (find out its IP address)
+- ssh into Raspi via its IP address, user `pi` password `raspberry)
+- Secure account by setting a new password (`passwd`)
+- `curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -`
+- `sudo apt-get install -y nodejs`
+
+#### Install image recognition software
+
 - [Follow instructions to us PyTorch](https://mathinf.eu/pytorch/arm64/)
 - Configure [PiWheels](https://www.piwheels.org/)
 - Enable camera using `sudo raspi-config`
-- `curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -`
-- `sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev nodejs`
+- `sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev`
 - `pip3 install --upgrade pip setuptools wheel`
 - `sudo pip3 install scikit-build`
 - `sudo pip3 install opencv-python`
@@ -67,6 +77,11 @@ The older frontend also listens to the "t" key, which toggles route tracking. Tr
 
 To control the actual car manually, open `http://<raspberry-address>:10000/remote.html`. You should use this on your smartphone to be more flexible when running the car outdoors. Put it on your home screen
 for easier access and to get rid of the browser controls.
+
+### Install to run at boot
+
+    sudo cp /home/pi/zerberus/zerberus.service /lib/systemd/system/
+    sudo systemctl start zerberus.service 
 
 ## Parts list
 
