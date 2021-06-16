@@ -1,4 +1,4 @@
-import { Subject } from "../Subject"
+import { Subject } from "../lib/Subject"
 import { RouteTracker } from "./RouteTracker"
 
 export type Replayer = {

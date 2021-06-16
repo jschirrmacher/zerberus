@@ -5,6 +5,8 @@ import RouteTrackerFactory, { DataPoint, DataType, RouteTracker } from "../route
 import CommandList from "./CommandList"
 import fs from "fs"
 import path from "path"
+import FileWriter, { RouteWriter } from "../route/FileWriter"
+import CSVFormatter from "../route/CSVFormatter"
 
 let connectedRemoteControls = 0
 let tracker: RouteTracker
@@ -25,28 +27,16 @@ export function connectRemoteControl(client: IO.Socket, car: Car): void {
   }
 
   function toggleTracker() {
-    const buffer = []
-    let interval: NodeJS.Timeout
-    let output: fs.WriteStream
-
-    function flush() {
-      if (buffer.length) {
-        output.write(buffer.join("\n"))
-        buffer.length = 0
-      }
-    }
+    let output: RouteWriter
 
     function logEvent(event: DataPoint): boolean {
-      if (event.type === DataType.ROUTE_END) {
-        flush()
+      const isEndEvent = event.type === DataType.ROUTE_END
+      if (isEndEvent) {
         output.end()
-        clearInterval(interval)
-        interval = undefined
-        return true
       } else {
-        buffer.push([event.time, event.type, event.value].join(","))
-        return false
+        output.write(event.time, event.type, event.value)
       }
+      return isEndEvent
     }
 
     if (tracker) {
@@ -54,15 +44,12 @@ export function connectRemoteControl(client: IO.Socket, car: Car): void {
       tracker = undefined
     } else {
       const routesDir = path.resolve(__dirname, "..", "..", "data", "routes")
-      fs.mkdirSync(routesDir, { recursive: true })
-      const routeFile = path.resolve(routesDir, "" + +new Date() + ".csv")
-      output = fs.createWriteStream(routeFile, { flags: "a" })
+      output = FileWriter(routesDir, "" + +new Date(), CSVFormatter())
       tracker = RouteTrackerFactory("route")
       tracker.registerObserver(logEvent)
       tracker.track(car.position, DataType.CAR_POSITION, (position) => position.x + "," + position.y)
       tracker.track(car.orientation, DataType.CAR_ORIENTATION, (orientation) => orientation.angle)
       tracker.track(car.events, DataType.CAR_STATUS, () => "")
-      interval = setInterval(flush, 500)
     }
   }
 
