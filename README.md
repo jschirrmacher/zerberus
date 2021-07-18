@@ -34,7 +34,8 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - `sudo apt-get install -y libssl-dev caca-utils gfortran liblapack-dev libblas-dev`
 - `sudo apt-get install cmake`
 - `sudo apt-get install python3-scipy`
-- `pip3 install --upgrade pip setuptools wheel`
+- `sudo pip3 install --upgrade pip setuptools wheel`
+- `sudo pip3 install scipy`
 - `sudo pip3 install scikit-build`
 - `sudo pip3 install opencv-python`
 - `sudo pip3 install scikit-image`
