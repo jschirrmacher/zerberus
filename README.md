@@ -21,7 +21,7 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - Copy `wpa_supplicant.conf.template` file from this repository to SD card, rename it to `wpa_supplicant.conf` and insert your WLAN configuration parameters
 - Create an empty `ssh` file on the SD card to enable ssh access
 - Put SD card into Raspi and boot, the Raspi should appear in your WLAN after a short while (find out its IP address)
-- ssh into Raspi via its IP address, user `pi` password `raspberry)
+- ssh into Raspi via its IP address, user `pi` password `raspberry`
 - Secure account by setting a new password (`passwd`)
 - `curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -`
 - `sudo apt-get install -y nodejs`
