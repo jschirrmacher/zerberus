@@ -16,7 +16,7 @@ const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
 
 const leftEncoder = Encoder(gpio, 14, 15)
 const rightEncoder = Encoder(gpio, 19, 26)
-const leftMotorSet = MotorFactory(gpio, 2, 3, 4, leftEncoder)
+const leftMotorSet = MotorFactory(gpio, 10, 9, 4, leftEncoder)
 const rightMotorSet = MotorFactory(gpio, 17, 27, 22, rightEncoder)
 const car = CarFactory({ left: leftMotorSet, right: rightMotorSet })
 

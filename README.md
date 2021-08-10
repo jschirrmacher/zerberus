@@ -14,6 +14,23 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 
 ## Installation
 
+### Wire motors, encoders and IMU
+
+THe MPU needs to be connected to the I2C ports, motor controllers and encoders just need some GPIO ports. We wired them like this:
+
+- MPU SDA <-> Raspi SDA (Pin 3)
+- MPU SCL <-> Raspi SCL (Pin 5)
+- Left Encoder A <-> Raspi GPIO 14 (Pin 8)
+- Left Encoder B <-> Raspi GPIO 15 (Pin 10)
+- Left Motor IN1 <-> Raspi GPIO 10 (Pin 19)
+- Left Motor IN2 <-> Raspi GPIO 9 (Pin 21)
+- Left Motor ENA <-> Raspi GPIO 4 (Pin 7)
+- Right Encoder A <-> Raspi GPIO 19 (Pin 35)
+- Right Encoder B <-> Raspi GPIO 26 (Pin 37)
+- Right Motor IN1 <-> Raspi GPIO 17 (Pin 11)
+- Right Motor IN2 <-> Raspi GPIO 27 (Pin 13)
+- Right Motor ENA <-> Raspi GPIO 22 (Pin 15)
+
 ### Setup raspberry pi
 
 - [Download raspbian 64bit OS](https://downloads.raspberrypi.org/raspios_arm64/images/)
@@ -25,6 +42,8 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 - Secure account by setting a new password (`passwd`)
 - `curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -`
 - `sudo apt-get install -y nodejs`
+- Enable I2C using `sudo raspi-config` (check that device is connected correctly by using `sudo i2cdetect -y 1` - it should show a "68" between a lot of "--")
+- Increase I2C baud rate by finding a `dtparam=i2c_arm=on` line in `/boot/config.txt` and replace it to `dtparam=i2c_arm=on,i2c_arm_baudrate=100000`
 
 #### Install image recognition software
 
@@ -94,6 +113,7 @@ for easier access and to get rid of the browser controls.
 - Accumulator for Motors
 - [CHOETECH PD18W Powerbank USB C 10000mAh for Raspi](https://www.choetech.com/product/b622-10000mah-5v-2.4a-portable-power-bank-black.html)
 - [Maker Hawk 5MP Night Vision Camera](https://www.amazon.de/gp/product/B071718FDK/)
+- [IMU with MPU 6050 chip](https://www.conrad.de/de/p/joy-it-mpu6050-beschleunigungs-sensor-1-st-passend-fuer-entwicklungskits-micro-bit-arduino-raspberry-pi-rock-pi-2136256.html)
 
 ## Development
 
