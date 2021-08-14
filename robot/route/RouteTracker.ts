@@ -24,6 +24,10 @@ export enum DataType {
   CAR_POSITION = 1,
   CAR_ORIENTATION = 2,
   CAR_STATUS = 3,
+  ENCODER_LEFT = 4,
+  ENCODER_RIGHT = 5,
+  MPU_ACCEL = 6,
+  MPU_GYRO = 7,
   ROUTE_END = 999,
 }
 

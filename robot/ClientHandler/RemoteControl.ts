@@ -7,11 +7,12 @@ import fs from "fs"
 import path from "path"
 import FileWriter, { RouteWriter } from "../route/FileWriter"
 import CSVFormatter from "../route/CSVFormatter"
+import { MPU, Triple } from "../Hardware/MPU6050"
 
 let connectedRemoteControls = 0
 let tracker: RouteTracker
 
-export function connectRemoteControl(client: IO.Socket, car: Car): void {
+export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): void {
   const keyControls = {
     forward: () => car.accelerate(car.getCurrentThrottle() + 25),
     back: () => car.accelerate(car.getCurrentThrottle() - 25),
@@ -50,6 +51,8 @@ export function connectRemoteControl(client: IO.Socket, car: Car): void {
       tracker.track(car.position, DataType.CAR_POSITION, (position) => position.x + "," + position.y)
       tracker.track(car.orientation, DataType.CAR_ORIENTATION, (orientation) => orientation.angle)
       tracker.track(car.events, DataType.CAR_STATUS, () => "")
+      tracker.track(mpu.accel, DataType.MPU_ACCEL, (accel: Triple) => accel.x + "," + accel.y + "," + accel.z)
+      tracker.track(mpu.gyro, DataType.MPU_GYRO, (gyro: Triple) => gyro.x + "," + gyro.y + "," + gyro.z)
     }
   }
 

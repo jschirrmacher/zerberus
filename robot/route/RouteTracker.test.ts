@@ -9,7 +9,7 @@ describe("RouteTracker", () => {
   let time = 42
 
   beforeEach(() => {
-    tracker = RouteTrackerFactory("Test", () => time)
+    tracker = RouteTrackerFactory("Test", () => time++)
   })
 
   it("should allow creation of a route with a name", () => {
@@ -25,13 +25,13 @@ describe("RouteTracker", () => {
     tracker.track(value, DataType.CAR_ORIENTATION, (value) => value)
     value.notify(5)
     tracker.endRecording()
-    spy.should.be.calledWith({ time, type: DataType.CAR_ORIENTATION, value: 5 })
+    spy.should.be.calledWith({ time: 1, type: DataType.CAR_ORIENTATION, value: 5 })
   })
 
   it("should send a completion event", () => {
     const spy = Sinon.spy()
     tracker.registerObserver(spy)
     tracker.endRecording()
-    spy.should.be.calledWith({ time, type: DataType.ROUTE_END })
+    spy.should.be.calledWith({ time: 1, type: DataType.ROUTE_END })
   })
 })

@@ -5,6 +5,7 @@ import Encoder from "./MotorSet/Encoder"
 import express from "express"
 import IO from "socket.io"
 import GPIOFactory from "./Hardware/gpio"
+import MPUFactory from "./Hardware/MPU6050"
 import HTTP = require("http")
 import { CLIENT_TYPE } from "../types"
 import { connectCockpit } from "./ClientHandler/Cockpit"
@@ -12,7 +13,9 @@ import { connectRemoteControl } from "./ClientHandler/RemoteControl"
 import { connectCamera } from "./ClientHandler/Camera"
 import { connectGPIOViewer } from "./ClientHandler/GPIOViewer"
 
-const gpio = GPIOFactory(process.env.NODE_ENV !== "production")
+const prod = process.env.NODE_ENV === "production"
+const gpio = GPIOFactory(!prod)
+const mpu = MPUFactory(!prod)
 
 const leftEncoder = Encoder(gpio, 14, 15)
 const rightEncoder = Encoder(gpio, 19, 26)
@@ -29,7 +32,7 @@ app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
 
 function clientHasRegistered(client: IO.Socket, types: string[]): void {
   if (types.includes(CLIENT_TYPE.REMOTE_CONTROL)) {
-    connectRemoteControl(client, car)
+    connectRemoteControl(client, car, mpu)
   }
 
   if (types.includes(CLIENT_TYPE.CAMERA)) {
