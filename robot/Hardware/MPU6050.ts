@@ -33,11 +33,11 @@ export default async function MPUFactory(useFake: boolean, i2cbus = 1, address =
   bus.writeByteSync(address, SMPLRT_DIV, 7)
   bus.writeByteSync(address, CONFIG, 0)
   bus.writeByteSync(address, GYRO_CONFIG, 24)
-  bus.writeByteSync(address, INT_ENABLE, 1)
+  // bus.writeByteSync(address, INT_ENABLE, 1)
 
   async function read(pos: number) {
     return new Promise((resolve, reject) => {
-      bus.readWord(address, pos, (err, value) => (err ? reject(err) : resolve(value)))
+      bus.readWord(address, pos, (err, value) => (err ? reject(err) : resolve(value > 32767 ? value - 65536 : value)))
     })
   }
 
