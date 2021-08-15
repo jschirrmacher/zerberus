@@ -30,9 +30,9 @@ server.listen(10000)
 app.use("/", express.static(path.resolve(__dirname, "..", "frontend")))
 app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
 
-function clientHasRegistered(client: IO.Socket, types: string[]): void {
+async function clientHasRegistered(client: IO.Socket, types: string[]): Promise<void> {
   if (types.includes(CLIENT_TYPE.REMOTE_CONTROL)) {
-    connectRemoteControl(client, car, mpu)
+    connectRemoteControl(client, car, await mpu)
   }
 
   if (types.includes(CLIENT_TYPE.CAMERA)) {
@@ -56,9 +56,11 @@ io.on("connection", (client) => {
   client.emit("hi", "Zerberus")
 })
 
-process.on("SIGINT", function () {
+process.on("SIGINT", async function () {
   console.log("Caught interrupt signal")
   car.destruct()
   console.log("Motor controller discarded")
+  ;(await mpu).close()
+  console.log("MPU discarded")
   process.exit()
 })

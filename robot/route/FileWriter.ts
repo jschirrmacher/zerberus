@@ -6,6 +6,7 @@ import { DataType } from "./RouteTracker"
 export default function FileWriter(dir: string, fileName: string, formatter: RouteFormatter) {
   fs.mkdirSync(dir, { recursive: true })
   const file = fs.createWriteStream(resolve(dir, fileName + "." + formatter.extension), { flags: "a" })
+  console.log("Writing data to " + dir + "/" + fileName + "." + formatter.extension)
   file.write(formatter.start())
 
   return {

@@ -3,11 +3,10 @@ import { Car, Direction } from "../Car/Car"
 import { throttleFromJoystickValues } from "../Car/CarThrottle"
 import RouteTrackerFactory, { DataPoint, DataType, RouteTracker } from "../route/RouteTracker"
 import CommandList from "./CommandList"
-import fs from "fs"
 import path from "path"
 import FileWriter, { RouteWriter } from "../route/FileWriter"
 import CSVFormatter from "../route/CSVFormatter"
-import { MPU, Triple } from "../Hardware/MPU6050"
+import { MPU, ThreeDeeCoords } from "../Hardware/MPU6050"
 
 let connectedRemoteControls = 0
 let tracker: RouteTracker
@@ -19,7 +18,6 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
     left: () => car.turn(Direction.left),
     right: () => car.turn(Direction.right),
     break: () => car.stop(),
-    track: () => toggleTracker(),
   }
 
   function keyControl(info: { cmd: string }) {
@@ -27,7 +25,7 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
     keyControls[info.cmd] && keyControls[info.cmd]()
   }
 
-  function toggleTracker() {
+  function setTracker(state: "on" | "off") {
     let output: RouteWriter
 
     function logEvent(event: DataPoint): boolean {
@@ -40,7 +38,7 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
       return isEndEvent
     }
 
-    if (tracker) {
+    if (state === "on") {
       tracker.endRecording()
       tracker = undefined
     } else {
@@ -51,8 +49,8 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
       tracker.track(car.position, DataType.CAR_POSITION, (position) => position.x + "," + position.y)
       tracker.track(car.orientation, DataType.CAR_ORIENTATION, (orientation) => orientation.angle)
       tracker.track(car.events, DataType.CAR_STATUS, () => "")
-      tracker.track(mpu.accel, DataType.MPU_ACCEL, (accel: Triple) => accel.x + "," + accel.y + "," + accel.z)
-      tracker.track(mpu.gyro, DataType.MPU_GYRO, (gyro: Triple) => gyro.x + "," + gyro.y + "," + gyro.z)
+      tracker.track(mpu.accel, DataType.MPU_ACCEL, (accel: ThreeDeeCoords) => accel.x + "," + accel.y + "," + accel.z)
+      tracker.track(mpu.gyro, DataType.MPU_GYRO, (gyro: ThreeDeeCoords) => gyro.x + "," + gyro.y + "," + gyro.z)
     }
   }
 
@@ -87,4 +85,5 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
   client.on("joystick", (values) => {
     car.throttle(throttleFromJoystickValues(values))
   })
+  client.on("tracker", (state: "on" | "off") => setTracker(state))
 }

@@ -82,3 +82,10 @@ body,
   stroke-width: 3px;
   stroke-linejoin: round;
 }
+
+#tracker-toggle,
+#camera-toggle {
+  color: #cccccc;
+  position: relative;
+  top: 3.3rem;
+}

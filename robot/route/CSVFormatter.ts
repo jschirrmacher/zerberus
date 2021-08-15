@@ -10,7 +10,7 @@ export default function CSVFormatter() {
 
     map(time: number, type: DataType, value: unknown): string {
       value = ("" + value).match(/,/) ? `"${value}"` : value
-      return +time + "," + type + "," + value
+      return +time + "," + type + "," + value + "\n"
     },
 
     end(): string {
