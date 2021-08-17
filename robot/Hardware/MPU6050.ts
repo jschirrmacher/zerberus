@@ -29,7 +29,8 @@ type MPUOptions = {
   useFake?: boolean
 }
 
-export default async function MPUFactory(options: MPUOptions = { i2cbus: 1, address: 0x68 }): Promise<MPU> {
+export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU> {
+  options.address = options.address || 0x68
   let timer: NodeJS.Timer | null = null
   const i2c = options.useFake ? fakeI2CBus : await import("i2c-bus")
   const gyro = createObservable<ThreeDeeCoords>(Subject("gyro"), {} as ThreeDeeCoords)
