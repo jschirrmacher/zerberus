@@ -50,28 +50,20 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
   const accelDivisor = 32768 / 2 // g (earth gravity)
   const gyroDivisor = (131 * 250) / 250 // deg/s
 
-  async function read(pos: number, divisor: number): Promise<number> {
-    return new Promise((resolve, reject) => {
-      bus.readWord(options.address, pos, (err: Error, result: number) => {
-        if (err) {
-          reject(err)
-        } else {
-          const value = (result % 0xff << 8) + (result >> 8)
-          resolve((value > 32767 ? value - 65536 : value) / divisor)
-        }
-      })
-    })
+  function read(pos: number, divisor: number): number {
+    const value = bus.readByteSync(options.address, pos << 8) + bus.readByteSync(options.address, pos + 1)
+    return (value > 32767 ? value - 65536 : value) / divisor
   }
 
-  async function update(): Promise<void> {
-    const result = await Promise.all([
+  function update(): void {
+    const result = [
       read(ACCEL_X, accelDivisor),
       read(ACCEL_Y, accelDivisor),
       read(ACCEL_Z, accelDivisor),
       read(GYRO_X, gyroDivisor),
       read(GYRO_Y, gyroDivisor),
       read(GYRO_Z, gyroDivisor),
-    ])
+    ]
     accel.value = { x: result[0], y: result[1], z: result[2], toString } as ThreeDeeCoords
     gyro.value = { x: result[3], y: result[4], z: result[5], toString } as ThreeDeeCoords
     timer = setTimeout(update, UPDATE_INTERVAL)
