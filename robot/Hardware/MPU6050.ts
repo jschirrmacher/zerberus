@@ -42,9 +42,9 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
 
   const bus = i2c.openSync(options.i2cbus || 1)
   bus.writeByteSync(options.address, PWR_MGMT_1, 0)
-  // bus.writeByteSync(options.address, SMPLRT_DIV, 0)
-  // bus.writeByteSync(options.address, CONFIG, 0)
-  // bus.writeByteSync(options.address, GYRO_CONFIG, 0)
+  bus.writeByteSync(options.address, SMPLRT_DIV, 7)
+  bus.writeByteSync(options.address, CONFIG, 0)
+  bus.writeByteSync(options.address, GYRO_CONFIG, 24)
   // bus.writeByteSync(options.address, INT_ENABLE, 1)
 
   const accelDivisor = 32768 / 2 // g (earth gravity)

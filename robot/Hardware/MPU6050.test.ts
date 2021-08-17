@@ -1,5 +1,18 @@
 import "should"
-import MPUFactory, { ACCEL_X, ACCEL_Y, ACCEL_Z, fakeI2CBus, GYRO_X, GYRO_Y, GYRO_Z, MPU, PWR_MGMT_1 } from "./MPU6050"
+import MPUFactory, {
+  ACCEL_X,
+  ACCEL_Y,
+  ACCEL_Z,
+  CONFIG,
+  fakeI2CBus,
+  GYRO_CONFIG,
+  GYRO_X,
+  GYRO_Y,
+  GYRO_Z,
+  MPU,
+  PWR_MGMT_1,
+  SMPLRT_DIV,
+} from "./MPU6050"
 
 describe("MPU6050", () => {
   let mpu: MPU
@@ -9,9 +22,9 @@ describe("MPU6050", () => {
 
   it("should initialize accelerometer and gyroscope", () => {
     fakeI2CBus.data[PWR_MGMT_1].should.equal(0)
-    // fakeI2CBus.data[SMPLRT_DIV].should.equal(7)
-    // fakeI2CBus.data[CONFIG].should.equal(0)
-    // fakeI2CBus.data[GYRO_CONFIG].should.equal(24)
+    fakeI2CBus.data[SMPLRT_DIV].should.equal(7)
+    fakeI2CBus.data[CONFIG].should.equal(0)
+    fakeI2CBus.data[GYRO_CONFIG].should.equal(24)
     // fakeI2CBus.data[INT_ENABLE].should.equal(1)
   })
 
