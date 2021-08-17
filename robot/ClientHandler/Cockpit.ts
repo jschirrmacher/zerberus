@@ -27,4 +27,6 @@ export function connectCockpit(client: IO.Socket, car: Car, mpu: MPU) {
   car.position.registerObserver(throttledInfoFunc)
   car.speed.registerObserver(throttledInfoFunc)
   car.state.registerObserver(sendCarStateChange)
+  mpu.accel.registerObserver(throttledInfoFunc)
+  mpu.gyro.registerObserver(throttledInfoFunc)
 }
