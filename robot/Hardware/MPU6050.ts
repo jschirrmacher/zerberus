@@ -48,9 +48,14 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
 
   async function read(pos: number, divisor: number): Promise<number> {
     return new Promise((resolve, reject) => {
-      bus.readWord(options.address, pos, (err: Error, value: number) =>
-        err ? reject(err) : resolve((value > 32767 ? value - 65536 : value) / divisor)
-      )
+      bus.readWord(options.address, pos, (err: Error, result: number) => {
+        if (err) {
+          reject(err)
+        } else {
+          const value = (result % 0xff << 8) + (result >> 8)
+          resolve((value > 32767 ? value - 65536 : value) / divisor)
+        }
+      })
     })
   }
 
