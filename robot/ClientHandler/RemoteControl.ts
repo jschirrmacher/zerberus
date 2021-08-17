@@ -85,5 +85,5 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
   client.on("joystick", (values) => {
     car.throttle(throttleFromJoystickValues(values))
   })
-  client.on("tracker", (state: "on" | "off") => setTracker(state))
+  client.on("tracker", (state: boolean) => setTracker(state ? "on" : "off"))
 }

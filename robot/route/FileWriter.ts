@@ -17,6 +17,7 @@ export default function FileWriter(dir: string, fileName: string, formatter: Rou
     end(): void {
       file.write(formatter.end())
       file.end()
+      console.log("Logging data to " + dir + "/" + fileName + "." + formatter.extension + " completed.")
     },
   }
 }
