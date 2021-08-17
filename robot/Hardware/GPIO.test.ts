@@ -1,5 +1,5 @@
 import should from "should"
-import GPIOFactory, { GPIO, INPUT, OUTPUT } from "../Hardware/gpio"
+import GPIOFactory, { GPIO, INPUT, OUTPUT } from "./gpio"
 
 describe("GPIO", () => {
   const events = []

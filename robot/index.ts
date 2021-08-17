@@ -15,7 +15,7 @@ import { connectGPIOViewer } from "./ClientHandler/GPIOViewer"
 
 const prod = process.env.NODE_ENV === "production"
 const gpio = GPIOFactory(!prod)
-const mpu = MPUFactory(!prod)
+const mpu = MPUFactory({ useFake: !prod })
 
 const leftEncoder = Encoder(gpio, 14, 15)
 const rightEncoder = Encoder(gpio, 19, 26)
