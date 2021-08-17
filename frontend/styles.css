@@ -48,7 +48,7 @@
 }
 #gpio td:first-of-type:before,
 #gpio td:last-of-type:after {
-  content: ' ';
+  content: " ";
   width: 20px;
   display: inline-block;
   text-align: center;
@@ -57,18 +57,19 @@
 }
 #gpio td:first-of-type.mode-in:before,
 #gpio td:last-of-type.mode-out:after {
-  content: '>';
+  content: ">";
 }
 #gpio td:last-of-type.mode-in:after,
 #gpio td:first-of-type.mode-out:before {
-  content: '<';
+  content: "<";
 }
 #gpio td:last-of-type.mode-pwm:after,
 #gpio td:first-of-type.mode-pwm:before {
-  content: '~';
+  content: "~";
 }
 
-.led, .led .shadow {
+.led,
+.led .shadow {
   width: 30px;
   height: 30px;
   border-radius: 50px 50px 0 0;
@@ -131,9 +132,19 @@
   cursor: pointer;
 }
 
+#camera-toggle {
+  display: none;
+}
 #camera-preview {
   width: 300px;
   height: 200px;
   background-repeat: no-repeat;
   border: 1px solid #aaaaaa;
+  cursor: pointer;
+}
+
+#accel span,
+#gyro span {
+  display: inline-block;
+  width: 80px;
 }

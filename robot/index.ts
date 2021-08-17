@@ -40,7 +40,7 @@ async function clientHasRegistered(client: IO.Socket, types: string[]): Promise<
   }
 
   if (types.includes(CLIENT_TYPE.COCKPIT)) {
-    connectCockpit(client, car)
+    connectCockpit(client, car, await mpu)
   }
 
   if (types.includes(CLIENT_TYPE.GPIO_VIEWER)) {

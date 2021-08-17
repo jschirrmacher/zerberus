@@ -3,7 +3,7 @@ import Subject from "../lib/Subject"
 
 const UPDATE_INTERVAL = 20
 
-export type ThreeDeeCoords = { x: number; y: number; z: number }
+export type ThreeDeeCoords = { x: number; y: number; z: number; toString: (num: number) => string }
 export type MPU = {
   gyro: ObservableValue<ThreeDeeCoords>
   accel: ObservableValue<ThreeDeeCoords>
@@ -29,12 +29,16 @@ type MPUOptions = {
   useFake?: boolean
 }
 
+function toString(num: number): string {
+  return [this.x.toFixed(num), this.y.toFixed(num), this.z.toFixed(num)].join(",")
+}
+
 export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU> {
   options.address = options.address || 0x68
   let timer: NodeJS.Timer | null = null
   const i2c = options.useFake ? fakeI2CBus : await import("i2c-bus")
-  const gyro = createObservable<ThreeDeeCoords>(Subject("gyro"), {} as ThreeDeeCoords)
-  const accel = createObservable<ThreeDeeCoords>(Subject("accel"), {} as ThreeDeeCoords)
+  const gyro = createObservable<ThreeDeeCoords>(Subject("gyro"), { toString } as ThreeDeeCoords)
+  const accel = createObservable<ThreeDeeCoords>(Subject("accel"), { toString } as ThreeDeeCoords)
 
   const bus = i2c.openSync(options.i2cbus || 1)
   bus.writeByteSync(options.address, PWR_MGMT_1, 0)
@@ -68,9 +72,9 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
       read(GYRO_Y, gyroDivisor),
       read(GYRO_Z, gyroDivisor),
     ])
-    accel.value = { x: result[0], y: result[1], z: result[2] } as ThreeDeeCoords
-    gyro.value = { x: result[3], y: result[4], z: result[5] } as ThreeDeeCoords
-    timer = !options.useFake && setTimeout(update, UPDATE_INTERVAL)
+    accel.value = { x: result[0], y: result[1], z: result[2], toString } as ThreeDeeCoords
+    gyro.value = { x: result[3], y: result[4], z: result[5], toString } as ThreeDeeCoords
+    timer = setTimeout(update, UPDATE_INTERVAL)
   }
 
   update()
@@ -81,7 +85,7 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     update,
 
     close: () => {
-      !options.useFake && clearTimeout(timer)
+      clearTimeout(timer)
     },
   }
 }

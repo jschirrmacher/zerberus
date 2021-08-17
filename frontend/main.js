@@ -4,6 +4,8 @@ import { CLIENT_TYPE } from "./types.js"
   const canvas = document.querySelector("#car-area")
   const car = document.querySelector("#car")
   const carPos = document.querySelector("#car-pos")
+  const accel = document.querySelector("#accel")
+  const gyro = document.querySelector("#gyro")
   const carPath = document.querySelector("#path")
   const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
   const wayPoints = [center.x.toFixed(0) + " " + center.y.toFixed(0)]
@@ -65,14 +67,24 @@ import { CLIENT_TYPE } from "./types.js"
     car.setAttribute("style", `transform: translate(${x}px, ${y}px) rotate(${msg.orientation}deg) scale(.5)`)
     addWaypoint(x, y)
     carPos.innerHTML = `x: ${msg.posX}<br>y: ${msg.posY}<br>o: ${msg.orientation}`
+    accel.innerHTML = "<span>accel:</span><span>" + msg.accel.split(",").join("</span><span>") + "</span>"
+    gyro.innerHTML = "<span>gyro:</span><span>" + msg.gyro.split(",").join("</span><span>") + "</span>"
   }
 
   socket.on("connect", () => socket.emit("command", { name: "list-commands" }))
   socket.on("car-position", setCarPosition)
 
   const preview = document.getElementById("camera-preview")
+  const camToggle = document.getElementById("camera-toggle")
   const previewUrl = preview.src
-  setInterval(() => (preview.src = previewUrl + "?" + +new Date()), 500)
+  let previewInterval
+  camToggle.addEventListener("change", () => {
+    if (camToggle.checked) {
+      previewInterval = setInterval(() => (preview.src = previewUrl + "?" + +new Date()), 500)
+    } else {
+      clearInterval(previewInterval)
+    }
+  })
   document.querySelector("#clearPath").addEventListener("click", () => {
     const currentPos = wayPoints[wayPoints.length - 1]
     wayPoints.length = 0
@@ -106,7 +118,7 @@ import { CLIENT_TYPE } from "./types.js"
 
   connectLEDs()
   connectMotors()
-  setCarPosition({ posX: 0, posY: 0, orientation: 0 })
+  setCarPosition({ posX: 0, posY: 0, orientation: 0, accel: "0,0,0", gyro: "0,0,0" })
 
   function connectLEDs() {
     document.querySelectorAll(".led").forEach((led) => {
