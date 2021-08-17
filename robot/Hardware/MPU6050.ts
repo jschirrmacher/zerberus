@@ -51,7 +51,7 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
   const gyroDivisor = (131 * 250) / 250 // deg/s
 
   function read(pos: number, divisor: number): number {
-    const value = bus.readByteSync(options.address, pos << 8) + bus.readByteSync(options.address, pos + 1)
+    const value = (bus.readByteSync(options.address, pos) << 8) + bus.readByteSync(options.address, pos + 1)
     return (value > 32767 ? value - 65536 : value) / divisor
   }
 
