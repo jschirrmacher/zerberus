@@ -7,6 +7,7 @@ import { Motor } from "../MotorSet/Motor"
 import { create as createOrientation, fromDegrees, fromRadian } from "./Orientation"
 import { create as createPosition } from "./Position"
 import { isPending } from "../lib/TestHelpers"
+import MPUFactory from "../Hardware/MPU6050"
 
 const sandbox = sinon.createSandbox()
 
@@ -17,13 +18,14 @@ describe("Car", () => {
   let leftMotorSpy
   let rightMotorSpy
 
-  beforeEach(() => {
+  beforeEach(async () => {
     leftMotorSpy = createMotorSpies(sandbox)
     rightMotorSpy = createMotorSpies(sandbox)
 
     left = MockMotor(1, leftMotorSpy)
     right = MockMotor(2, rightMotorSpy)
-    car = CarFactory({ left, right })
+    const mpu = await MPUFactory({ useFake: true })
+    car = CarFactory({ left, right }, mpu)
   })
 
   afterEach(() => {

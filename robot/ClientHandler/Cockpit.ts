@@ -11,8 +11,12 @@ export function connectCockpit(client: IO.Socket, car: Car, mpu: MPU) {
       posY: pos.y.toFixed(3),
       orientation: Math.round(car.orientation.value.degreeAngle()),
       speed: car.speed.value.toFixed(1),
-      accel: mpu.accel.value.toString(3),
-      gyro: mpu.gyro.value.toString(3),
+      mpuSpeed: car.mpuSpeed.value.toFixed(1),
+      mpu: {
+        accel: mpu.accel.value.toString(3),
+        gyro: mpu.gyro.value.toString(3),
+        speed: mpu.speed.value.toString(3),
+      },
     })
     return false
   }
@@ -24,9 +28,13 @@ export function connectCockpit(client: IO.Socket, car: Car, mpu: MPU) {
 
   sendInfo()
   const throttledInfoFunc = throttle(sendInfo, 20)
+
   car.position.registerObserver(throttledInfoFunc)
   car.speed.registerObserver(throttledInfoFunc)
+  car.mpuSpeed.registerObserver(throttledInfoFunc)
   car.state.registerObserver(sendCarStateChange)
+
   mpu.accel.registerObserver(throttledInfoFunc)
   mpu.gyro.registerObserver(throttledInfoFunc)
+  mpu.speed.registerObserver(throttledInfoFunc)
 }

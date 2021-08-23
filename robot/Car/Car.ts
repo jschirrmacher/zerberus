@@ -1,9 +1,10 @@
 import { Motor, TICKS_PER_MM } from "../MotorSet/Motor"
 import { Position, create as createPosition } from "./Position"
 import { create as createOrientation, fromRadian, Orientation } from "./Orientation"
-import ObservableFactory, { ObservableValue } from "../lib/ObservableValue"
-import SubjectFactory, { Subject } from "../lib/Subject"
+import ObservableFactory from "../lib/ObservableValue"
+import SubjectFactory from "../lib/Subject"
 import { waitFor } from "../lib/Trigger"
+import { MPU } from "../Hardware/MPU6050"
 
 export const WIDTH_OF_AXIS = 270 // mm
 export const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
@@ -39,34 +40,11 @@ export enum CarState {
 
 type MotorThrottle = { left: number; right: number }
 
-export type Car = {
-  motors: Record<Direction, Motor>
-  position: ObservableValue<Position>
-  orientation: ObservableValue<Orientation>
-  speed: ObservableValue<number>
-  state: ObservableValue<CarState>
-  events: Subject<CarEvent>
-
-  getCurrentThrottle(): number
-  accelerate(throttle: number): Promise<void>
-  throttle({ left, right }: MotorThrottle): Promise<void>
-  stop(): Promise<void>
-  float(): Promise<void>
-  go(distance: number, throttle: number): Promise<void>
-  turn(direction: Direction): Promise<void>
-
-  turnRelative(angle: Orientation): Promise<void>
-  turnRelative(angle: Orientation, onTheSpot: boolean): Promise<void>
-
-  turnTo(destination: Orientation): Promise<void>
-  goto(position: Position): Promise<void>
-
-  destruct(): Promise<void>
-}
+export type Car = ReturnType<typeof CarFactory>
 
 const debug = process.env.DEBUG && process.env.DEBUG.split(",").includes("car") ? console.debug : () => undefined
 
-export default function (motors: { left: Motor; right: Motor }, logger = { debug }): Car {
+export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: MPU, logger = { debug }) {
   motors.left.blocked.registerObserver(() => handleBlocking(motors.left))
   motors.right.blocked.registerObserver(() => handleBlocking(motors.right))
 
@@ -96,13 +74,14 @@ export default function (motors: { left: Motor; right: Motor }, logger = { debug
     return angle.angle > 0 ? Direction.right : Direction.left
   }
 
-  const car: Car = {
+  const car = {
     motors,
     position: ObservableFactory("position", createPosition(0, 0)),
     orientation: ObservableFactory("orientation", createOrientation(0)),
     state: ObservableFactory("state", CarState.NORMAL),
     events: SubjectFactory<CarEvent>("events"),
     speed: ObservableFactory("speed", 0),
+    mpuSpeed: ObservableFactory("newSpeed", 0),
 
     getCurrentThrottle() {
       return (car.motors.left.throttle + car.motors.right.throttle) / 2

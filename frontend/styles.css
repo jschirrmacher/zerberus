@@ -143,8 +143,9 @@
   cursor: pointer;
 }
 
-#accel span,
-#gyro span {
+#mpu .accel span,
+#mpu .gyro span,
+#mpu .speed span {
   display: inline-block;
   width: 80px;
 }
