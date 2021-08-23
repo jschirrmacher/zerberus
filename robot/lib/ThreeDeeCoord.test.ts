@@ -18,6 +18,12 @@ describe("ThreeDeeCoords", () => {
     })
   })
 
+  describe("sub() function", () => {
+    it("should suctract another coordinate", () => {
+      make3dCoord(7, 8, 9).sub(make3dCoord(4, 5, 6)).should.containDeep({ x: 3, y: 3, z: 3 })
+    })
+  })
+
   describe("toString() function", () => {
     it("should return a string", () => {
       make3dCoord().toString(2).should.be.a.String()

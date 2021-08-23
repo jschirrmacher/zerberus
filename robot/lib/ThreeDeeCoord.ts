@@ -4,6 +4,7 @@ export type ThreeDeeCoords = {
   z: number
   toString(digits?: number): string
   add(other: ThreeDeeCoords): ThreeDeeCoords
+  sub(other: ThreeDeeCoords): ThreeDeeCoords
 }
 export function make3dCoord(x: number = 0, y: number = 0, z: number = 0) {
   const coords: ThreeDeeCoords = {
@@ -20,6 +21,10 @@ export function make3dCoord(x: number = 0, y: number = 0, z: number = 0) {
 
     add(other) {
       return make3dCoord(coords.x + other.x, coords.y + other.y, coords.z + other.z)
+    },
+
+    sub(other) {
+      return make3dCoord(coords.x - other.x, coords.y - other.y, coords.z - other.z)
     },
   }
 
