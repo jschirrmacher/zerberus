@@ -8,7 +8,7 @@
     "start-camera": "cd image_recognition && python3 use_classifier.py > ../camera.log",
     "simulator": "ts-node-dev --nolazy --watch --inspect -- robot",
     "lint": "eslint .",
-    "test": "nyc --reporter=html --reporter=text mocha",
+    "test": "nyc --reporter=html --reporter=text-summary mocha",
     "build:types": "tsc -t es6 --moduleResolution node --outDir frontend types.ts && prettier -w ./frontend/types.js"
   },
   "keywords": [
