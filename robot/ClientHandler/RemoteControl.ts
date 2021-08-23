@@ -6,7 +6,8 @@ import CommandList from "./CommandList"
 import path from "path"
 import FileWriter, { RouteWriter } from "../route/FileWriter"
 import CSVFormatter from "../route/CSVFormatter"
-import { MPU, ThreeDeeCoords } from "../Hardware/MPU6050"
+import { MPU } from "../Hardware/MPU6050"
+import { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
 
 let connectedRemoteControls = 0
 let tracker: RouteTracker
