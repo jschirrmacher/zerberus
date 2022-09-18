@@ -18,7 +18,7 @@
     "robot"
   ],
   "engines": {
-    "node": ">= 14"
+    "node": ">= 18"
   },
   "repository": {
     "url": "https://github.com/jschirrmacher/zerberus.git"
