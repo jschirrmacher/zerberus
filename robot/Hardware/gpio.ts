@@ -24,7 +24,7 @@ export type GPIO = {
   initializedPins: Record<number, Options>
 }
 
-const readableData = []
+const readableData = [] as Buffer[]
 export function pushStreamData(info: { flags: number; time: number; level: number }[]): void {
   const data = Buffer.alloc(12 * info.length)
   info.forEach((entry, index) => {
@@ -54,13 +54,9 @@ class FakeNotifer {
   }
 
   stream() {
-    function getNext() {
-      return readableData.shift()
-    }
-
     return new Stream.Readable({
       read() {
-        const value = getNext()
+        const value = readableData.shift()
         value && this.push(value)
       },
       objectMode: true,
@@ -122,7 +118,7 @@ export default function (useFake = false): GPIO {
         Notifier: FakeNotifer,
       }
   let listenerId = 0
-  const listeners = {} as Record<number, (...args: unknown[]) => void>
+  const listeners = {} as Record<number, ListenerFunction>
 
   function notifyListeners(event: string | symbol, ...args: unknown[]): void {
     Object.values(listeners).forEach((emit) => emit(event, ...args))
@@ -133,7 +129,7 @@ export default function (useFake = false): GPIO {
 
     create(pin: number, options = {} as Record<string, unknown>): GPIOPin {
       const pigpioObj = new pigpio.Gpio(pin, options)
-      const actualPin = gpioPins[pin]
+      const actualPin = gpioPins[pin as keyof typeof gpioPins]
 
       this.initializedPins[pin] = options
       if (options.mode) {

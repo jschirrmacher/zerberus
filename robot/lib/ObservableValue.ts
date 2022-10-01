@@ -1,4 +1,4 @@
-import SubjectFactory, { Subject, Observer } from "./Subject"
+import SubjectFactory, { Subject } from "./Subject"
 
 export type ObservableValue<T> = Subject<T> & {
   value: T
@@ -6,12 +6,12 @@ export type ObservableValue<T> = Subject<T> & {
   toString(): string
 }
 
-export default function ObservableFactory<T>(name: string, value: T): ObservableValue<T> {
+export default function ObservableFactory<T>(name: string, value: T) {
   const subject = SubjectFactory<T>(name)
   return createObservable(subject, value)
 }
 
-export function createObservable<T>(subject: Subject<T>, value: T): ObservableValue<T> {
+export function createObservable<T>(subject: Subject<T>, value: T) {
   return {
     ...subject,
 

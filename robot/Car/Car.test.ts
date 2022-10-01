@@ -79,7 +79,7 @@ describe("Car", () => {
       let signalReceived = false
       car.state.registerObserver(() => (signalReceived = true))
       const promise = car.go(500, 50)
-      left.blocked.notify(left)
+      left.blocked.notify(true)
       signalReceived.should.be.true()
       await promise
     })
