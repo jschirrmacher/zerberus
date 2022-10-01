@@ -18,7 +18,7 @@
     "robot"
   ],
   "engines": {
-    "node": ">= 14"
+    "node": ">= 18"
   },
   "repository": {
     "url": "https://github.com/jschirrmacher/zerberus.git"
@@ -48,7 +48,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
-    "mocha": "^8.4.0",
+    "mocha": "^9.2.2",
     "node-fetch": "^2.6.1",
     "nyc": "^15.1.0",
     "pre-commit": "^1.2.2",
