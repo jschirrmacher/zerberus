@@ -1,6 +1,6 @@
 import { Encoder, TICKS_PER_REV } from "./Encoder"
 import { GPIO, OUTPUT, PWM } from "../Hardware/gpio"
-import { Logger, LogLevel } from "../lib/Logger"
+import { ModuleLogger } from "../lib/Logger"
 import createObservable, { ObservableValue } from "../lib/ObservableValue"
 import SubjectFactory, { Subject } from "../lib/Subject"
 import TriggerFactory, { waitFor } from "../lib/Trigger"
@@ -52,42 +52,35 @@ export default function MotorSetFactory(
   pin_in2: number,
   pin_ena: number,
   encoder: Encoder,
-  logger?: Logger
+  logger = ModuleLogger("motor")
 ): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
   let blockCount = 0
   const blocked = SubjectFactory<boolean>(`MotorSet #${motorNo} blocked`)
-  const debugLog = process.env.DEBUG && process.env.DEBUG.split(",").includes("motorset")
 
   encoder.speed.registerObserver(tick)
 
-  function log(level: LogLevel, msg: string) {
-    if (level !== LogLevel.debug || debugLog) {
-      ;(logger || console)[level](`Motor,${motor.no},${motor.mode},${motor.currentThrottle.toFixed(0)},${msg}`)
-    }
-  }
-
   function tick(speed: number) {
-    log(LogLevel.debug, `tick(${speed}): throttle: ${motor.throttle} currentThrottle: ${motor.currentThrottle}`)
+    logger.debug(`tick(${speed}): throttle: ${motor.throttle} currentThrottle: ${motor.currentThrottle}`)
     if (blockCount === MAX_BLOCK_COUNT) {
-      log(LogLevel.debug, "tick returning since motor is blocked")
+      logger.debug("tick returning since motor is blocked")
       return
     }
     if (motor.throttle && !speed) {
       if (++blockCount === MAX_BLOCK_COUNT) {
-        log(LogLevel.warn, `motor is blocked and will be set to FLOAT`)
+        logger.warn(`motor is blocked and will be set to FLOAT`)
         motor.throttle = 0
         setMode(motor, MotorMode.FLOAT)
         blocked.notify(true)
         return
       } else {
-        log(LogLevel.debug, `motor seems to be blocked #${blockCount}`)
+        logger.debug(`motor seems to be blocked #${blockCount}`)
       }
     } else {
       if (blockCount) {
-        log(LogLevel.debug, `motor is released automatically`)
+        logger.debug(`motor is released automatically`)
       }
       blockCount = 0
     }
@@ -95,7 +88,7 @@ export default function MotorSetFactory(
   }
 
   function setMode(motor: Motor, mode: MotorMode): void {
-    log(LogLevel.debug, `Changing mode to ${mode}`)
+    logger.debug(`Changing mode to ${mode}`)
     in1.digitalWrite(mode === MotorMode.FORWARD || mode === MotorMode.FLOAT ? 1 : 0)
     in2.digitalWrite(mode === MotorMode.BACKWARDS || mode === MotorMode.FLOAT ? 1 : 0)
     motor.mode.value = mode
@@ -177,13 +170,13 @@ export default function MotorSetFactory(
     destruct(): void {
       encoder.simulateSpeed(0)
       setMode(motor, MotorMode.FLOAT)
-      console.log(`Motor #${motor.no} set to FLOAT`)
+      logger.debug(`Motor #${motor.no} set to FLOAT`)
       ena.pwmWrite(0)
-      console.log(`Motor #${motor.no} set throttle to 0`)
+      logger.debug(`Motor #${motor.no} set throttle to 0`)
     },
 
     releaseBlock() {
-      log(LogLevel.debug, `Block released`)
+      logger.debug(`Block released`)
       blockCount = 0
     },
   } as Motor

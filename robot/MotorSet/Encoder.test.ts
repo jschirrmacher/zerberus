@@ -45,13 +45,13 @@ describe("Encoder", () => {
   })
 
   it("should log in csv format if env ist set", () => {
-    const console = Logger()
+    const logger = Logger()
     process.env.LOG = "encoder"
-    encoder = EncoderFactory(gpio, 1, 2, console)
+    encoder = EncoderFactory(gpio, 1, 2, logger)
     encoder.tick(1, 1)
     encoder.tick(1, 2)
-    console.get().length.should.equal(2)
-    const entry = console.get()[1].split(",")
+    logger.get().length.should.equal(2)
+    const entry = logger.get()[1].split(",")
     entry.length.should.equal(5)
     entry.should.containDeep(["Encoder", "2", "1838.235294117647", "1"])
     delete process.env.LOG_ENCODER

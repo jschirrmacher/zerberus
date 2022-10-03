@@ -121,6 +121,8 @@ If you change anything in `types.ts` (which is shared by server and frontend), b
 
 ### Log output
 
-To get debug log output, use environment variable "DEBUG" and add the names of the components to get debug output for, like in this example:
+The log level (`debug`, `info`, `warn` or `error`) can be set via environment variable "LOGLEVEL".
 
-    export DEBUG=encoder,motorset,car
+In log level `debug`, another environment variable, "DEBUG" controls, which modules are to be logged. This can be a comma separated list of module names in lower case, like in this example:
+
+    export DEBUG=encoder,motor,car

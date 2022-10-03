@@ -83,7 +83,6 @@ export default function (car: Car): Record<string, CommandFunction> {
       for (let i = 0; i < 3; i += 0.3) {
         const x = 300 * Math.sin(i)
         const y = 300 * Math.cos(i)
-        console.log(x, y)
         await car.goto(createPosition(x, y))
       }
     },

@@ -4,14 +4,16 @@ import GPIOFactory, { GPIO, INPUT, OUTPUT, PWM } from "../Hardware/gpio"
 import { Encoder } from "./Encoder"
 import MockEncoderFactory, { createEncoderSpies } from "./MockEncoder"
 import { createSandbox } from "sinon"
+import TestLogger, { Logger } from "../lib/Logger"
 
 const sandbox = createSandbox()
 
-describe("MotorSet", () => {
+describe("Motor", () => {
   let encoder: Encoder
   let motor: Motor
   let gpio: GPIO
   let encoderSpy
+  let logger: Logger
 
   function notify(pos: number, speed: number) {
     encoder.position.notify(pos)
@@ -19,10 +21,11 @@ describe("MotorSet", () => {
   }
 
   beforeEach(() => {
+    logger = TestLogger()
     gpio = GPIOFactory(true)
     encoderSpy = createEncoderSpies(sandbox)
     encoder = MockEncoderFactory(1, encoderSpy)
-    motor = MotorFactory(gpio, 1, 2, 3, encoder)
+    motor = MotorFactory(gpio, 1, 2, 3, encoder, logger)
   })
 
   afterEach(() => {

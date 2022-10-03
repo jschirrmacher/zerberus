@@ -37,3 +37,15 @@ function Logger(): TestLogger {
 }
 
 export default Logger
+
+const logLevel: LogLevel = (process.env.LOGLEVEL as LogLevel) || LogLevel.warn
+
+export const ModuleLogger = (moduleName: string, level = logLevel) => {
+  const debugModule = process.env.DEBUG && process.env.DEBUG.split(",").includes(moduleName)
+  return {
+    debug: level === LogLevel.debug && debugModule ? console.debug : () => undefined,
+    info: [LogLevel.debug, LogLevel.info].includes(level) ? console.info : () => undefined,
+    warn: [LogLevel.debug, LogLevel.info, LogLevel.warn].includes(level) ? console.warn : () => undefined,
+    error: console.error,
+  }
+}

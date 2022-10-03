@@ -1,5 +1,6 @@
 import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
 import createObservable, { ObservableValue } from "../lib/ObservableValue"
+import { ModuleLogger } from "../lib/Logger"
 
 export const TICKS_PER_REV = 544
 const SAMPLE_DURATION_MS = 3
@@ -22,16 +23,11 @@ const QEM = [
   [NaN, 1, -1, 0],
 ]
 
-const defaultLogger = {
-  debug: process.env.DEBUG && process.env.DEBUG.split(",").includes("encoder") ? console.debug : () => undefined,
-  error: console.error,
-}
-
 /*
   This class implements a quadrature encoder with two outputs, with a 90° phase shift.
   Specify the GPIO pins where the outputs are connecte too.
 */
-export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defaultLogger): Encoder {
+export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = ModuleLogger("encoder")): Encoder {
   let oldVal = 0
   let lastTick = undefined as number | undefined
   const notifier = gpio.createNotifier([pin_a, pin_b])

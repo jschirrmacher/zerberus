@@ -8,11 +8,12 @@ import FileWriter, { RouteWriter } from "../route/FileWriter"
 import CSVFormatter from "../route/CSVFormatter"
 import { MPU } from "../Hardware/MPU6050"
 import { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
+import { ModuleLogger } from "../lib/Logger"
 
 let connectedRemoteControls = 0
 let tracker: RouteTracker | undefined
 
-export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): void {
+export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU, logger = ModuleLogger("remote")): void {
   const keyControls = {
     forward: () => car.accelerate(car.getCurrentThrottle() + 25),
     back: () => car.accelerate(car.getCurrentThrottle() - 25),
@@ -21,9 +22,9 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
     break: () => car.stop(),
   }
 
-  function keyControl(info: { cmd: keyof typeof keyControl }) {
+  function keyControl(info: { cmd: keyof typeof keyControls }) {
     console.debug("Direct control " + info.cmd)
-    const cmd = keyControls[info.cmd] as () => Promise<void>
+    const cmd = keyControls[info.cmd]
     cmd && cmd()
   }
 
@@ -57,14 +58,14 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
   }
 
   async function doCommand(client: IO.Socket, command: { name: string; args: unknown[] }) {
-    console.debug("Received command " + command.name)
+    logger.debug("Received command " + command.name)
     if (command.name === "list-commands") {
       client.emit("command-list", Object.keys(commands))
     } else {
       try {
         await commands[command.name](command.args)
       } catch (error) {
-        console.error(error)
+        logger.error(error)
         client.emit("error", error)
       }
       await car.stop()
