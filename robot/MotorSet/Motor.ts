@@ -18,7 +18,7 @@ export interface Motor {
   mode: ObservableValue<MotorMode>
   position: ObservableValue<number>
   speed: ObservableValue<number>
-  blocked: Subject<Motor>
+  blocked: Subject<boolean>
 
   setThrottle: (throttle: number) => void
 
@@ -52,13 +52,13 @@ export default function MotorSetFactory(
   pin_in2: number,
   pin_ena: number,
   encoder: Encoder,
-  logger = undefined as Logger
+  logger?: Logger
 ): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })
   const ena = gpio.create(pin_ena, { mode: PWM })
   let blockCount = 0
-  const blocked = SubjectFactory<Motor>(`MotorSet #${motorNo} blocked`)
+  const blocked = SubjectFactory<boolean>(`MotorSet #${motorNo} blocked`)
   const debugLog = process.env.DEBUG && process.env.DEBUG.split(",").includes("motorset")
 
   encoder.speed.registerObserver(tick)
@@ -80,7 +80,7 @@ export default function MotorSetFactory(
         log(LogLevel.warn, `motor is blocked and will be set to FLOAT`)
         motor.throttle = 0
         setMode(motor, MotorMode.FLOAT)
-        blocked.notify(motor)
+        blocked.notify(true)
         return
       } else {
         log(LogLevel.debug, `motor seems to be blocked #${blockCount}`)
@@ -155,7 +155,7 @@ export default function MotorSetFactory(
       const direction = Math.sign(desiredPosition - encoder.position.value)
 
       const trigger = TriggerFactory()
-      trigger.waitFor(encoder.position, (pos: number) => direction * pos >= desiredPosition * direction)
+      trigger.waitFor(encoder.position, (pos) => direction * (pos as number) >= desiredPosition * direction)
       trigger.waitFor(motor.blocked)
       motor.throttle = throttle
       await trigger.race()

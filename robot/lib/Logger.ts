@@ -18,7 +18,7 @@ type TestLogger = Logger & {
 }
 
 function Logger(): TestLogger {
-  const messages = []
+  const messages = [] as { level: LogLevel; msg: string }[]
 
   function log(level: LogLevel, msg: string) {
     messages.push({ level, msg })

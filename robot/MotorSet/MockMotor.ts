@@ -35,7 +35,7 @@ export default function (no: number, spies: Record<MotorProp, sinon.SinonSpy>): 
     mode: ObservableValueFactory("mode", MotorMode.FLOAT),
     position: ObservableValueFactory("position", 0),
     speed: ObservableValueFactory("speed", 0),
-    blocked: SubjectFactory<Motor>(`MotorSet #${no} blocked`),
+    blocked: SubjectFactory<boolean>(`MotorSet #${no} blocked`),
 
     ...spies,
   }

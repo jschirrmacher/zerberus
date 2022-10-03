@@ -10,7 +10,7 @@ import { MPU } from "../Hardware/MPU6050"
 import { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
 
 let connectedRemoteControls = 0
-let tracker: RouteTracker
+let tracker: RouteTracker | undefined
 
 export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): void {
   const keyControls = {
@@ -21,9 +21,10 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
     break: () => car.stop(),
   }
 
-  function keyControl(info: { cmd: string }) {
+  function keyControl(info: { cmd: keyof typeof keyControl }) {
     console.debug("Direct control " + info.cmd)
-    keyControls[info.cmd] && keyControls[info.cmd]()
+    const cmd = keyControls[info.cmd] as () => Promise<void>
+    cmd && cmd()
   }
 
   function setTracker(state: "on" | "off") {
@@ -40,7 +41,7 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU): voi
     }
 
     if (state === "on") {
-      tracker.endRecording()
+      tracker?.endRecording()
       tracker = undefined
     } else {
       const routesDir = path.resolve(__dirname, "..", "..", "data", "routes")

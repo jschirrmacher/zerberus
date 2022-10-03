@@ -1,4 +1,4 @@
-import { Observer, Subject } from "./Subject"
+import { Subject } from "./Subject"
 
 export type Trigger<T> = {
   completed: string[]
@@ -17,13 +17,13 @@ type Listener<T> = {
 }
 
 export async function waitFor<T>(subject: Subject<T>, predicate: Predicate<T> = () => true): Promise<void> {
-  const trigger = TriggerFactory()
+  const trigger = TriggerFactory<T>()
   trigger.waitFor(subject, predicate)
   await trigger.race()
 }
 
 export default function TriggerFactory<T>(): Trigger<T> {
-  const completed = []
+  const completed = [] as string[]
 
   function handle(payload: T, subject: Subject<T>): void {
     listeners.forEach((listener) => {
@@ -40,9 +40,9 @@ export default function TriggerFactory<T>(): Trigger<T> {
     if (listeners.length == 0) {
       return ""
     }
-    const winner = await Promise.race(listeners.map((listener) => listener.promise))
+    await Promise.race(listeners.map((listener) => listener.promise))
     listeners.forEach((l) => l.subject.unregisterObserver(handle))
-    return winner
+    return completed[0]
   }
 
   function waitFor(subject: Subject<T>, predicate: Predicate<T> = () => true) {

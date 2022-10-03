@@ -58,6 +58,6 @@ describe("MPU6050", () => {
     fakeI2CBus.set({ [ACCEL_X]: 7, [ACCEL_Y]: -2, [ACCEL_Z]: 4 })
     mpu.update()
     const result = await promise
-    result.toString(5).should.equal("0.00013,-0.00458,0.00007")
+    result.toString(5).should.equal("0.00013,-0.00004,0.00007")
   })
 })

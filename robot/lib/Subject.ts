@@ -8,7 +8,7 @@ export interface Subject<T> {
 }
 
 export default function <T>(name: string): Subject<T> {
-  let observers = []
+  let observers = [] as Observer<T>[]
   const subject = {
     name,
 
@@ -20,7 +20,7 @@ export default function <T>(name: string): Subject<T> {
       observers = observers.filter((o) => o !== observer)
     },
 
-    notify(payload: unknown) {
+    notify(payload: T) {
       observers.forEach((observer) => observer(payload, subject))
     },
   }

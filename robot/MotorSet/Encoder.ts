@@ -33,9 +33,9 @@ const defaultLogger = {
 */
 export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defaultLogger): Encoder {
   let oldVal = 0
-  let lastTick = undefined as number
+  let lastTick = undefined as number | undefined
   const notifier = gpio.createNotifier([pin_a, pin_b])
-  let timer = undefined as NodeJS.Timer
+  let tickTimer = undefined as NodeJS.Timer | undefined
   let zeroSent = false
   let zeroTimeOut: NodeJS.Timeout
 
@@ -62,12 +62,12 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defa
 
     simulateSpeed(speed: number): void {
       if (encoder.simulated) {
-        timer && clearInterval(timer)
-        timer = undefined
+        tickTimer && clearInterval(tickTimer)
+        tickTimer = undefined
         if (speed || !zeroSent) {
           zeroSent = !speed
           const diff = Math.round((speed * SAMPLE_DURATION_MS) / 36.7)
-          timer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
+          tickTimer = setInterval(() => encoder.tick(diff, (lastTick || 0) + SAMPLE_DURATION_MS), SAMPLE_DURATION_MS)
         }
       }
     },
@@ -86,7 +86,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = defa
       }
     } catch (error) {
       logger.error(error)
-      logger.error({ buffer: chunk.toString("hex").match(/../g).join(" ") })
+      logger.error({ buffer: chunk.toString("hex").match(/../g)?.join(" ") })
     }
 
     chunk.length > 12 && handleChunk(chunk.slice(12))

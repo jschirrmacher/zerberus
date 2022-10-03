@@ -33,28 +33,28 @@ type MPUOptions = {
 }
 
 export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU> {
-  options.address = options.address || 0x68
-  options.timer = options.timer || process.hrtime.bigint
-  let timer: NodeJS.Timer | null = null
+  const address = options.address || 0x68
+  let timer = options.timer || process.hrtime.bigint
+  let timeout: NodeJS.Timeout
   const i2c = options.useFake ? fakeI2CBus : await import("i2c-bus")
   const gyro = createObservable<ThreeDeeCoords>(Subject("gyro"), make3dCoord())
   const accel = createObservable<ThreeDeeCoords>(Subject("accel"), make3dCoord())
   const speed = createObservable<ThreeDeeCoords>(Subject("speed"), make3dCoord())
 
   const bus = i2c.openSync(options.i2cbus || 1)
-  bus.writeByteSync(options.address, PWR_MGMT_1, 0)
-  bus.writeByteSync(options.address, SMPLRT_DIV, 0b00000111)
-  bus.writeByteSync(options.address, CONFIG, 0b00000000)
-  bus.writeByteSync(options.address, ACCEL_CONFIG, 0b00000000)
-  bus.writeByteSync(options.address, GYRO_CONFIG, 0b00000000)
-  // bus.writeByteSync(options.address, INT_ENABLE, 1)
+  bus.writeByteSync(address, PWR_MGMT_1, 0)
+  bus.writeByteSync(address, SMPLRT_DIV, 0b00000111)
+  bus.writeByteSync(address, CONFIG, 0b00000000)
+  bus.writeByteSync(address, ACCEL_CONFIG, 0b00000000)
+  bus.writeByteSync(address, GYRO_CONFIG, 0b00000000)
+  // bus.writeByteSync(address, INT_ENABLE, 1)
 
-  const accelDivisor = 32768 / 2 // g (earth gravity)
+  const accelDivisor = 0x4000 // g (earth gravity)
   const gyroDivisor = (131 * 250) / 250 // deg/s
 
   function read(pos: number, divisor: number): number {
-    const value = (bus.readByteSync(options.address, pos) << 8) + bus.readByteSync(options.address, pos + 1)
-    return (value > 32767 ? value - 65536 : value) / divisor
+    const value = (bus.readByteSync(address, pos) << 8) + bus.readByteSync(address, pos + 1)
+    return (value > 0x7fff ? value - 0x10000 : value) / divisor
   }
 
   let lastUpdate = undefined as bigint | undefined
@@ -70,7 +70,7 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     ]
     accel.value = make3dCoord(result[0], result[1], result[2])
     gyro.value = make3dCoord(result[3], result[4], result[5])
-    const now = options.timer()
+    const now = timer()
     if (lastUpdate) {
       const delta = Number(now - lastUpdate) / 1e9
       if (delta && (result[0] || result[1] || result[2])) {
@@ -78,7 +78,7 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
       }
     }
     lastUpdate = now
-    timer = setTimeout(update, UPDATE_INTERVAL)
+    timeout = setTimeout(update, UPDATE_INTERVAL)
   }
 
   update()
@@ -90,12 +90,21 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     update,
 
     close: () => {
-      clearTimeout(timer)
+      timeout && clearTimeout(timeout)
     },
   }
 }
 
-export const fakeI2CBus = {
+interface I2CBus {
+  data: Record<number, number>
+  set(values: Partial<typeof fakeI2CBus.data>): void
+  openSync(busNumber: number): {
+    writeByteSync(address: number, pos: number, value: number): void
+    readByteSync(address: number, pos: number): number
+  }
+}
+
+export const fakeI2CBus: I2CBus = {
   data: {
     [ACCEL_X]: 0,
     [ACCEL_X + 1]: 0,
@@ -111,23 +120,19 @@ export const fakeI2CBus = {
     [GYRO_Z + 1]: 0,
   },
 
-  set(values: Partial<typeof fakeI2CBus.data>): void {
+  set(values) {
     Object.keys(values).forEach((key) => {
-      const value = values[key] < 0 ? values[key] + 65536 : values[key]
-      fakeI2CBus.data[key] = value >> 8
-      fakeI2CBus.data[+key + 1] = value % 8
+      const rawValue = values[+key] || 0
+      const value = rawValue < 0 ? rawValue + 0x10000 : rawValue
+      fakeI2CBus.data[+key] = value >> 8
+      fakeI2CBus.data[+key + 1] = value & 0xff
     })
   },
 
-  openSync(busNumber: number) {
+  openSync() {
     return {
-      writeByteSync(address: number, pos: number, value: number): void {
-        fakeI2CBus.data[pos] = value
-      },
-
-      readByteSync(address: number, pos: number): number {
-        return fakeI2CBus.data[pos]
-      },
+      writeByteSync: (_, pos, value) => (fakeI2CBus.data[pos] = value),
+      readByteSync: (_, pos) => fakeI2CBus.data[pos],
     }
   },
 }
