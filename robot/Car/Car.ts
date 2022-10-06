@@ -5,6 +5,7 @@ import ObservableFactory from "../lib/ObservableValue"
 import SubjectFactory from "../lib/Subject"
 import { waitFor } from "../lib/Trigger"
 import { MPU } from "../Hardware/MPU6050"
+import { ModuleLogger } from "../lib/Logger"
 
 export const WIDTH_OF_AXIS = 270 // mm
 export const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
@@ -42,9 +43,9 @@ type MotorThrottle = { left: number; right: number }
 
 export type Car = ReturnType<typeof CarFactory>
 
-const debug = process.env.DEBUG && process.env.DEBUG.split(",").includes("car") ? console.debug : () => undefined
+const defaultLogger = ModuleLogger("car")
 
-export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: MPU, logger = { debug }) {
+export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: MPU, logger = defaultLogger) {
   motors.left.blocked.registerObserver(() => handleBlocking(motors.left))
   motors.right.blocked.registerObserver(() => handleBlocking(motors.right))
 
@@ -181,7 +182,7 @@ export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: M
         const trigger = waitFor(car.position, (pos) => Math.abs(pos.distanceTo(position)) < MINIMAL_DISTANCE)
         const observer = (orientation: Orientation) => {
           const angle = orientation.differenceTo(createOrientation(car.position.value.angleTo(position)))
-          // console.log(`should be ${angle.toString()}`)
+          // logger.debug(`should be ${angle.toString()}`)
           const distance = car.position.value.distanceTo(position)
           const throttle = clampThrottle(Math.sqrt(distance))
           if (Math.abs(angle.angle) > 1) {
@@ -205,7 +206,7 @@ export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: M
 
     async destruct(): Promise<void> {
       await car.stop()
-      console.log("Car stopped")
+      logger.debug("Car stopped")
       motors.left.destruct()
       motors.right.destruct()
     },

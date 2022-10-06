@@ -8,6 +8,7 @@ import { create as createOrientation, fromDegrees, fromRadian } from "./Orientat
 import { create as createPosition } from "./Position"
 import { isPending } from "../lib/TestHelpers"
 import MPUFactory from "../Hardware/MPU6050"
+import TestLogger, { Logger } from "../lib/Logger"
 
 const sandbox = sinon.createSandbox()
 
@@ -17,15 +18,17 @@ describe("Car", () => {
   let car: Car
   let leftMotorSpy
   let rightMotorSpy
+  let logger: Logger
 
   beforeEach(async () => {
+    logger = TestLogger()
     leftMotorSpy = createMotorSpies(sandbox)
     rightMotorSpy = createMotorSpies(sandbox)
 
     left = MockMotor(1, leftMotorSpy)
     right = MockMotor(2, rightMotorSpy)
     const mpu = await MPUFactory({ useFake: true })
-    car = CarFactory({ left, right }, mpu)
+    car = CarFactory({ left, right }, mpu, logger)
   })
 
   afterEach(() => {
