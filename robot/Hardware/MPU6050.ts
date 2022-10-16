@@ -46,15 +46,15 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
   bus.writeByteSync(address, SMPLRT_DIV, 0b00000111)
   bus.writeByteSync(address, CONFIG, 0b00000000)
   bus.writeByteSync(address, ACCEL_CONFIG, 0b00000000)
-  bus.writeByteSync(address, GYRO_CONFIG, 0b00000000)
-  // bus.writeByteSync(address, INT_ENABLE, 1)
+  bus.writeByteSync(address, GYRO_CONFIG, 0b00011000)
+  bus.writeByteSync(address, INT_ENABLE, 0b00000001)
 
   const accelDivisor = 0x4000 // g (earth gravity)
   const gyroDivisor = (131 * 250) / 250 // deg/s
 
   function read(pos: number, divisor: number): number {
     const value = (bus.readByteSync(address, pos) << 8) + bus.readByteSync(address, pos + 1)
-    return (value > 0x7fff ? value - 0x10000 : value) / divisor
+    return (value > 0x8000 ? value - 0x10000 : value) / divisor
   }
 
   let lastUpdate: bigint | undefined

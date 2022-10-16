@@ -10,6 +10,7 @@ import MPUFactory, {
   GYRO_X,
   GYRO_Y,
   GYRO_Z,
+  INT_ENABLE,
   MPU,
   PWR_MGMT_1,
   SMPLRT_DIV,
@@ -31,8 +32,8 @@ describe("MPU6050", () => {
     fakeI2CBus.data[PWR_MGMT_1].should.equal(0)
     fakeI2CBus.data[SMPLRT_DIV].should.equal(7)
     fakeI2CBus.data[CONFIG].should.equal(0)
-    fakeI2CBus.data[GYRO_CONFIG].should.equal(0)
-    // fakeI2CBus.data[INT_ENABLE].should.equal(1)
+    fakeI2CBus.data[GYRO_CONFIG].should.equal(24)
+    fakeI2CBus.data[INT_ENABLE].should.equal(1)
   })
 
   it("should read values from accelerometer", () => {
