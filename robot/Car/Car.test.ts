@@ -16,8 +16,8 @@ describe("Car", () => {
   let left: Motor
   let right: Motor
   let car: Car
-  let leftMotorSpy
-  let rightMotorSpy
+  let leftMotorSpy: ReturnType<typeof createMotorSpies>
+  let rightMotorSpy: ReturnType<typeof createMotorSpies>
   let logger: Logger
 
   beforeEach(async () => {

@@ -6,7 +6,7 @@ import Logger from "../lib/Logger"
 describe("Encoder", () => {
   let gpio: GPIO
   let encoder: Encoder
-  let timer: number
+  let timer: number | undefined
 
   beforeEach(() => {
     gpio = GPIOFactory(true)

@@ -46,7 +46,7 @@ export default function TriggerFactory<T>(): Trigger<T> {
   }
 
   function waitFor(subject: Subject<T>, predicate: Predicate<T> = () => true) {
-    let resolve: ResolveFunc
+    let resolve: ResolveFunc = () => undefined
     const promise = new Promise<string>((res) => (resolve = res))
     subject.registerObserver(handle)
     listeners.push({ subject, predicate, resolve, promise })

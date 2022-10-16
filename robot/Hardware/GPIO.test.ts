@@ -2,7 +2,7 @@ import should from "should"
 import GPIOFactory, { GPIO, INPUT, OUTPUT } from "./gpio"
 
 describe("GPIO", () => {
-  const events = []
+  const events = [] as { event: string | symbol; args: unknown }[]
   let gpio: GPIO
 
   beforeEach(() => {

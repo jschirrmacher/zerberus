@@ -5,7 +5,7 @@ import ObservableValue from "../lib/ObservableValue"
 import Sinon from "sinon"
 
 describe("RouteTracker", () => {
-  let tracker: RouteTracker = null
+  let tracker: RouteTracker
   let time = 42
 
   beforeEach(() => {
