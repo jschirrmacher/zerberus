@@ -10,6 +10,8 @@ import { CLIENT_TYPE } from "./types.js"
   const carPath = document.querySelector("#path")
   const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
   const wayPoints = [center.x.toFixed(0) + " " + center.y.toFixed(0)]
+  const flightindicator = document.querySelector("#flightindicator line")
+  const speedo = document.querySelector("#speedo")
 
   const socket = io()
 
@@ -68,9 +70,16 @@ import { CLIENT_TYPE } from "./types.js"
     car.setAttribute("style", `transform: translate(${x}px, ${y}px) rotate(${msg.orientation}deg) scale(.5)`)
     addWaypoint(x, y)
     carPos.innerHTML = `x: ${msg.posX}<br>y: ${msg.posY}<br>o: ${msg.orientation}`
-    mpuAccel.innerHTML = "<span>accel:</span><span>" + msg.mpu?.accel.split(",").join("</span><span>") + "</span>"
-    mpuGyro.innerHTML = "<span>gyro:</span><span>" + msg.mpu?.gyro.split(",").join("</span><span>") + "</span>"
-    mpuSpeed.innerHTML = "<span>speed:</span><span>" + msg.mpu?.speed.split(",").join("</span><span>") + "</span>"
+
+    const accel = msg.mpu?.accel.split(",")
+    const gyro = msg.mpu?.gyro.split(",")
+    const speed = msg.mpu?.speed.split(",")
+    mpuAccel.innerHTML = "<span>accel:</span><span>" + accel.split(",").join("</span><span>") + "</span>"
+    mpuGyro.innerHTML = "<span>gyro:</span><span>" + gyro.split(",").join("</span><span>") + "</span>"
+    mpuSpeed.innerHTML = "<span>speed:</span><span>" + speed.split(",").join("</span><span>") + "</span>"
+
+    flightindicator.y1 = 75 + accel.y * 75
+    flightindicator.y2 = 75 + accel.y * 75
   }
 
   socket.on("connect", () => socket.emit("command", { name: "list-commands" }))
