@@ -13,7 +13,7 @@ export type GPIONotifier = {
 }
 
 type ListenerId = number
-export type ListenerFunction = (event: string | symbol, ...args: unknown[]) => void
+export type ListenerFunction = (event: string, ...args: unknown[]) => void
 type Options = Record<string, unknown>
 
 export type GPIO = {
@@ -110,7 +110,7 @@ export default function (useFake = false): GPIO {
   let listenerId = 0
   const listeners = {} as Record<number, ListenerFunction>
 
-  function notifyListeners(event: string | symbol, ...args: unknown[]): void {
+  function notifyListeners(event: string, ...args: unknown[]): void {
     Object.values(listeners).forEach((emit) => emit(event, ...args))
   }
 

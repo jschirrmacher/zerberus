@@ -3,7 +3,7 @@ import MotorFactory from "./MotorSet/Motor"
 import CarFactory from "./Car/Car"
 import Encoder from "./MotorSet/Encoder"
 import express from "express"
-import IO from "socket.io"
+import { Server, Socket } from "socket.io"
 import GPIOFactory from "./Hardware/gpio"
 import MPUFactory from "./Hardware/MPU6050"
 import HTTP = require("http")
@@ -16,7 +16,7 @@ import { connectGPIOViewer } from "./ClientHandler/GPIOViewer"
 async function initCar() {
   const prod = process.env.NODE_ENV === "production"
   const gpio = GPIOFactory(!prod)
-  const mpu = MPUFactory({ useFake: !prod })
+  const mpu = await MPUFactory({ useFake: !prod })
 
   const leftEncoder = Encoder(gpio, 14, 15)
   const rightEncoder = Encoder(gpio, 19, 26)
@@ -26,15 +26,15 @@ async function initCar() {
 
   const app = express()
   const server = HTTP.createServer(app)
-  const io = IO(server)
+  const io = new Server(server)
   server.listen(10000)
   app.use("/", express.static(path.resolve(__dirname, "..", "frontend")))
   app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
   console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 
-  async function clientHasRegistered(client: IO.Socket, types: string[]): Promise<void> {
+  async function clientHasRegistered(client: Socket, types: string[]): Promise<void> {
     if (types.includes(CLIENT_TYPE.REMOTE_CONTROL)) {
-      connectRemoteControl(client, car, await mpu)
+      connectRemoteControl(client, car, mpu)
     }
 
     if (types.includes(CLIENT_TYPE.CAMERA)) {
@@ -42,7 +42,7 @@ async function initCar() {
     }
 
     if (types.includes(CLIENT_TYPE.COCKPIT)) {
-      connectCockpit(client, car, await mpu)
+      connectCockpit(client, car, mpu)
     }
 
     if (types.includes(CLIENT_TYPE.GPIO_VIEWER)) {
@@ -52,7 +52,7 @@ async function initCar() {
 
   io.on("connection", (client) => {
     console.log("Client connected")
-    client.on("hi", (types) => clientHasRegistered(client, types))
+    client.on("hi", (types: string[]) => clientHasRegistered(client, types))
     client.on("disconnect", () => console.log("Client has disconnected"))
     client.emit("hi", "Zerberus")
   })
@@ -61,7 +61,7 @@ async function initCar() {
     console.log("Caught interrupt signal")
     car.destruct()
     console.log("Motor controller discarded")
-    ;(await mpu).close()
+    mpu.close()
     console.log("MPU discarded")
     process.exit()
   })
