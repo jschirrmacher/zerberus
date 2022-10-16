@@ -12,6 +12,7 @@ export interface Encoder {
   speed: ObservableValue<number>
   tick(diff: number, time: number): void
   simulateSpeed(speed: number): void
+  handleChunk(chunk: Buffer): void
 }
 
 let encoderNo = 1
@@ -67,30 +68,30 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = Modu
         }
       }
     },
-  }
 
-  function handleChunk(chunk: Buffer) {
-    try {
-      if (!(chunk.readUInt16LE(2) & PI_NTFY_FLAGS_ALIVE)) {
-        const level = chunk.readUInt32LE(8)
-        const newVal = (((level >>> pin_a) & 1) << 1) | ((level >>> pin_b) & 1)
-        const diff = QEM[oldVal][newVal]
-        if (!Number.isNaN(diff) && diff !== 0) {
-          encoder.tick(diff, chunk.readUInt32LE(4))
+    handleChunk(chunk: Buffer) {
+      try {
+        if (!(chunk.readUInt16LE(2) & PI_NTFY_FLAGS_ALIVE)) {
+          const level = chunk.readUInt32LE(8)
+          const newVal = (((level >>> pin_a) & 1) << 1) | ((level >>> pin_b) & 1)
+          const diff = QEM[oldVal][newVal]
+          if (!Number.isNaN(diff) && diff !== 0) {
+            encoder.tick(diff, chunk.readUInt32LE(4))
+          }
+          oldVal = newVal
         }
-        oldVal = newVal
+      } catch (error) {
+        logger.error(error)
+        logger.error({ buffer: chunk.toString("hex").match(/../g)?.join(" ") })
       }
-    } catch (error) {
-      logger.error(error)
-      logger.error({ buffer: chunk.toString("hex").match(/../g)?.join(" ") })
-    }
 
-    chunk.length > 12 && handleChunk(chunk.slice(12))
-  }
+      chunk.length > 12 && encoder.handleChunk(chunk.slice(12))
+    },
+  } as Encoder
 
   gpio.create(pin_a, { mode: INPUT })
   gpio.create(pin_b, { mode: INPUT })
-  notifier.stream().on("data", handleChunk)
+  notifier.stream().on("data", encoder.handleChunk)
 
   return encoder
 }

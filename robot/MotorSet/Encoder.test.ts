@@ -1,6 +1,6 @@
 import "should"
 import EncoderFactory, { Encoder, TICKS_PER_REV } from "./Encoder"
-import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE, pushStreamData } from "../Hardware/gpio"
+import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
 import Logger from "../lib/Logger"
 
 describe("Encoder", () => {
@@ -57,19 +57,28 @@ describe("Encoder", () => {
     delete process.env.LOG_ENCODER
   })
 
-  it("should read from stream", (done) => {
-    pushStreamData([{ flags: 0, level: 2, time: 10000 }])
-    setImmediate(() => {
-      encoder.position.value.should.equal(1)
-      done()
+  function createBuffer(info: { flags: number; time: number; level: number }[]) {
+    const data = Buffer.alloc(12 * info.length)
+    info.forEach((entry, index) => {
+      data.writeInt16LE(entry.flags, index * 12 + 2)
+      data.writeInt32LE(entry.time, index * 12 + 4)
+      data.writeInt32LE(entry.level, index * 12 + 8)
     })
+    return data
+  }
+
+  it("should read from stream", () => {
+    encoder.handleChunk(createBuffer([{ flags: 0, level: 2, time: 10000 }]))
+    encoder.position.value.should.equal(1)
   })
 
   it("should handle buffers containing multiple entries", (done) => {
-    pushStreamData([
-      { flags: 0, level: 2, time: 10000 },
-      { flags: 0, level: 6, time: 20000 },
-    ])
+    encoder.handleChunk(
+      createBuffer([
+        { flags: 0, level: 2, time: 10000 },
+        { flags: 0, level: 6, time: 20000 },
+      ])
+    )
     setImmediate(() => {
       encoder.position.value.should.equal(2)
       done()
@@ -77,10 +86,12 @@ describe("Encoder", () => {
   })
 
   it("should ignore keepalive ticks", (done) => {
-    pushStreamData([
-      { flags: 0, level: 2, time: 10000 },
-      { flags: PI_NTFY_FLAGS_ALIVE, level: 6, time: 20000 },
-    ])
+    encoder.handleChunk(
+      createBuffer([
+        { flags: 0, level: 2, time: 10000 },
+        { flags: PI_NTFY_FLAGS_ALIVE, level: 6, time: 20000 },
+      ])
+    )
     setImmediate(() => {
       encoder.position.value.should.equal(1)
       done()

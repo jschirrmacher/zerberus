@@ -1,4 +1,4 @@
-import sinon, { spy } from "sinon"
+import sinon from "sinon"
 import { Encoder } from "./Encoder"
 import ObservableValueFactory from "../lib/ObservableValue"
 
@@ -22,6 +22,7 @@ export default function MockEncoderFactory(no: number, spies: Record<EncoderProp
     simulated: true,
     position: ObservableValueFactory<number>("position", 0),
     speed: ObservableValueFactory<number>("speed", 0),
+    handleChunk: () => undefined,
 
     ...spies,
   }

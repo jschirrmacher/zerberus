@@ -25,16 +25,6 @@ export type GPIO = {
 }
 
 const readableData = [] as Buffer[]
-export function pushStreamData(info: { flags: number; time: number; level: number }[]): void {
-  const data = Buffer.alloc(12 * info.length)
-  info.forEach((entry, index) => {
-    data.writeInt16LE(entry.flags, index * 12 + 2)
-    data.writeInt32LE(entry.time, index * 12 + 4)
-    data.writeInt32LE(entry.level, index * 12 + 8)
-  })
-  readableData.push(data)
-}
-
 class FakeGPIO {
   digitalWrite() {
     //
