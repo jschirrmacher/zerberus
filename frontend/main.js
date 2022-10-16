@@ -78,8 +78,8 @@ import { CLIENT_TYPE } from "./types.js"
     mpuGyro.innerHTML = "<span>gyro:</span><span>" + gyro?.join("</span><span>") + "</span>"
     mpuSpeed.innerHTML = "<span>speed:</span><span>" + speed?.join("</span><span>") + "</span>"
 
-    flightindicator.setAttribute("y1", 75 - accel[0] * accel[1] * 75)
-    flightindicator.setAttribute("y2", 75 + accel[0] * accel[1] * 75)
+    flightindicator.setAttribute("y1", 75 - accel[0] * accel[1] * 75 * 75)
+    flightindicator.setAttribute("y2", 75 + accel[0] * accel[1] * 75 * 75)
   }
 
   socket.on("connect", () => socket.emit("command", { name: "list-commands" }))
