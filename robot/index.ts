@@ -33,6 +33,7 @@ async function initCar() {
   console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 
   async function clientHasRegistered(client: Socket, types: string[]): Promise<void> {
+    console.log(types)
     if (types.includes(CLIENT_TYPE.REMOTE_CONTROL)) {
       connectRemoteControl(client, car, mpu)
     }

@@ -40,8 +40,9 @@ THe MPU needs to be connected to the I2C ports, motor controllers and encoders j
 - Put SD card into Raspi and boot, the Raspi should appear in your WLAN after a short while (find out its IP address)
 - ssh into Raspi via its IP address, user `pi` password `raspberry`
 - Secure account by setting a new password (`passwd`)
-- `curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -`
-- `sudo apt-get install -y nodejs`
+- `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash`
+- Close and re-open your terminal
+- `nvm install 18`
 - Enable I2C using `sudo raspi-config` (check that device is connected correctly by using `sudo i2cdetect -y 1` - it should show a "68" between a lot of "--")
 - Increase I2C baud rate by finding a `dtparam=i2c_arm=on` line in `/boot/config.txt` and replace it to `dtparam=i2c_arm=on,i2c_arm_baudrate=100000`
 

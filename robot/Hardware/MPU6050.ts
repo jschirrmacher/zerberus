@@ -35,7 +35,7 @@ type MPUOptions = {
 export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU> {
   const address = options.address || 0x68
   let timer = options.timer || process.hrtime.bigint
-  let timeout: NodeJS.Timeout
+  let interval: NodeJS.Timer
   const i2c = options.useFake ? fakeI2CBus : await import("i2c-bus")
   const gyro = createObservable<ThreeDeeCoords>(Subject("gyro"), make3dCoord())
   const accel = createObservable<ThreeDeeCoords>(Subject("accel"), make3dCoord())
@@ -57,9 +57,10 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     return (value > 0x7fff ? value - 0x10000 : value) / divisor
   }
 
-  let lastUpdate = undefined as bigint | undefined
+  let lastUpdate: bigint | undefined
 
   function update(): void {
+    const now = timer()
     const result = [
       read(ACCEL_X, accelDivisor),
       read(ACCEL_Y, accelDivisor),
@@ -70,7 +71,6 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     ]
     accel.value = make3dCoord(result[0], result[1], result[2])
     gyro.value = make3dCoord(result[3], result[4], result[5])
-    const now = timer()
     if (lastUpdate) {
       const delta = Number(now - lastUpdate) / 1e9
       if (delta && (result[0] || result[1] || result[2])) {
@@ -78,10 +78,9 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
       }
     }
     lastUpdate = now
-    timeout = setTimeout(update, UPDATE_INTERVAL)
   }
 
-  update()
+  interval = setInterval(update, UPDATE_INTERVAL)
 
   return {
     gyro,
@@ -90,7 +89,7 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     update,
 
     close: () => {
-      timeout && clearTimeout(timeout)
+      interval && clearInterval(interval)
     },
   }
 }
