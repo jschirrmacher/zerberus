@@ -198,9 +198,8 @@ export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: M
         car.orientation.registerObserver(observer)
         await trigger
         car.orientation.unregisterObserver(observer)
-
-        car.float()
       }
+      car.float()
       logger.debug(`car.goto: arrived at currentPos=${this.position} ${this.orientation}`)
     },
 
