@@ -74,12 +74,12 @@ import { CLIENT_TYPE } from "./types.js"
     const accel = msg.mpu?.accel.split(",")
     const gyro = msg.mpu?.gyro.split(",")
     const speed = msg.mpu?.speed.split(",")
-    mpuAccel.innerHTML = "<span>accel:</span><span>" + accel.join("</span><span>") + "</span>"
-    mpuGyro.innerHTML = "<span>gyro:</span><span>" + gyro.join("</span><span>") + "</span>"
-    mpuSpeed.innerHTML = "<span>speed:</span><span>" + speed.join("</span><span>") + "</span>"
+    mpuAccel.innerHTML = "<span>accel:</span><span>" + accel?.join("</span><span>") + "</span>"
+    mpuGyro.innerHTML = "<span>gyro:</span><span>" + gyro?.join("</span><span>") + "</span>"
+    mpuSpeed.innerHTML = "<span>speed:</span><span>" + speed?.join("</span><span>") + "</span>"
 
-    flightindicator.y1 = 75 + accel.y * 75
-    flightindicator.y2 = 75 + accel.y * 75
+    flightindicator.setAttribute("y1", 75 + accel[1] * 75)
+    flightindicator.setAttribute("y2", 75 + accel[1] * 75)
   }
 
   socket.on("connect", () => socket.emit("command", { name: "list-commands" }))
