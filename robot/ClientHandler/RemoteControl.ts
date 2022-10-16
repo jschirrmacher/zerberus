@@ -23,7 +23,7 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU, logg
   }
 
   function keyControl(info: { cmd: keyof typeof keyControls }) {
-    console.debug("Direct control " + info.cmd)
+    logger.debug("Direct control " + info.cmd)
     const cmd = keyControls[info.cmd]
     cmd && cmd()
   }
