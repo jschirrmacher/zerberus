@@ -20,7 +20,7 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU, logg
     left: () => car.turn(Direction.left),
     right: () => car.turn(Direction.right),
     break: () => car.stop(),
-  }
+  } as Record<string, () => Promise<void>>
 
   function keyControl(info: { cmd: keyof typeof keyControls }) {
     logger.debug("Direct control " + info.cmd)
