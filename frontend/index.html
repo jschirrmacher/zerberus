@@ -63,8 +63,13 @@
 
         <div id="mpu">
           <svg id="flightindicator" width="150" height="150" >
-            <circle cx="75" cy="75" r="70" fill="transparent" stroke="darkred" stroke-width="3" />
-            <line x1="30" x2="120" y1="75" y2="75" stroke="darkred" stroke-width="3" />
+            <path id="horizon" d="M0,150L0,75L150,75L150,150Z" fill="red" />
+            <g fill-rule="evenodd" fill="darkred">
+              <path d="M0,0L150,0L150,150L0,150z
+              M 75,75 m -75, 0
+              a 75,75 0 1,0 150,0
+              a 75,75 0 1,0 -150,0" />
+            </g>
           </svg>
           <svg id="speedo" width="150" height="150" >
             <circle cx="75" cy="75" r="60" fill="transparent" stroke="darkred" stroke-width="30" />

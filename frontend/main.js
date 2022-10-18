@@ -10,7 +10,7 @@ import { CLIENT_TYPE } from "./types.js"
   const carPath = document.querySelector("#path")
   const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
   const wayPoints = [center.x.toFixed(0) + " " + center.y.toFixed(0)]
-  const flightindicator = document.querySelector("#flightindicator line")
+  const flightindicator = document.querySelector("#flightindicator #horizon")
   const speedo = document.querySelector("#speedo")
 
   const socket = io()
@@ -78,8 +78,11 @@ import { CLIENT_TYPE } from "./types.js"
     mpuGyro.innerHTML = "<span>gyro:</span><span>" + gyro?.join("</span><span>") + "</span>"
     mpuSpeed.innerHTML = "<span>speed:</span><span>" + speed?.join("</span><span>") + "</span>"
 
-    flightindicator.setAttribute("y1", 75 - accel[0] * accel[1] * 75 * 75)
-    flightindicator.setAttribute("y2", 75 + accel[0] * accel[1] * 75 * 75)
+    // flightindicator.setAttribute("y1", 75 + accel[1] * 75 - accel[0] * 30)
+    // flightindicator.setAttribute("y2", 75 + accel[1] * 75 + accel[0] * 30)
+    const y1 = 75 + accel[1] * 75 - accel[0] * 30
+    const y2 = 75 + accel[1] * 75 + accel[0] * 30
+    flightindicator.setAttribute("d", `M0,150L0,${y1}L150,${y2}L150,150Z`)
   }
 
   socket.on("connect", () => socket.emit("command", { name: "list-commands" }))
