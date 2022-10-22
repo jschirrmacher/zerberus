@@ -11,7 +11,6 @@ import { CLIENT_TYPE } from "./types.js"
   const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 }
   const wayPoints = [center.x.toFixed(0) + " " + center.y.toFixed(0)]
   const flightindicator = document.querySelector("#flightindicator #horizon")
-  const speedo = document.querySelector("#speedo")
 
   const socket = io()
 
