@@ -1,0 +1,13 @@
+// Vitest Snapshot v1
+
+exports[`TheCar > should render as expected 1`] = `
+<div
+  class="car"
+>
+  <!-- &lt;CarWheel /&gt; -->
+  <!-- &lt;CarWheel /&gt; -->
+  <car-chassis-stub />
+  <!-- &lt;CarWheel /&gt;
+    &lt;CarWheel /&gt; -->
+</div>
+`;

@@ -22,7 +22,6 @@ export default function JoystickHandle(handle) {
   handle.addEventListener("touchstart", touchstart, { passive: true })
 
   let snapBackTimer
-  const center = { x: padSize.x / 2, y: padSize.y / 2 }
   let pos = { x: 0, y: 0 }
   update()
 

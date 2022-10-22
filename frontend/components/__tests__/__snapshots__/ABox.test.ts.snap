@@ -1,0 +1,33 @@
+// Vitest Snapshot v1
+
+exports[`ABox > should render as expected 1`] = `
+<div
+  class="box"
+  data-v-a1187cd5=""
+>
+  <div
+    class="top"
+    data-v-a1187cd5=""
+  />
+  <div
+    class="bottom"
+    data-v-a1187cd5=""
+  />
+  <div
+    class="left"
+    data-v-a1187cd5=""
+  />
+  <div
+    class="right"
+    data-v-a1187cd5=""
+  />
+  <div
+    class="front"
+    data-v-a1187cd5=""
+  />
+  <div
+    class="back"
+    data-v-a1187cd5=""
+  />
+</div>
+`;

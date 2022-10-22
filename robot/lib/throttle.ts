@@ -10,7 +10,7 @@ export function debounce(cb: (...args: unknown[]) => void, delay: number) {
 }
 
 export function throttle(cb: (...args: unknown[]) => void, limit: number) {
-  var wait = false
+  let wait = false
   return (...args: unknown[]) => {
     if (!wait) {
       cb(...args)

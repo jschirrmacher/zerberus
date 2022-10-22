@@ -4,5 +4,5 @@ extension:
   - '.ts'
 exit: true
 spec:
-  - 'robot/**/*.test.ts'
+  - './**/*.test.ts'
 ui: bdd

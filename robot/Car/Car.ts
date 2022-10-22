@@ -12,8 +12,6 @@ export const AXIS_WIDTH_IN_TICKS = WIDTH_OF_AXIS * TICKS_PER_MM
 export const MINIMAL_TURN_ANGLE = fromRadian(Math.PI / 180)
 export const MINIMAL_DISTANCE = 20
 
-const epsilon = 0.003
-
 export enum Direction {
   left = "left",
   right = "right",
