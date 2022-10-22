@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue"
 
-const cameraPos = ref({ x: 0, y: 0, z: 0 })
-const cameraRot = ref({ x: 0, y: 0, z: 0 })
+const cameraPos = ref({ x: 100, y: 400, z: 100 })
+const cameraRot = ref({ x: 0, y: 50, z: 0 })
 
 const commands = {
   ArrowDown: () => move({ y: -50 }),
@@ -78,5 +78,6 @@ const setupStyle = computed(() => {
   transform-style: preserve-3d;
   transition: all 1s linear;
   position: absolute;
+  transform-origin: 0 0;
 }
 </style>
