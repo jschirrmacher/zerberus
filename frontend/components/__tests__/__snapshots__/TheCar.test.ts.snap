@@ -3,11 +3,26 @@
 exports[`TheCar > should render as expected 1`] = `
 <div
   class="car"
+  data-v-fb2245a3=""
 >
-  <!-- &lt;CarWheel /&gt; -->
-  <!-- &lt;CarWheel /&gt; -->
-  <car-chassis-stub />
-  <!-- &lt;CarWheel /&gt;
-    &lt;CarWheel /&gt; -->
+  <car-wheel-stub
+    class="left back"
+    data-v-fb2245a3=""
+  />
+  <car-wheel-stub
+    class="right back"
+    data-v-fb2245a3=""
+  />
+  <car-chassis-stub
+    data-v-fb2245a3=""
+  />
+  <car-wheel-stub
+    class="left front"
+    data-v-fb2245a3=""
+  />
+  <car-wheel-stub
+    class="right front"
+    data-v-fb2245a3=""
+  />
 </div>
 `;

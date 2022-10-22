@@ -5,12 +5,28 @@ import CarChassis from "./CarChassis.vue"
 
 <template>
   <div class="car">
-    <!-- <CarWheel /> -->
-    <!-- <CarWheel /> -->
+    <CarWheel class="left back" />
+    <CarWheel class="right back" />
     <CarChassis />
-    <!-- <CarWheel />
-    <CarWheel /> -->
+    <CarWheel class="left front" />
+    <CarWheel class="right front" />
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.left.back {
+  transform: translateZ(-20px);
+}
+
+.right.back {
+  transform: translateZ(320px);
+}
+
+.left.front {
+  transform: translateZ(-20px) translateX(320px);
+}
+
+.right.front {
+  transform: translateZ(320px) translateX(320px);
+}
+</style>
