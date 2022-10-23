@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { ref, computed } from "vue"
 
-const cameraPos = ref({ x: 100, y: 400, z: 100 })
-const cameraRot = ref({ x: 0, y: 50, z: 0 })
+const cameraPos = ref({ x: 300, y: 400, z: 100 })
+const cameraRot = ref({ x: 0, y: 90, z: 0 })
 
 const commands = {
-  ArrowDown: () => move({ y: -50 }),
-  ArrowUp: () => move({ y: 50 }),
+  ArrowDown: () => move({ y: 50 }),
+  ArrowUp: () => move({ y: -50 }),
   ArrowLeft: () => move({ x: -50 }),
   ArrowRight: () => move({ x: 50 }),
   TurnArrowDown: () => turn({ y: -10 }),
   TurnArrowUp: () => turn({ y: 10 }),
-  TurnArrowLeft: () => turn({ x: -10 }),
-  TurnArrowRight: () => turn({ x: 10 }),
+  TurnArrowLeft: () => turn({ x: 10 }),
+  TurnArrowRight: () => turn({ x: -10 }),
 } as Record<string, () => void>
 
 function keydown(event: KeyboardEvent) {
@@ -69,7 +69,7 @@ const setupStyle = computed(() => {
 
 #camera {
   perspective: 1500px;
-  perspective-origin: 0px 0px;
+  perspective-origin: 400px 200px;
 }
 
 #setup,
