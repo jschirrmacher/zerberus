@@ -7,7 +7,7 @@ import TheCar from "./components/TheCar.vue"
   <header>Zerberus</header>
 
   <ThreeDeeWorld>
-    <TheCar />
+    <TheCar :motor-speed-left="20" :motor-speed-right="100" />
   </ThreeDeeWorld>
 </template>
 

@@ -22,7 +22,20 @@ const tireStyles = [...Array(32)].map((_, index) => {
 </template>
 
 <style scoped lang="scss">
-.wheel {
+@keyframes rotation {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+#setup .wheel {
+  transform-origin: 90px 90px;
+  animation: 0s linear 0s infinite normal none running rotation;
+
   .side {
     width: 180px;
   }

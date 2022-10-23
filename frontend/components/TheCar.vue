@@ -1,32 +1,52 @@
 <script setup lang="ts">
 import CarWheel from "./CarWheel.vue"
 import CarChassis from "./CarChassis.vue"
+
+defineProps<{
+  motorSpeedLeft: number
+  motorSpeedRight: number
+}>()
+
+function speed(percent: number) {
+  return {
+    animationDuration: 5 - Math.abs(percent) / 25 + "s",
+    animationDirection: percent < 0 ? "reverse" : "normal",
+  }
+}
 </script>
 
 <template>
   <div class="car">
-    <CarWheel class="left back" />
-    <CarWheel class="right back" />
     <CarChassis />
-    <CarWheel class="left front" />
-    <CarWheel class="right front" />
+    <div class="left">
+      <div class="back">
+        <CarWheel :style="speed(motorSpeedLeft)" />
+      </div>
+      <div class="front">
+        <CarWheel :style="speed(motorSpeedLeft)" />
+      </div>
+    </div>
+    <div class="right">
+      <div class="back">
+        <CarWheel :style="speed(motorSpeedRight)" />
+      </div>
+      <div class="front">
+        <CarWheel :style="speed(motorSpeedRight)" />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.left.back {
+.left {
   transform: translateZ(-20px);
 }
 
-.right.back {
+.right {
   transform: translateZ(320px);
 }
 
-.left.front {
-  transform: translateZ(-20px) translateX(320px);
-}
-
-.right.front {
-  transform: translateZ(320px) translateX(320px);
+.front {
+  transform: translateX(320px);
 }
 </style>
