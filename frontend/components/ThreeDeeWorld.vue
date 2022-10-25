@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue"
 
-const cameraPos = ref({ x: 300, y: 400, z: 100 })
-const cameraRot = ref({ x: 0, y: 90, z: 0 })
+const cameraPos = ref({ x: 450, y: 400, z: 0 })
+const cameraRot = ref({ x: -10, y: 0, z: 0 })
 
 const commands = {
   ArrowDown: () => move({ y: 50 }),
@@ -48,9 +48,12 @@ const setupStyle = computed(() => {
     <button id="ArrowDown" @click="commands.ArrowDown">ᐁ</button>
   </nav>
 
-  <div class="perspective">
+  <div id="perspective">
     <div id="camera">
       <div id="setup" :style="setupStyle">
+        <div id="floor" />
+        <div id="x-axis"></div>
+        <div id="z-axis"></div>
         <slot />
       </div>
     </div>
@@ -58,7 +61,7 @@ const setupStyle = computed(() => {
 </template>
 
 <style scoped>
-.perspective {
+#perspective {
   color: #5c758e;
   width: 100%;
   height: 100%;
@@ -68,8 +71,10 @@ const setupStyle = computed(() => {
 }
 
 #camera {
-  perspective: 1500px;
-  perspective-origin: 400px 200px;
+  width: 100%;
+  height: 100%;
+  perspective: 3000px;
+  perspective-origin: 50% 50%;
 }
 
 #setup,
@@ -79,5 +84,27 @@ const setupStyle = computed(() => {
   transition: all 1s linear;
   position: absolute;
   transform-origin: 0 0;
+}
+
+#floor {
+  top: 0;
+  left: 0;
+  width: 10000px;
+  height: 10000px;
+  background: #003300;
+  transform: translate3d(-5000px, 0, -5000px) rotateX(90deg);
+}
+
+#x-axis,
+#z-axis {
+  width: 1px;
+  height: 10000px;
+  background-color: red;
+}
+#x-axis {
+  transform: translateY(-1px) rotateZ(-90deg) translateY(-5000px);
+}
+#z-axis {
+  transform: translateY(-1px) rotateX(-90deg) translateY(-5000px);
 }
 </style>
