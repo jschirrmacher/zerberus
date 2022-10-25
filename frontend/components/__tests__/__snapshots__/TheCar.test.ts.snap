@@ -5,24 +5,66 @@ exports[`TheCar > should render as expected 1`] = `
   class="car"
   data-v-fb2245a3=""
 >
-  <car-wheel-stub
-    class="left back"
-    data-v-fb2245a3=""
-  />
-  <car-wheel-stub
-    class="right back"
-    data-v-fb2245a3=""
-  />
   <car-chassis-stub
+    color="#000000"
     data-v-fb2245a3=""
+    height="125"
+    length="250"
+    width="500"
   />
-  <car-wheel-stub
-    class="left front"
+  <div
+    class="left"
     data-v-fb2245a3=""
-  />
-  <car-wheel-stub
-    class="right front"
+  >
+    <div
+      class="back"
+      data-v-fb2245a3=""
+    >
+      <car-wheel-stub
+        data-v-fb2245a3=""
+        diameter="180"
+        speed="0"
+        width="50"
+      />
+    </div>
+    <div
+      class="front"
+      data-v-fb2245a3=""
+    >
+      <car-wheel-stub
+        data-v-fb2245a3=""
+        diameter="180"
+        speed="0"
+        width="50"
+      />
+    </div>
+  </div>
+  <div
+    class="right"
     data-v-fb2245a3=""
-  />
+  >
+    <div
+      class="back"
+      data-v-fb2245a3=""
+    >
+      <car-wheel-stub
+        data-v-fb2245a3=""
+        diameter="180"
+        speed="0"
+        width="50"
+      />
+    </div>
+    <div
+      class="front"
+      data-v-fb2245a3=""
+    >
+      <car-wheel-stub
+        data-v-fb2245a3=""
+        diameter="180"
+        speed="0"
+        width="50"
+      />
+    </div>
+  </div>
 </div>
 `;

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import CarWheel from "./CarWheel.vue"
 import CarChassis from "./CarChassis.vue"
-import { computed } from "vue"
 
 defineProps<{
   motorSpeedLeft: number
   motorSpeedRight: number
+  direction?: number
 }>()
 
 const length = 250
@@ -13,10 +13,6 @@ const width = 500
 const height = 125
 const wheelDiameter = 180
 const wheelWidth = 50
-
-const px = (num: number) => num + "px"
-const carPosX = computed(() => px(-length / 2))
-const capPosZ = computed(() => px(-width / 2))
 </script>
 
 <template>
@@ -43,7 +39,9 @@ const capPosZ = computed(() => px(-width / 2))
 
 <style scoped lang="scss">
 .car {
-  transform: translateX(v-bind(carPosX)) translateY(calc(v-bind(wheelDiameter) * -1px)) translateZ(v-bind(capPosZ));
+  transform-origin: calc(v-bind(length) * 0.5px) 0 calc(v-bind(width) * 0.5px) !important;
+  transform: translateX(calc(v-bind(length) * -0.5px)) translateY(calc(v-bind(wheelDiameter) * -1px))
+    translateZ(calc(v-bind(width) * -0.5px)) rotateY(calc(v-bind(direction) * 1deg));
 }
 
 .left {

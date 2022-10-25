@@ -1,13 +1,23 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": ["env.d.ts", "./**/*.ts", "./**/*.vue"],
   "exclude": ["./**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "target": "ESNext",
+    "module": "ESNext",
     "types": ["node"],
+    "strict": true,
     "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "importsNotUsedAsValues": "error",
+    "preserveValueImports": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "ES2016"],
     "paths": {
       "@/*": ["./*"]
     }

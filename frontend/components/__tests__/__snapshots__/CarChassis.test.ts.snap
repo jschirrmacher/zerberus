@@ -1,0 +1,11 @@
+// Vitest Snapshot v1
+
+exports[`CarChassis > should render as expected 1`] = `
+<a-box-stub
+  class="car-chassis"
+  color="#abcdef"
+  height="50px"
+  length="100px"
+  width="200px"
+/>
+`;

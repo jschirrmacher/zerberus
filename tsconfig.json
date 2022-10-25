@@ -1,0 +1,16 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.node.json",
+  "include": ["env.d.ts", "./**/*.ts"],
+  "exclude": ["./**/__tests__/*"],
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "target": "ESNext",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
