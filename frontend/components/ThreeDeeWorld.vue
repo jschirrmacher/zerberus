@@ -54,13 +54,23 @@ const setupStyle = computed(() => {
         <div id="floor" />
         <div id="x-axis"></div>
         <div id="z-axis"></div>
+        <div id="directions">
+          <div id="north">N</div>
+          <div id="north-east">NE</div>
+          <div id="east">E</div>
+          <div id="south-east">SE</div>
+          <div id="south">S</div>
+          <div id="south-west">SW</div>
+          <div id="west">W</div>
+          <div id="north-west">NW</div>
+        </div>
         <slot />
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 #perspective {
   color: #5c758e;
   width: 100%;
@@ -93,11 +103,12 @@ const setupStyle = computed(() => {
   height: 10000px;
   background: #003300;
   transform: translate3d(-5000px, 0, -5000px) rotateX(90deg);
+  border-radius: 50%;
 }
 
 #x-axis,
 #z-axis {
-  width: 1px;
+  width: 2px;
   height: 10000px;
   background-color: red;
 }
@@ -106,5 +117,35 @@ const setupStyle = computed(() => {
 }
 #z-axis {
   transform: translateY(-1px) rotateX(-90deg) translateY(-5000px);
+}
+
+#directions {
+  font-size: 100px;
+  transform: translateX(-0.35em) translateY(-1.35em);
+
+  #north {
+    transform: rotateY(90deg) translateX(5000px) rotateY(270deg);
+  }
+  #north-east {
+    transform: rotateY(45deg) translateX(5000px) rotateY(270deg);
+  }
+  #east {
+    transform: translateX(5000px) rotateY(270deg);
+  }
+  #south-east {
+    transform: rotateY(-45deg) translateX(5000px) rotateY(270deg);
+  }
+  #south {
+    transform: rotateY(-90deg) translateX(5000px) rotateY(270deg) translateX(-0.6em);
+  }
+  #south-west {
+    transform: rotateY(-135deg) translateX(5000px) rotateY(270deg);
+  }
+  #west {
+    transform: rotateY(180deg) translateX(5000px) rotateY(270deg);
+  }
+  #north-west {
+    transform: rotateY(135deg) translateX(5000px) rotateY(270deg);
+  }
 }
 </style>
