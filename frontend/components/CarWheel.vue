@@ -14,7 +14,7 @@ const treadDepth = 20
 
 const animationSpeed = computed(() => {
   return {
-    animationDuration: 5 - Math.abs(props.speed || 0) / 25 + "s",
+    animationDuration: (props.speed ? 5 - Math.abs(props.speed) / 25 : 0) + "s",
     animationDirection: (props.speed || 0) < 0 ? "reverse" : "normal",
   }
 })

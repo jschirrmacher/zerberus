@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, nextTick } from "vue"
 
 const cameraPos = ref({ x: 450, y: 400, z: 0 })
 const cameraRot = ref({ x: -10, y: 0, z: 0 })
@@ -38,6 +38,15 @@ const setupStyle = computed(() => {
       rotateX(${cameraRot.value.x}deg) rotateY(${cameraRot.value.y}deg) rotateZ(${cameraRot.value.z}deg`,
   }
 })
+
+function resize() {
+  const perspective = document.getElementById("perspective")
+  cameraPos.value.x = (perspective?.clientWidth || 1000) * 0.5
+  cameraPos.value.y = (perspective?.clientHeight || 800) * 0.7
+}
+
+window.addEventListener("resize", resize)
+nextTick(resize)
 </script>
 
 <template>

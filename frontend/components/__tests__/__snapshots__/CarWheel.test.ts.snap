@@ -1,0 +1,559 @@
+// Vitest Snapshot v1
+
+exports[`CarWheel > should render as expected 1`] = `
+<div
+  class="wheel-container"
+  data-v-91b73939=""
+>
+  <div
+    class="wheel"
+    data-v-91b73939=""
+    style="animation-duration: 0s; animation-direction: normal;"
+  >
+    <img
+      class="side"
+      data-v-91b73939=""
+      src="/frontend/assets/wheel.svg"
+    />
+    <img
+      class="side"
+      data-v-91b73939=""
+      src="/frontend/assets/wheel.svg"
+    />
+    
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(-5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(6.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(17.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(28.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(40deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(51.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(62.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(73.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(85deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(96.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(107.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(118.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(130deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(141.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(152.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(163.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(175deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(186.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(197.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(208.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(220deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(231.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(242.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(253.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(265deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(276.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(287.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(298.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(310deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(321.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(332.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(343.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    
+  </div>
+</div>
+`;
+
+exports[`CarWheel > should turn backwards if a negative speed is specified 1`] = `
+<div
+  class="wheel-container"
+  data-v-91b73939=""
+>
+  <div
+    class="wheel"
+    data-v-91b73939=""
+    style="animation-duration: 3s; animation-direction: reverse;"
+  >
+    <img
+      class="side"
+      data-v-91b73939=""
+      src="/frontend/assets/wheel.svg"
+    />
+    <img
+      class="side"
+      data-v-91b73939=""
+      src="/frontend/assets/wheel.svg"
+    />
+    
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(-5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(6.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(17.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(28.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(40deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(51.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(62.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(73.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(85deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(96.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(107.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(118.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(130deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(141.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(152.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(163.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(175deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(186.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(197.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(208.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(220deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(231.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(242.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(253.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(265deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(276.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(287.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(298.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(310deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(321.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(332.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(343.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    
+  </div>
+</div>
+`;
+
+exports[`CarWheel > should turn if a speed is specified 1`] = `
+<div
+  class="wheel-container"
+  data-v-91b73939=""
+>
+  <div
+    class="wheel"
+    data-v-91b73939=""
+    style="animation-duration: 1s; animation-direction: normal;"
+  >
+    <img
+      class="side"
+      data-v-91b73939=""
+      src="/frontend/assets/wheel.svg"
+    />
+    <img
+      class="side"
+      data-v-91b73939=""
+      src="/frontend/assets/wheel.svg"
+    />
+    
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(-5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(6.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(17.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(28.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(40deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(51.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(62.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(73.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(85deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(96.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(107.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(118.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(130deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(141.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(152.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(163.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(175deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(186.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(197.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(208.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(220deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(231.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(242.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(253.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(265deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(276.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(287.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(298.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(310deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(321.25deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(332.5deg) translateY(50px) rotateX(90deg) translateX(-15px); background-color: rgb(17, 17, 17);"
+    />
+    <div
+      class="tire-tread"
+      data-v-91b73939=""
+      style="transform: translateY(50px) translateX(50px) rotateY(90deg) rotateX(343.75deg) translateY(45px) rotateX(90deg) translateX(-15px); background-color: rgb(22, 22, 22);"
+    />
+    
+  </div>
+</div>
+`;
