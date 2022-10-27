@@ -1,4 +1,4 @@
-import { Subject } from "./Subject"
+import type { Subject } from "./Subject"
 
 export type Trigger<T> = {
   completed: string[]

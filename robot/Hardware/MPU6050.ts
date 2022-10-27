@@ -1,6 +1,6 @@
-import { createObservable, ObservableValue } from "../lib/ObservableValue"
+import { createObservable, type ObservableValue } from "../lib/ObservableValue"
 import Subject from "../lib/Subject"
-import { make3dCoord, ThreeDeeCoords } from "../lib/ThreeDeeCoord"
+import { make3dCoord, type ThreeDeeCoords } from "../lib/ThreeDeeCoord"
 
 const UPDATE_INTERVAL = 20
 
@@ -34,8 +34,7 @@ type MPUOptions = {
 
 export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU> {
   const address = options.address || 0x68
-  let timer = options.timer || process.hrtime.bigint
-  let interval: NodeJS.Timer
+  const timer = options.timer || process.hrtime.bigint
   const i2c = options.useFake ? fakeI2CBus : await import("i2c-bus")
   const gyro = createObservable<ThreeDeeCoords>(Subject("gyro"), make3dCoord())
   const accel = createObservable<ThreeDeeCoords>(Subject("accel"), make3dCoord())
@@ -80,7 +79,7 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     lastUpdate = now
   }
 
-  interval = setInterval(update, UPDATE_INTERVAL)
+  const interval = setInterval(update, UPDATE_INTERVAL)
 
   return {
     gyro,

@@ -1,5 +1,5 @@
-import { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
-import createObservable, { ObservableValue } from "../lib/ObservableValue"
+import { type GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
+import createObservable, { type ObservableValue } from "../lib/ObservableValue"
 import { ModuleLogger } from "../lib/Logger"
 
 export const TICKS_PER_REV = 544
@@ -51,7 +51,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = Modu
       encoder.position.value += diff
       const timeDiff = lastTick ? time - lastTick : 0
       encoder.speed.value = timeDiff ? ((diff / timeDiff) * 1000000) / TICKS_PER_REV : 0
-      logger.debug(`Encoder,${encoder.no},${encoder.position},${encoder.speed},${timeDiff}`)
+      logger.debug(`Encoder,${encoder.no},${encoder.position.value},${encoder.speed.value},${timeDiff}`)
       lastTick = time
       zeroTimeOut && clearTimeout(zeroTimeOut)
       zeroTimeOut = setTimeout(() => (encoder.speed.value = 0), 50)

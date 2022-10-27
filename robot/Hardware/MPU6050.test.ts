@@ -1,5 +1,5 @@
 import expect from "expect"
-import { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
+import type { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
 import MPUFactory, {
   ACCEL_X,
   ACCEL_Y,
@@ -11,12 +11,12 @@ import MPUFactory, {
   GYRO_Y,
   GYRO_Z,
   INT_ENABLE,
-  MPU,
+  type MPU,
   PWR_MGMT_1,
   SMPLRT_DIV,
 } from "./MPU6050"
 
-let currentTime = 0n
+let currentTime = BigInt(0)
 
 const timer = () => {
   return currentTime
@@ -52,10 +52,10 @@ describe("MPU6050", () => {
 
   it("should calculate speeds from acceleration", async () => {
     fakeI2CBus.set({ [ACCEL_X]: 0, [ACCEL_Y]: 0, [ACCEL_Z]: 0 })
-    currentTime = 1000000000n
+    currentTime = BigInt(1_000_000_000)
     mpu.update()
     const promise = new Promise<ThreeDeeCoords>((resolve) => mpu.speed.registerObserver(resolve))
-    currentTime = 1300000000n
+    currentTime = BigInt(1_300_000_000)
     fakeI2CBus.set({ [ACCEL_X]: 7, [ACCEL_Y]: -2, [ACCEL_Z]: 4 })
     mpu.update()
     expect((await promise).toString(5)).toBe("0.00013,-0.00004,0.00007")

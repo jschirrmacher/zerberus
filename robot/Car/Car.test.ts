@@ -1,13 +1,13 @@
 import expect from "expect"
 import * as sinon from "sinon"
-import CarFactory, { Car, Direction, MINIMAL_DISTANCE, MINIMAL_TURN_ANGLE } from "./Car"
+import CarFactory, { type Car, Direction, MINIMAL_DISTANCE, MINIMAL_TURN_ANGLE } from "./Car"
 import MockMotor, { createMotorSpies } from "../MotorSet/MockMotor"
-import { Motor } from "../MotorSet/Motor"
+import type { Motor } from "../MotorSet/Motor"
 import { create as createOrientation, fromDegrees, fromRadian } from "./Orientation"
 import { create as createPosition } from "./Position"
 import { isPending } from "../lib/TestHelpers"
 import MPUFactory from "../Hardware/MPU6050"
-import TestLogger, { Logger } from "../lib/Logger"
+import TestLogger, { type Logger } from "../lib/Logger"
 
 const sandbox = sinon.createSandbox()
 

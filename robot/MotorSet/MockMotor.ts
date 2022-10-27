@@ -1,4 +1,4 @@
-import sinon, { spy } from "sinon"
+import * as sinon from "sinon"
 import { Motor, MotorMode } from "./Motor"
 import ObservableValueFactory from "../lib/ObservableValue"
 import SubjectFactory from "../lib/Subject"
@@ -26,8 +26,6 @@ export function createMotorSpies(sandbox: sinon.SinonSandbox) {
 }
 
 export default function (no: number, spies: Record<MotorProp, sinon.SinonSpy>): Motor {
-  const sandbox = sinon.createSandbox()
-
   const motor: Motor = {
     no,
     throttle: 0,

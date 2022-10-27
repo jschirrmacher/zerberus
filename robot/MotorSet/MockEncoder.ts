@@ -1,5 +1,4 @@
-import sinon from "sinon"
-import { Encoder } from "./Encoder"
+import type { Encoder } from "./Encoder"
 import ObservableValueFactory from "../lib/ObservableValue"
 
 enum EncoderProp {
@@ -15,8 +14,6 @@ export function createEncoderSpies(sandbox: sinon.SinonSandbox) {
 }
 
 export default function MockEncoderFactory(no: number, spies: Record<EncoderProp, sinon.SinonSpy>): Encoder {
-  const sandbox = sinon.createSandbox()
-
   const encoder: Encoder = {
     no,
     simulated: true,

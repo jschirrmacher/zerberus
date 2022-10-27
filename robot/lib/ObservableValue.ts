@@ -1,4 +1,4 @@
-import SubjectFactory, { Subject } from "./Subject"
+import SubjectFactory, { type Subject } from "./Subject"
 
 export type ObservableValue<T> = Subject<T> & {
   value: T

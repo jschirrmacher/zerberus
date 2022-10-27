@@ -1,6 +1,6 @@
 import expect from "expect"
 import { spy } from "sinon"
-import GPIOFactory, { GPIO, INPUT, OUTPUT } from "./gpio"
+import GPIOFactory, { type GPIO, INPUT, OUTPUT } from "./gpio"
 
 describe("GPIO", () => {
   const events = [] as { event: string | symbol; args: unknown }[]
