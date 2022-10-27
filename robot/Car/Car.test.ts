@@ -1,6 +1,5 @@
-import "should"
-import "should-sinon"
-import sinon from "sinon"
+import expect from "expect"
+import * as sinon from "sinon"
 import CarFactory, { Car, Direction, MINIMAL_DISTANCE, MINIMAL_TURN_ANGLE } from "./Car"
 import MockMotor, { createMotorSpies } from "../MotorSet/MockMotor"
 import { Motor } from "../MotorSet/Motor"
@@ -38,44 +37,44 @@ describe("Car", () => {
   describe("motor control", () => {
     it("should both accelerate to the given throttle", async () => {
       await car.accelerate(100)
-      leftMotorSpy.accelerate.should.be.calledWith(100)
-      rightMotorSpy.accelerate.should.be.calledWith(100)
+      expect(leftMotorSpy.accelerate.calledWith(100)).toBe(true)
+      expect(rightMotorSpy.accelerate.calledWith(100)).toBe(true)
     })
 
     it("should have a throttle of zero after breaking", async () => {
       await car.accelerate(100)
       await car.stop()
-      leftMotorSpy.stop.should.be.calledOnce()
-      rightMotorSpy.stop.should.be.calledOnce()
+      expect(leftMotorSpy.stop.calledOnce).toBe(true)
+      expect(rightMotorSpy.stop.calledOnce).toBe(true)
     })
 
     it("should have a throttle of zero after floating", async () => {
       await car.accelerate(100)
       await car.float()
-      leftMotorSpy.float.should.be.calledOnce()
-      rightMotorSpy.float.should.be.calledOnce()
+      expect(leftMotorSpy.float.calledOnce).toBe(true)
+      expect(rightMotorSpy.float.calledOnce).toBe(true)
     })
 
     it("should run motors in different directions if car turns on the spot", async () => {
       await car.turn(Direction.left)
-      leftMotorSpy.accelerate.should.be.calledWith(-50)
-      rightMotorSpy.accelerate.should.be.calledWith(50)
+      expect(leftMotorSpy.accelerate.calledWith(-50)).toBe(true)
+      expect(rightMotorSpy.accelerate.calledWith(50)).toBe(true)
     })
 
     it("should set one motor slower than the other when turning while car is in motion", async () => {
       left.throttle = 50
       right.throttle = 50
       await car.turn(Direction.left)
-      leftMotorSpy.accelerate.should.be.calledWith(25)
-      rightMotorSpy.accelerate.should.be.calledWith(75)
+      expect(leftMotorSpy.accelerate.calledWith(25)).toBe(true)
+      expect(rightMotorSpy.accelerate.calledWith(75)).toBe(true)
     })
 
     it("should run the motors only until reaching a position", async () => {
       await car.go(100, 50)
-      leftMotorSpy.go.should.be.calledWith(100, 50)
-      rightMotorSpy.go.should.be.calledWith(100, 50)
-      leftMotorSpy.float.should.be.calledOnce()
-      rightMotorSpy.float.should.be.calledOnce()
+      expect(leftMotorSpy.go.calledWith(100, 50)).toBe(true)
+      expect(rightMotorSpy.go.calledWith(100, 50)).toBe(true)
+      expect(leftMotorSpy.float.calledOnce).toBe(true)
+      expect(rightMotorSpy.float.calledOnce).toBe(true)
     })
 
     it("should receive and propagate blocking events", async () => {
@@ -83,7 +82,7 @@ describe("Car", () => {
       car.state.registerObserver(() => (signalReceived = true))
       const promise = car.go(500, 50)
       left.blocked.notify(true)
-      signalReceived.should.be.true()
+      expect(signalReceived).toBe(true)
       await promise
     })
   })
@@ -91,8 +90,8 @@ describe("Car", () => {
   describe("turning relative", () => {
     it("should accelerate the motors in the correct direction", async () => {
       const turned = car.turnRelative(createOrientation(1))
-      leftMotorSpy.accelerate.should.be.calledWith(50)
-      rightMotorSpy.accelerate.should.be.calledWith(-50)
+      expect(leftMotorSpy.accelerate.calledWith(50)).toBe(true)
+      expect(rightMotorSpy.accelerate.calledWith(-50)).toBe(true)
       car.orientation.value = createOrientation(1)
       await turned
     })
@@ -101,14 +100,14 @@ describe("Car", () => {
       await car.accelerate(50)
       const turn = car.turnRelative(createOrientation(Math.PI / 4))
       car.orientation.value = fromDegrees(20)
-      ;(await isPending(turn)).should.be.true()
+      expect(await isPending(turn)).toBe(true)
       car.orientation.value = fromDegrees(45)
-      ;(await isPending(turn)).should.be.false()
+      expect(await isPending(turn)).toBe(false)
     })
 
     it("should not turn if angle is too small", async () => {
       await car.turnRelative(createOrientation(MINIMAL_TURN_ANGLE.angle * 0.99))
-      car.orientation.value.degreeAngle().should.equal(0)
+      expect(car.orientation.value.degreeAngle()).toEqual(0)
     })
   })
 
@@ -116,9 +115,9 @@ describe("Car", () => {
     it("should stop when angle is reached", async () => {
       const turn = car.turnTo(createOrientation(Math.PI / 4))
       car.orientation.value = fromDegrees(20)
-      ;(await isPending(turn)).should.be.true()
+      expect(await isPending(turn)).toBe(true)
       car.orientation.value = fromDegrees(45)
-      ;(await isPending(turn)).should.be.false()
+      expect(await isPending(turn)).toBe(false)
     })
 
     it("should turn left", async () => {
@@ -127,12 +126,12 @@ describe("Car", () => {
         car.orientation.value = car.orientation.value.add(fromDegrees(-1))
       }
       await turn
-      Math.abs(car.orientation.value.degreeAngle() + 135).should.lessThanOrEqual(4)
+      expect(Math.abs(car.orientation.value.degreeAngle() + 135)).toBeLessThanOrEqual(4)
     })
 
     it("should not turn if angle is too small", async () => {
       await car.turnTo(createOrientation(MINIMAL_TURN_ANGLE.angle * 0.99))
-      car.orientation.value.degreeAngle().should.equal(0)
+      expect(car.orientation.value.degreeAngle()).toEqual(0)
     })
   })
 
@@ -146,31 +145,31 @@ describe("Car", () => {
 
     it("should send commands to both motors", async () => {
       car.go(100, 50)
-      leftMotorSpy.go.should.be.calledWith(100, 50)
-      rightMotorSpy.go.should.be.calledWith(100, 50)
+      expect(leftMotorSpy.go.calledWith(100, 50)).toBe(true)
+      expect(rightMotorSpy.go.calledWith(100, 50)).toBe(true)
     })
 
     it("should reach positive X coordinates when running east", async () => {
       await fakeMotorMovement()
-      car.position.value.x.should.be.greaterThan(0)
+      expect(car.position.value.x).toBeGreaterThan(0)
     })
 
     it("should reach positive Y coordinates when running north°", async () => {
       car.orientation.value = fromRadian(-Math.PI / 2)
       await fakeMotorMovement()
-      car.position.value.y.should.be.greaterThan(0)
+      expect(car.position.value.y).toBeGreaterThan(0)
     })
 
     it("should reach negative X coordinates when running west", async function () {
       car.orientation.value = fromRadian(Math.PI)
       await fakeMotorMovement()
-      car.position.value.x.should.be.lessThan(0)
+      expect(car.position.value.x).toBeLessThan(0)
     })
 
     it("should reach negative Y coordinates when running south", async () => {
       car.orientation.value = fromRadian(Math.PI / 2)
       await fakeMotorMovement()
-      car.position.value.y.should.be.lessThan(0)
+      expect(car.position.value.y).toBeLessThan(0)
     })
   })
 
@@ -180,7 +179,7 @@ describe("Car", () => {
       const goto = car.goto(destination)
       await approximateMovement(goto)
 
-      car.position.value.distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
+      expect(car.position.value.distanceTo(destination)).toBeLessThanOrEqual(MINIMAL_DISTANCE)
     })
 
     it("should reach the given position", async function () {
@@ -188,7 +187,7 @@ describe("Car", () => {
       const destination = createPosition(200, 200)
       const goto = car.goto(destination)
       await approximateMovement(goto)
-      car.position.value.distanceTo(destination).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
+      expect(car.position.value.distanceTo(destination)).toBeLessThanOrEqual(MINIMAL_DISTANCE)
     })
 
     async function approximateMovement(goto: Promise<void>) {
@@ -215,7 +214,7 @@ describe("Car", () => {
       await approximateMovement(goto)
       goto = car.goto(createPosition(-200, -200))
       await approximateMovement(goto)
-      car.position.value.distanceTo(createPosition(-200, -200)).should.be.lessThanOrEqual(MINIMAL_DISTANCE)
+      expect(car.position.value.distanceTo(createPosition(-200, -200))).toBeLessThanOrEqual(MINIMAL_DISTANCE)
     })
   })
 })

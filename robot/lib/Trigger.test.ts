@@ -1,4 +1,4 @@
-import "should"
+import expect from "expect"
 import Subject from "./Subject"
 import Trigger, { waitFor } from "./Trigger"
 import { spy } from "sinon"
@@ -6,7 +6,7 @@ import { spy } from "sinon"
 describe("Trigger", () => {
   it("should be completed if empty", async () => {
     const empty = Trigger<number>()
-    empty.race().should.be.resolvedWith("")
+    expect(await empty.race()).toEqual("")
   })
 
   it("should wait for the event to occur", async () => {
@@ -14,7 +14,7 @@ describe("Trigger", () => {
     const subjectA = Subject("A")
     trigger.waitFor(subjectA)
     subjectA.notify("a")
-    trigger.race().should.be.resolvedWith("A")
+    expect(await trigger.race()).toEqual("A")
   })
 
   it("should require event to be triggered", async () => {
@@ -22,7 +22,7 @@ describe("Trigger", () => {
     const subjectA = Subject("A")
     trigger.waitFor(subjectA)
     const result = await Promise.race([trigger.race(), Promise.resolve("B")])
-    result.should.equal("B")
+    expect(result).toEqual("B")
   })
 
   it("should not resolve if predicate is false", async () => {
@@ -31,7 +31,7 @@ describe("Trigger", () => {
     trigger.waitFor(subjectA, () => false)
     subjectA.notify("a")
     const result = await Promise.race([trigger.race(), Promise.resolve("B")])
-    result.should.equal("B")
+    expect(result).toEqual("B")
   })
 
   it("should wait for the correct event to trigger before returning", async () => {
@@ -44,7 +44,7 @@ describe("Trigger", () => {
     subjectB.notify(10)
     subjectB.notify(5)
     subjectA.notify(10)
-    trigger.race().should.be.resolvedWith("B")
+    expect(await trigger.race()).toEqual("B")
   })
 
   it("should unregister itself from all subjects", async () => {
@@ -58,20 +58,20 @@ describe("Trigger", () => {
     trigger.waitFor(subjectA, () => false)
     trigger.waitFor(subjectB)
     subjectA.notify(1)
-    spyA.callCount.should.equal(0)
-    spyB.callCount.should.equal(0)
+    expect(spyA.callCount).toEqual(0)
+    expect(spyB.callCount).toEqual(0)
     subjectB.notify(1)
-    spyA.callCount.should.equal(0)
-    spyB.callCount.should.equal(0)
+    expect(spyA.callCount).toEqual(0)
+    expect(spyB.callCount).toEqual(0)
     await trigger.race()
-    spyA.callCount.should.equal(1)
-    spyB.callCount.should.equal(1)
+    expect(spyA.callCount).toEqual(1)
+    expect(spyB.callCount).toEqual(1)
   })
 
   it("should allow simple creation of triggers for single subject", async () => {
     const subjectA = Subject("A")
     setTimeout(() => subjectA.notify("A"), 100)
-    waitFor(subjectA).should.be.resolved()
+    await waitFor(subjectA)
   })
 
   it("should add the completed subject names to the list", async () => {
@@ -81,14 +81,14 @@ describe("Trigger", () => {
     trigger.waitFor(subjectA, () => true)
     trigger.waitFor(subjectA, (x) => x == 3)
     trigger.waitFor(subjectB, (x) => x === 2)
-    trigger.completed.should.deepEqual([])
+    expect(trigger.completed).toEqual([])
     subjectA.notify(5)
-    trigger.completed.should.deepEqual(["A"])
+    expect(trigger.completed).toEqual(["A"])
     subjectA.notify(3)
-    trigger.completed.should.deepEqual(["A"])
+    expect(trigger.completed).toEqual(["A"])
     subjectB.notify(3)
-    trigger.completed.should.deepEqual(["A"])
+    expect(trigger.completed).toEqual(["A"])
     subjectB.notify(2)
-    trigger.completed.should.deepEqual(["A", "B"])
+    expect(trigger.completed).toEqual(["A", "B"])
   })
 })

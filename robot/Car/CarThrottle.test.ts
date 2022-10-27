@@ -1,8 +1,8 @@
-import "should"
+import expect from "expect"
 import { throttleFromJoystickValues } from "./CarThrottle"
 
 function testWithValues(input: number[], output: number[]): void {
-  throttleFromJoystickValues({ x: input[0], y: input[1] }).should.deepEqual({ left: output[0], right: output[1] })
+  expect(throttleFromJoystickValues({ x: input[0], y: input[1] })).toEqual({ left: output[0], right: output[1] })
 }
 
 describe("CarThrottle", () => {

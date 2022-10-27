@@ -1,4 +1,4 @@
-import "should"
+import expect from "expect"
 import Subject from "./Subject"
 
 describe("Subject", () => {
@@ -8,7 +8,7 @@ describe("Subject", () => {
     const observer = () => c++
     subject.registerObserver(observer)
     subject.notify({ value: 42 })
-    c.should.equal(1)
+    expect(c).toEqual(1)
   })
 
   it("should not notify an unregistered observer", async () => {
@@ -19,6 +19,6 @@ describe("Subject", () => {
     subject.registerObserver(observer)
     subject.unregisterObserver(observer)
     subject.notify({ value: 42 })
-    c.should.equal(0)
+    expect(c).toEqual(0)
   })
 })

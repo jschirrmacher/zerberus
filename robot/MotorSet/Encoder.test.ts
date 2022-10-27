@@ -1,6 +1,7 @@
-import "should"
-import EncoderFactory, { Encoder, TICKS_PER_REV } from "./Encoder"
-import GPIOFactory, { GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
+import { expect } from "expect"
+import { describe } from "mocha"
+import EncoderFactory, { type Encoder, TICKS_PER_REV } from "./Encoder"
+import GPIOFactory, { type GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
 import Logger from "../lib/Logger"
 
 describe("Encoder", () => {
@@ -21,27 +22,27 @@ describe("Encoder", () => {
 
   it("should initialize the GPIO", () => {
     encoder = EncoderFactory(gpio, 1, 2)
-    gpio.initializedPins.should.deepEqual({ 1: { mode: INPUT }, 2: { mode: INPUT } })
+    expect(gpio.initializedPins).toEqual({ 1: { mode: INPUT }, 2: { mode: INPUT } })
   })
 
   it("should have an id", () => {
     const encoder2 = EncoderFactory(gpio, 3, 4)
-    encoder2.no.should.not.equal(encoder.no)
+    expect(encoder2.no).not.toEqual(encoder.no)
     encoder2.simulateSpeed(0)
   })
 
   it("should contain the current position", () => {
-    encoder.position.value.should.equal(0)
+    expect(encoder.position.value).toEqual(0)
     encoder.tick(1, 1)
-    encoder.position.value.should.equal(1)
+    expect(encoder.position.value).toEqual(1)
   })
 
   it("should contain the current speed", () => {
     encoder.tick(1, 1)
     encoder.tick(1, 2)
-    encoder.speed.value.should.equal(1000000 / TICKS_PER_REV)
+    expect(encoder.speed.value).toEqual(1000000 / TICKS_PER_REV)
     encoder.tick(4, 4)
-    encoder.speed.value.should.equal(2000000 / TICKS_PER_REV)
+    expect(encoder.speed.value).toEqual(2000000 / TICKS_PER_REV)
   })
 
   it("should log in csv format if env ist set", () => {
@@ -50,11 +51,11 @@ describe("Encoder", () => {
     encoder = EncoderFactory(gpio, 1, 2, logger)
     encoder.tick(1, 1)
     encoder.tick(1, 2)
-    logger.get().length.should.equal(2)
-    const entry = logger.get()[1].split(",")
-    entry.length.should.equal(5)
-    entry.should.containDeep(["Encoder", "2", "1838.235294117647", "1"])
-    delete process.env.LOG_ENCODER
+    expect(logger.get().length).toEqual(2)
+    const entry = logger.get()[1]
+    expect(entry.split(",").length).toBe(5)
+    expect(entry).toMatch(/^Encoder,\d+,2,1838.235294117647,1$/)
+    delete process.env.LOG
   })
 
   function createBuffer(info: { flags: number; time: number; level: number }[]) {
@@ -69,7 +70,7 @@ describe("Encoder", () => {
 
   it("should read from stream", () => {
     encoder.handleChunk(createBuffer([{ flags: 0, level: 2, time: 10000 }]))
-    encoder.position.value.should.equal(1)
+    expect(encoder.position.value).toEqual(1)
   })
 
   it("should handle buffers containing multiple entries", (done) => {
@@ -80,7 +81,7 @@ describe("Encoder", () => {
       ])
     )
     setImmediate(() => {
-      encoder.position.value.should.equal(2)
+      expect(encoder.position.value).toEqual(2)
       done()
     })
   })
@@ -93,7 +94,7 @@ describe("Encoder", () => {
       ])
     )
     setImmediate(() => {
-      encoder.position.value.should.equal(1)
+      expect(encoder.position.value).toEqual(1)
       done()
     })
   })
@@ -101,7 +102,7 @@ describe("Encoder", () => {
   it("should allow to simulate motion", (done) => {
     encoder.simulateSpeed(100)
     setTimeout(() => {
-      encoder.position.value.should.be.greaterThan(0)
+      expect(encoder.position.value).toBeGreaterThan(0)
       done()
     }, 100)
   })

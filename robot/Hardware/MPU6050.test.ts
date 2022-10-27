@@ -1,4 +1,4 @@
-import "should"
+import expect from "expect"
 import { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
 import MPUFactory, {
   ACCEL_X,
@@ -29,25 +29,25 @@ describe("MPU6050", () => {
   afterEach(() => mpu.close())
 
   it("should initialize accelerometer and gyroscope", () => {
-    fakeI2CBus.data[PWR_MGMT_1].should.equal(0)
-    fakeI2CBus.data[SMPLRT_DIV].should.equal(7)
-    fakeI2CBus.data[CONFIG].should.equal(0)
-    fakeI2CBus.data[GYRO_CONFIG].should.equal(24)
-    fakeI2CBus.data[INT_ENABLE].should.equal(1)
+    expect(fakeI2CBus.data[PWR_MGMT_1]).toBe(0)
+    expect(fakeI2CBus.data[SMPLRT_DIV]).toBe(7)
+    expect(fakeI2CBus.data[CONFIG]).toBe(0)
+    expect(fakeI2CBus.data[GYRO_CONFIG]).toBe(24)
+    expect(fakeI2CBus.data[INT_ENABLE]).toBe(1)
   })
 
-  it("should read values from accelerometer", () => {
+  it("should read values from accelerometer", async () => {
     const promise = new Promise((resolve) => mpu.accel.registerObserver(resolve))
     fakeI2CBus.set({ [ACCEL_X]: 123, [ACCEL_Y]: 42, [ACCEL_Z]: -815 })
     mpu.update()
-    promise.should.be.resolvedWith({ x: 123 / 16384, y: 42 / 16384, z: -815 / 16384 })
+    expect(await promise).toEqual(expect.objectContaining({ x: 123 / 16384, y: 42 / 16384, z: -815 / 16384 }))
   })
 
-  it("should read values from gyroscope", () => {
+  it("should read values from gyroscope", async () => {
     const promise = new Promise((resolve) => mpu.gyro.registerObserver(resolve))
     fakeI2CBus.set({ [GYRO_X]: -321, [GYRO_Y]: -24, [GYRO_Z]: 518 })
     mpu.update()
-    promise.should.be.resolvedWith({ x: -321 / 131, y: -24 / 131, z: 518 / 131 })
+    expect(await promise).toEqual(expect.objectContaining({ x: -321 / 131, y: -24 / 131, z: 518 / 131 }))
   })
 
   it("should calculate speeds from acceleration", async () => {
@@ -58,7 +58,6 @@ describe("MPU6050", () => {
     currentTime = 1300000000n
     fakeI2CBus.set({ [ACCEL_X]: 7, [ACCEL_Y]: -2, [ACCEL_Z]: 4 })
     mpu.update()
-    const result = await promise
-    result.toString(5).should.equal("0.00013,-0.00004,0.00007")
+    expect((await promise).toString(5)).toBe("0.00013,-0.00004,0.00007")
   })
 })
