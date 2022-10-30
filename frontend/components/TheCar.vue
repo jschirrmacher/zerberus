@@ -42,6 +42,7 @@ const wheelWidth = 50
   transform-origin: calc(v-bind(length) * 0.5px) 0 calc(v-bind(width) * 0.5px) !important;
   transform: translateX(calc(v-bind(length) * -0.5px)) translateY(calc(v-bind(wheelDiameter) * -1px))
     translateZ(calc(v-bind(width) * -0.5px)) rotateY(calc(v-bind(direction) * 1deg));
+  transition: none !important;
 }
 
 .left {

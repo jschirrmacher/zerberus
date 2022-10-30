@@ -17,6 +17,16 @@ export function connectCockpit(client: IO.Socket, car: Car, mpu: MPU) {
         gyro: mpu.gyro.value.toString(3),
         speed: mpu.speed.value.toString(3),
       },
+      leftMotor: {
+        throttle: car.motors.left.currentThrottle,
+        speed: car.motors.left.speed,
+        pos: car.motors.left.position,
+      },
+      rightMotor: {
+        throttle: car.motors.right.currentThrottle,
+        speed: car.motors.right.speed,
+        pos: car.motors.right.position,
+      },
     })
     return false
   }

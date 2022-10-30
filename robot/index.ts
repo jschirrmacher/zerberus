@@ -26,9 +26,9 @@ async function initCar() {
 
   const app = express()
   const server = HTTP.createServer(app)
-  const io = new Server(server)
+  const io = new Server(server, { cors: { origin: true } })
   server.listen(10000)
-  app.use("/", express.static(path.resolve(__dirname, "..", "frontend")))
+  app.use("/", express.static(path.resolve(__dirname, "..", "old-frontend")))
   app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
   console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 
