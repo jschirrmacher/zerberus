@@ -7,7 +7,7 @@
     "start": "concurrently -k 'npm:start-robot' 'npm:start-camera'",
     "start-robot": "sudo PATH=$PATH NODE_ENV=production bash -c 'npx ts-node robot | tee robot.log'",
     "start-camera": "cd image_recognition && python3 use_classifier.py > ../camera.log",
-    "simulator": "ts-node-dev --nolazy --watch --inspect -- robot",
+    "simulator": "ts-node robot",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "type-check": "vue-tsc --noEmit --composite false",
     "build": "npm run build:types && npm run build:frontend",
