@@ -1,0 +1,44 @@
+// Vitest Snapshot v1
+
+exports[`KeyboardControl > should render as expected 1`] = `
+<nav
+  data-v-89b5344a=""
+>
+  <button
+    data-v-89b5344a=""
+    id="ArrowUp"
+  >
+    ᐃ
+  </button>
+  <button
+    data-v-89b5344a=""
+    id="ArrowLeft"
+  >
+    ᐊ
+  </button>
+  <button
+    data-v-89b5344a=""
+    id="ArrowRight"
+  >
+    ᐅ
+  </button>
+  <button
+    data-v-89b5344a=""
+    id="ArrowDown"
+  >
+    ᐁ
+  </button>
+  <button
+    data-v-89b5344a=""
+    id="Plus"
+  >
+    +
+  </button>
+  <button
+    data-v-89b5344a=""
+    id="Minus"
+  >
+     
+  </button>
+</nav>
+`;

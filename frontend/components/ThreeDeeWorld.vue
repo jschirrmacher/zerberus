@@ -1,68 +1,40 @@
 <script setup lang="ts">
-import { ref, computed, nextTick } from "vue"
+import { computed } from "vue"
 
-const cameraPos = ref({ x: 450, y: 400, z: 0 })
-const cameraRot = ref({ x: -10, y: 0, z: 0 })
-
-const commands = {
-  ArrowDown: () => move({ y: 50 }),
-  ArrowUp: () => move({ y: -50 }),
-  ArrowLeft: () => move({ x: -50 }),
-  ArrowRight: () => move({ x: 50 }),
-  TurnArrowDown: () => turn({ y: -10 }),
-  TurnArrowUp: () => turn({ y: 10 }),
-  TurnArrowLeft: () => turn({ x: 10 }),
-  TurnArrowRight: () => turn({ x: -10 }),
-} as Record<string, () => void>
-
-function keydown(event: KeyboardEvent) {
-  const code = (event.shiftKey ? "Turn" : "") + event.code
-  commands[code] && commands[code]()
-}
-
-window.addEventListener("keydown", keydown)
-
-function move({ x, y }: { x?: number; y?: number }) {
-  cameraPos.value.x += x || 0
-  cameraPos.value.y += y || 0
-}
-
-function turn({ x, y }: { x?: number; y?: number }) {
-  cameraRot.value.y += x || 0
-  cameraRot.value.x += y || 0
-}
+const props = withDefaults(
+  defineProps<{
+    cameraPosX?: number
+    cameraPosY?: number
+    cameraPosZ?: number
+    cameraAngleX?: number
+    cameraAngleY?: number
+    cameraAngleZ?: number
+    cameraZoom?: number
+  }>(),
+  {
+    cameraPosX: 0,
+    cameraPosY: 0,
+    cameraPosZ: 0,
+    cameraAngleX: 0,
+    cameraAngleY: 0,
+    cameraAngleZ: 0,
+    cameraZoom: 0,
+  }
+)
 
 const setupStyle = computed(() => {
   return {
-    transform: `translate3d(${cameraPos.value.x}px,${cameraPos.value.y}px,${cameraPos.value.z}px)
-      rotateX(${cameraRot.value.x}deg) rotateY(${cameraRot.value.y}deg) rotateZ(${cameraRot.value.z}deg`,
+    transform: `translate3d(${props.cameraPosX}px,${props.cameraPosY}px,${props.cameraPosZ}px)
+      rotateX(${props.cameraAngleX}deg) rotateY(${props.cameraAngleY}deg) rotateZ(${props.cameraAngleZ}deg`,
   }
 })
-
-function resize() {
-  const perspective = document.getElementById("perspective")
-  cameraPos.value.x = (perspective?.clientWidth || 1000) * 0.5
-  cameraPos.value.y = (perspective?.clientHeight || 800) * 0.7
-}
-
-window.addEventListener("resize", resize)
-nextTick(resize)
 </script>
 
 <template>
-  <nav>
-    <button id="ArrowUp" @click="commands.ArrowUp">ᐃ</button>
-    <button id="ArrowLeft" @click="commands.ArrowLeft">ᐊ</button>
-    <button id="ArrowRight" @click="commands.ArrowRight">ᐅ</button>
-    <button id="ArrowDown" @click="commands.ArrowDown">ᐁ</button>
-  </nav>
-
   <div id="perspective">
     <div id="camera">
       <div id="setup" :style="setupStyle">
         <div id="floor" />
-        <div id="x-axis"></div>
-        <div id="z-axis"></div>
         <div id="directions">
           <div id="north">N</div>
           <div id="north-east">NE</div>
@@ -113,19 +85,6 @@ nextTick(resize)
   background: #003300;
   transform: translate3d(-5000px, 0, -5000px) rotateX(90deg);
   border-radius: 50%;
-}
-
-#x-axis,
-#z-axis {
-  width: 2px;
-  height: 10000px;
-  background-color: red;
-}
-#x-axis {
-  transform: translateY(-1px) rotateZ(-90deg) translateY(-5000px);
-}
-#z-axis {
-  transform: translateY(-1px) rotateX(-90deg) translateY(-5000px);
 }
 
 #directions {

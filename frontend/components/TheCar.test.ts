@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest"
 import { shallowMount } from "@vue/test-utils"
-import CarChassis from "../CarChassis.vue"
+import TheCar from "./TheCar.vue"
 
-describe("CarChassis", () => {
+describe("TheCar", () => {
   it("should render as expected", () => {
-    const component = shallowMount(CarChassis, {
-      props: { length: 100, width: 200, height: 50, color: "#abcdef" },
+    const component = shallowMount(TheCar, {
+      props: { motorSpeedLeft: 0, motorSpeedRight: 0, direction: 0 },
     })
     expect(component.element).toMatchSnapshot()
   })
