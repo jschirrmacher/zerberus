@@ -85,8 +85,13 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU, logg
   client.on("error", remoteControlIsDisconnected)
   client.on("command", async (command) => doCommand(client, command))
   client.on("control", (info) => keyControl(info))
+  // @deprecated
   client.on("joystick", (values) => {
     car.throttle(throttleFromJoystickValues(values))
+  })
+  client.on("motor-throttle", ({ left, right }: { left: number; right: number }) => {
+    car.motors.left.setThrottle(left)
+    car.motors.right.setThrottle(right)
   })
   client.on("tracker", (state: boolean) => setTracker(state ? "on" : "off"))
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { mount } from "@vue/test-utils"
-import ABox from "../ABox.vue"
+import ABox from "./ABox.vue"
 
 describe("ABox", () => {
   it("should render as expected", () => {

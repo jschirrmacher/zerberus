@@ -1,0 +1,26 @@
+// Vitest Snapshot v1
+
+exports[`CameraControl > should render as expected 1`] = `
+<nav>
+  <button
+    id="ArrowUp"
+  >
+    ᐃ
+  </button>
+  <button
+    id="ArrowLeft"
+  >
+    ᐊ
+  </button>
+  <button
+    id="ArrowRight"
+  >
+    ᐅ
+  </button>
+  <button
+    id="ArrowDown"
+  >
+    ᐁ
+  </button>
+</nav>
+`;
