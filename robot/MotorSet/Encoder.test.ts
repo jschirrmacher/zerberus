@@ -1,5 +1,4 @@
 import { expect } from "expect"
-import { describe } from "mocha"
 import EncoderFactory, { type Encoder, TICKS_PER_REV } from "./Encoder"
 import GPIOFactory, { type GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
 import Logger from "../lib/Logger"
