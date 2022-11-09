@@ -10,44 +10,52 @@ export type Orientation = {
   add(other: Orientation): Orientation
   isCloseTo(other: Orientation, epsilon: Orientation): boolean
   toString(): string
+  [Symbol.toPrimitive](hint: string): string | number
 }
 
 export function create(angle: RadianAngle): Orientation {
-  function normalizeAngle(angle: number): number {
-    const normalize = angle - twoPi * Math.floor(angle / twoPi)
-    return normalize > Math.PI ? normalize - twoPi : normalize
+  function normalize(angle: RadianAngle) {
+    const normalized = angle - twoPi * Math.floor(angle / twoPi)
+    return normalized > Math.PI ? normalized - twoPi : normalized
   }
 
   return {
-    angle: normalizeAngle(angle),
+    angle,
 
-    degreeAngle(): DegreeAngle {
-      return (this.angle / Math.PI) * 180
+    degreeAngle() {
+      return (normalize(this.angle) / Math.PI) * 180
     },
 
-    differenceTo(other: Orientation): Orientation {
-      const diff = other.angle - this.angle
-      return create(diff - twoPi * Math.floor((diff + Math.PI) / twoPi))
+    differenceTo(other) {
+      return create(normalize(other.angle - this.angle))
     },
 
-    add(other: Orientation): Orientation {
-      return create(angle + other.angle)
+    add(other) {
+      return create(normalize(angle + other.angle))
     },
 
-    isCloseTo(other: Orientation, epsilon: Orientation) {
-      return Math.abs(angle - other.angle) <= epsilon.angle
+    isCloseTo(other, epsilon) {
+      return normalize(Math.abs(angle - other.angle)) <= epsilon.angle
     },
 
-    toString(): string {
+    toString() {
       return `${this.degreeAngle().toFixed(1)}°`
+    },
+
+    [Symbol.toPrimitive](hint) {
+      const normalized = create(normalize(this.angle))
+      if (hint === "number") {
+        return normalized.degreeAngle()
+      }
+      return normalized.toString()
     },
   }
 }
 
-export function fromDegrees(angle: DegreeAngle): Orientation {
+export function fromDegrees(angle: DegreeAngle) {
   return create((angle / 180) * Math.PI)
 }
 
-export function fromRadian(angle: RadianAngle): Orientation {
+export function fromRadian(angle: RadianAngle) {
   return create(angle)
 }

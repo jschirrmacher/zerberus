@@ -4,6 +4,7 @@ import { fromDegrees } from "./Orientation"
 
 const halfPi = Math.PI / 2
 const threeQuartersPI = (3 / 4) * Math.PI
+const threeHalvesPI = (3 / 2) * Math.PI
 
 describe("Orientation", () => {
   it("should calculate a difference", () => {
@@ -20,13 +21,9 @@ describe("Orientation", () => {
     )
   })
 
-  it("should normalize angles which are out of bounds", () => {
-    expect(Orientation.create(3 * Math.PI).angle).toEqual(Math.PI)
-    expect(Orientation.create(-3 * Math.PI).angle).toEqual(Math.PI)
-  })
-
-  it("should normalize angles between ±PI", () => {
-    expect(Orientation.create(halfPi).angle).toEqual(halfPi)
+  it("should not normalize angles", () => {
+    expect(Orientation.create(threeHalvesPI).angle).toEqual(threeHalvesPI)
+    expect(Orientation.create(2 * Math.PI).angle).toEqual(2 * Math.PI)
     expect(Orientation.create(-halfPi).angle).toEqual(-halfPi)
   })
 
@@ -37,12 +34,24 @@ describe("Orientation", () => {
   })
 
   it("should add two angles", () => {
-    expect(Orientation.create(Math.PI).add(Orientation.create((3 / 2) * Math.PI)).angle).toEqual(halfPi)
+    expect(Orientation.create(Math.PI).add(Orientation.create(threeHalvesPI)).angle).toEqual(halfPi)
   })
 
-  it("should be convertable to a string", () => {
+  it("should be convertible to a string", () => {
     expect(Orientation.create(halfPi).toString()).toEqual("90.0°")
     expect(Orientation.create(-halfPi).toString()).toEqual("-90.0°")
+  })
+
+  it("should be coercible", () => {
+    expect(+Orientation.create(halfPi)).toEqual(90)
+    expect(+Orientation.create(-halfPi)).toEqual(-90)
+    expect(`${Orientation.create(threeQuartersPI)}`).toEqual("135.0°")
+    expect("" + Orientation.create(-halfPi)).toEqual("-90.0°")
+  })
+
+  it("should normalize the angle if it is coerced", () => {
+    expect(+Orientation.create(3 * Math.PI)).toEqual(180)
+    expect(`${Orientation.create(threeHalvesPI)}`).toEqual("-90.0°")
   })
 
   it("should identify close orientations", () => {
