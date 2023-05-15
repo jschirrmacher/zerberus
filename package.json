@@ -4,7 +4,7 @@
   "description": "Software for a robot to chase racoons in your garden",
   "scripts": {
     "start": "concurrently -k 'npm:start-robot' 'npm:start-camera'",
-    "start-robot": "sudo NODE_ENV=production npx ts-node robot | tee robot.log",
+    "start-robot": "sudo PATH=$PATH NODE_ENV=production bash -c 'npx ts-node robot | tee robot.log'",
     "start-camera": "cd image_recognition && python3 use_classifier.py > ../camera.log",
     "simulator": "ts-node-dev --nolazy --watch --inspect -- robot",
     "lint": "eslint .",

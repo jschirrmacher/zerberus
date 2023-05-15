@@ -1,4 +1,4 @@
-# Racoon chaser
+# Zerberus
 
 Software for a robot, which chases racoons out of your garden.
 
@@ -13,6 +13,16 @@ The software consists of several parts:
 The robot control program is implmented in TypeScript (for motor control) and Python (for image recognition).
 
 ## Installation
+
+## Parts list
+
+- [Wild Thumper (Chassis and Motors)](https://www.pololu.com/product/1566)
+- Raspberry PI 4B
+- [Motor Driver](https://www.handsontec.com/dataspecs/module/7A-160W%20motor%20control.pdf)
+- Accumulator for Motors
+- [CHOETECH PD18W Powerbank USB C 10000mAh for Raspi](https://www.choetech.com/product/b622-10000mah-5v-2.4a-portable-power-bank-black.html)
+- [Maker Hawk 5MP Night Vision Camera](https://www.amazon.de/gp/product/B071718FDK/)
+- [IMU with MPU 6050 chip](https://www.conrad.de/de/p/joy-it-mpu6050-beschleunigungs-sensor-1-st-passend-fuer-entwicklungskits-micro-bit-arduino-raspberry-pi-rock-pi-2136256.html)
 
 ### Wire motors, encoders and IMU
 
@@ -31,19 +41,20 @@ THe MPU needs to be connected to the I2C ports, motor controllers and encoders j
 - Right Motor IN2 <-> Raspi GPIO 27 (Pin 13)
 - Right Motor ENA <-> Raspi GPIO 22 (Pin 15)
 
+![Pinout](./pinout.drawio.svg)
 ### Setup raspberry pi
 
-- [Download raspbian 64bit OS](https://downloads.raspberrypi.org/raspios_arm64/images/)
-- Install on SD Card by using [Rasperry Pi Imager](https://www.raspberrypi.org/software/) with option "Own image"
-- Copy `wpa_supplicant.conf.template` file from this repository to SD card, rename it to `wpa_supplicant.conf` and insert your WLAN configuration parameters
-- Create an empty `ssh` file on the SD card to enable ssh access
-- Put SD card into Raspi and boot, the Raspi should appear in your WLAN after a short while (find out its IP address)
-- ssh into Raspi via its IP address, user `pi` password `raspberry`
-- Secure account by setting a new password (`passwd`)
-- `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash`
+- Install on SD Card by using [Rasperry Pi Imager](https://www.raspberrypi.org/software/) with 64bit Raspberry Pi OS, using the options to pre-configure ssh and WLAN (see https://www.raspberrypi.com/news/raspberry-pi-bullseye-update-april-2022/)
+- Put SD card into Raspi and boot, the Raspi should appear in your WLAN after a short while
+- ssh into Raspi via its IP address with your pre-configured user and password: `ssh <username>@raspberrypi`
+- Install required libraries: `sudo apt-get install pigpio git`
+- `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash`
 - Close and re-open your terminal
 - `nvm install 18`
-- Enable I2C using `sudo raspi-config` (check that device is connected correctly by using `sudo i2cdetect -y 1` - it should show a "68" between a lot of "--")
+- Clone this repository: `git clone https://github.com/jschirrmacher/zerberus.git`
+- Go into cloned repository's folder: `cd zerberus`
+- Install dependencies: `npm i`
+- Enable I2C using `sudo raspi-config` (check that device is connected correctly by using `sudo apt-get install i2c-tools && sudo i2cdetect -y 1` - it should show a "68" between a lot of "--")
 - Increase I2C baud rate by finding a `dtparam=i2c_arm=on` line in `/boot/config.txt` and replace it to `dtparam=i2c_arm=on,i2c_arm_baudrate=100000`
 
 #### Install image recognition software
@@ -66,14 +77,6 @@ We use [RaspAP](https://raspap.com/) to have a local Wifi network on the Raspber
 even when using the car outdoor.
 
 Currently, we don't got the AP-STA-mode working, so that it is possible to have internet access as well, if the car is at home. This will be further investigated.
-
-### Install robot software
-
-As a final step, install the robot software:
-
-    git clone https://github.com/jschirrmacher/zerberus.git
-    cd zerberus
-    npm i  // for production (on a Rasperry Pi), add `--production`
 
 ## Start
 
@@ -105,16 +108,6 @@ for easier access and to get rid of the browser controls.
 
     sudo cp /home/pi/zerberus/zerberus.service /lib/systemd/system/
     sudo systemctl start zerberus.service 
-
-## Parts list
-
-- [Wild Thumper (Chassis and Motors)](https://www.pololu.com/product/1566)
-- Raspberry PI 4B
-- [Motor Driver](https://www.handsontec.com/dataspecs/module/7A-160W%20motor%20control.pdf)
-- Accumulator for Motors
-- [CHOETECH PD18W Powerbank USB C 10000mAh for Raspi](https://www.choetech.com/product/b622-10000mah-5v-2.4a-portable-power-bank-black.html)
-- [Maker Hawk 5MP Night Vision Camera](https://www.amazon.de/gp/product/B071718FDK/)
-- [IMU with MPU 6050 chip](https://www.conrad.de/de/p/joy-it-mpu6050-beschleunigungs-sensor-1-st-passend-fuer-entwicklungskits-micro-bit-arduino-raspberry-pi-rock-pi-2136256.html)
 
 ## Development
 
