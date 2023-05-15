@@ -5,6 +5,7 @@ const twoPi = 2 * Math.PI
 
 export type Orientation = {
   angle: RadianAngle
+  normalized(): Orientation
   degreeAngle(): DegreeAngle
   differenceTo(other: Orientation): Orientation
   add(other: Orientation): Orientation
@@ -22,8 +23,12 @@ export function create(angle: RadianAngle): Orientation {
   return {
     angle,
 
+    normalized() {
+      return create(normalize(this.angle))
+    },
+
     degreeAngle() {
-      return (normalize(this.angle) / Math.PI) * 180
+      return (this.angle / Math.PI) * 180
     },
 
     differenceTo(other) {

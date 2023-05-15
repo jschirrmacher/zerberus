@@ -27,6 +27,7 @@ defineProps<{
     transform-style: preserve-3d;
     transition: all 1s linear;
     transform-origin: 0 0;
+    box-shadow: 1px 1px grey;
   }
 
   .top,

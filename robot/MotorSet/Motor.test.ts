@@ -1,12 +1,9 @@
-import expect from "expect"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import MotorFactory, { getAdaptedThrottle, type Motor, MotorMode, MAX_ACCELERATION } from "./Motor"
 import GPIOFactory, { type GPIO, OUTPUT, PWM } from "../Hardware/gpio"
 import type { Encoder } from "./Encoder"
 import MockEncoderFactory, { createEncoderSpies } from "./MockEncoder"
-import { createSandbox } from "sinon"
 import TestLogger, { type Logger } from "../lib/Logger"
-
-const sandbox = createSandbox()
 
 describe("Motor", () => {
   let encoder: Encoder
@@ -23,7 +20,7 @@ describe("Motor", () => {
   beforeEach(() => {
     logger = TestLogger()
     gpio = GPIOFactory(true)
-    encoderSpy = createEncoderSpies(sandbox)
+    encoderSpy = createEncoderSpies()
     encoder = MockEncoderFactory(1, encoderSpy)
     motor = MotorFactory(gpio, 1, 2, 3, encoder, logger)
   })
@@ -136,7 +133,7 @@ describe("Motor", () => {
 
     it("should prevent to accelerate when motor is blocked", async () => {
       await blockMotor()
-      expect(motor.accelerate(50)).rejects.toBe(true)
+      await expect(motor.accelerate(50)).rejects.toEqual(Error("Tried to power blocked motor"))
     })
 
     it("should allow to release the lock", async () => {

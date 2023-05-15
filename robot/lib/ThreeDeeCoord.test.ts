@@ -1,4 +1,4 @@
-import expect from "expect"
+import { describe, expect, it } from "vitest"
 import { make3dCoord } from "./ThreeDeeCoord"
 
 describe("ThreeDeeCoords", () => {

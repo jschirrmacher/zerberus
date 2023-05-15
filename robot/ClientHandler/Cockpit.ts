@@ -13,9 +13,9 @@ export function connectCockpit(client: IO.Socket, car: Car, mpu: MPU) {
       speed: car.speed.value.toFixed(1),
       mpuSpeed: car.mpuSpeed.value.toFixed(1),
       mpu: {
-        accel: mpu.accel.value.toString(3),
-        gyro: mpu.gyro.value.toString(3),
-        speed: mpu.speed.value.toString(3),
+        accel: +mpu.accel.value.toString(3),
+        gyro: +mpu.gyro.value.toString(3),
+        speed: +mpu.speed.value.toString(3),
       },
       leftMotor: {
         throttle: car.motors.left.currentThrottle,

@@ -1,7 +1,6 @@
-import expect from "expect"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import RouteTrackerFactory, { DataType, type RouteTracker } from "./RouteTracker"
 import ObservableValue from "../lib/ObservableValue"
-import { spy } from "sinon"
 
 describe("RouteTracker", () => {
   let tracker: RouteTracker
@@ -19,18 +18,18 @@ describe("RouteTracker", () => {
 
   it("should track events", () => {
     const value = ObservableValue("orientation", 0)
-    const observer = spy()
+    const observer = vi.fn()
     tracker.registerObserver(observer)
     tracker.track(value, DataType.CAR_ORIENTATION, (value) => value)
     value.notify(5)
     tracker.endRecording()
-    expect(observer.firstCall.args[0]).toEqual({ time: 1, type: DataType.CAR_ORIENTATION, value: 5 })
+    expect(observer).toBeCalledWith({ time: 1, type: DataType.CAR_ORIENTATION, value: 5 }, expect.any(Object))
   })
 
   it("should send a completion event", () => {
-    const observer = spy()
+    const observer = vi.fn()
     tracker.registerObserver(observer)
     tracker.endRecording()
-    expect(observer.calledOnceWith({ time: 1, type: DataType.ROUTE_END })).toBe(true)
+    expect(observer).toBeCalledWith({ time: 1, type: DataType.ROUTE_END }, expect.any(Object))
   })
 })

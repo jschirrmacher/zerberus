@@ -1,4 +1,4 @@
-import expect from "expect"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import type { ThreeDeeCoords } from "../lib/ThreeDeeCoord"
 import MPUFactory, {
   ACCEL_X,
@@ -25,7 +25,10 @@ const timer = () => {
 describe("MPU6050", () => {
   let mpu: MPU
 
-  beforeEach(async () => (mpu = await MPUFactory({ useFake: true, timer })))
+  beforeEach(async () => {
+    mpu = await MPUFactory({ useFake: true, timer })
+  })
+
   afterEach(() => mpu.close())
 
   it("should initialize accelerometer and gyroscope", () => {
