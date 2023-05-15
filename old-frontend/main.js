@@ -70,17 +70,17 @@ import { CLIENT_TYPE } from "./types.js"
     addWaypoint(x, y)
     carPos.innerHTML = `x: ${msg.posX}<br>y: ${msg.posY}<br>o: ${msg.orientation}`
 
-    const accel = msg.mpu?.accel.split(",")
-    const gyro = msg.mpu?.gyro.split(",")
-    const speed = msg.mpu?.speed.split(",")
+    const accel = Object.values(msg.mpu?.accel).map((v) => v.toFixed(3))
+    const gyro = Object.values(msg.mpu?.gyro).map((v) => v.toFixed(3))
+    const speed = Object.values(msg.mpu?.speed).map((v) => v.toFixed(3))
     mpuAccel.innerHTML = "<span>accel:</span><span>" + accel?.join("</span><span>") + "</span>"
     mpuGyro.innerHTML = "<span>gyro:</span><span>" + gyro?.join("</span><span>") + "</span>"
     mpuSpeed.innerHTML = "<span>speed:</span><span>" + speed?.join("</span><span>") + "</span>"
 
     // flightindicator.setAttribute("y1", 75 + accel[1] * 75 - accel[0] * 30)
     // flightindicator.setAttribute("y2", 75 + accel[1] * 75 + accel[0] * 30)
-    const y1 = 75 + accel[1] * 75 - accel[0] * 30
-    const y2 = 75 + accel[1] * 75 + accel[0] * 30
+    const y1 = 75 + msg.mpu.accel.y * 75 - msg.mpu.accel.x * 30
+    const y2 = 75 + msg.mpu.accel.y * 75 + msg.mpu.accel.x * 30
     flightindicator.setAttribute("d", `M0,150L0,${y1}L150,${y2}L150,150Z`)
   }
 

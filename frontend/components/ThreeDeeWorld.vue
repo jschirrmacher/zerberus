@@ -34,7 +34,7 @@ const setupStyle = computed(() => {
   <div id="perspective">
     <div id="camera">
       <div id="setup" :style="setupStyle">
-        <div id="floor" />
+        <!-- <div id="floor" />
         <div id="directions">
           <div id="north">N</div>
           <div id="north-east">NE</div>
@@ -44,7 +44,7 @@ const setupStyle = computed(() => {
           <div id="south-west">SW</div>
           <div id="west">W</div>
           <div id="north-west">NW</div>
-        </div>
+        </div> -->
         <slot />
       </div>
     </div>
@@ -72,7 +72,7 @@ const setupStyle = computed(() => {
 #setup *,
 #setup :deep(*) {
   transform-style: preserve-3d;
-  transition: all 1s linear;
+  transition: all 0.1s linear;
   position: absolute;
   transform-origin: 0 0;
 }

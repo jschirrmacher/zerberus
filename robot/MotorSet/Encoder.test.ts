@@ -1,4 +1,4 @@
-import { expect } from "expect"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import EncoderFactory, { type Encoder, TICKS_PER_REV } from "./Encoder"
 import GPIOFactory, { type GPIO, INPUT, PI_NTFY_FLAGS_ALIVE } from "../Hardware/gpio"
 import Logger from "../lib/Logger"
@@ -72,37 +72,43 @@ describe("Encoder", () => {
     expect(encoder.position.value).toEqual(1)
   })
 
-  it("should handle buffers containing multiple entries", (done) => {
+  it("should handle buffers containing multiple entries", async () => {
     encoder.handleChunk(
       createBuffer([
         { flags: 0, level: 2, time: 10000 },
         { flags: 0, level: 6, time: 20000 },
       ])
     )
-    setImmediate(() => {
-      expect(encoder.position.value).toEqual(2)
-      done()
-    })
+    await new Promise((resolve) =>
+      setImmediate(() => {
+        expect(encoder.position.value).toEqual(2)
+        resolve(undefined)
+      })
+    )
   })
 
-  it("should ignore keepalive ticks", (done) => {
+  it("should ignore keepalive ticks", async () => {
     encoder.handleChunk(
       createBuffer([
         { flags: 0, level: 2, time: 10000 },
         { flags: PI_NTFY_FLAGS_ALIVE, level: 6, time: 20000 },
       ])
     )
-    setImmediate(() => {
-      expect(encoder.position.value).toEqual(1)
-      done()
-    })
+    await new Promise((resolve) =>
+      setImmediate(() => {
+        expect(encoder.position.value).toEqual(1)
+        resolve(undefined)
+      })
+    )
   })
 
-  it("should allow to simulate motion", (done) => {
+  it("should allow to simulate motion", async () => {
     encoder.simulateSpeed(100)
-    setTimeout(() => {
-      expect(encoder.position.value).toBeGreaterThan(0)
-      done()
-    }, 100)
+    await new Promise((resolve) =>
+      setTimeout(() => {
+        expect(encoder.position.value).toBeGreaterThan(0)
+        resolve(undefined)
+      }, 100)
+    )
   })
 })

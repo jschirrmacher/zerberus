@@ -1,4 +1,4 @@
-import expect from "expect"
+import { describe, expect, it } from "vitest"
 import { throttleFromJoystickValues } from "./CarThrottle"
 
 function testWithValues(input: number[], output: number[]): void {

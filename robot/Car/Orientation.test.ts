@@ -1,4 +1,4 @@
-import expect from "expect"
+import { describe, expect, it } from "vitest"
 import * as Orientation from "./Orientation"
 import { fromDegrees } from "./Orientation"
 
@@ -7,6 +7,10 @@ const threeQuartersPI = (3 / 4) * Math.PI
 const threeHalvesPI = (3 / 2) * Math.PI
 
 describe("Orientation", () => {
+  it("should normalize the angle", () => {
+    expect(Orientation.create(Math.PI * 2.5).normalized().angle).toEqual(halfPi)
+  })
+
   it("should calculate a difference", () => {
     expect(Orientation.create(0).differenceTo(Orientation.create(halfPi)).angle).toEqual(halfPi)
   })
@@ -29,8 +33,9 @@ describe("Orientation", () => {
 
   it("should convert to degrees", () => {
     expect(Orientation.create(Math.PI).degreeAngle()).toEqual(180)
-    expect(Orientation.create(-Math.PI).degreeAngle()).toEqual(180)
+    expect(Orientation.create(-Math.PI).degreeAngle()).toEqual(-180)
     expect(Orientation.create(-halfPi).degreeAngle()).toEqual(-90)
+    expect(Orientation.create(Math.PI * 2.5).degreeAngle()).toEqual(450)
   })
 
   it("should add two angles", () => {

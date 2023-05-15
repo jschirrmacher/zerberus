@@ -1,4 +1,4 @@
-import expect from "expect"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import * as Position from "./Position"
 
 describe("Position", () => {

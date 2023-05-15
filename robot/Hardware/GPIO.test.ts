@@ -1,5 +1,4 @@
-import expect from "expect"
-import { spy } from "sinon"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import GPIOFactory, { type GPIO, INPUT, OUTPUT } from "./gpio"
 
 describe("GPIO", () => {
@@ -41,11 +40,11 @@ describe("GPIO", () => {
 
     it("should not notify de-registered listeners", () => {
       const pin = gpio.create(17, { mode: OUTPUT })
-      const listener = spy()
+      const listener = vi.fn()
       const id = gpio.addListener(listener)
       gpio.removeListener(id)
       pin.pwmWrite(42)
-      expect(listener.callCount).toBe(0)
+      expect(listener).not.toBeCalled()
     })
   })
 

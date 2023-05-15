@@ -103,10 +103,7 @@ function touchstart() {
   border: 1px solid white;
   border-radius: calc(1px * v-bind(handleSize) / 2);
   background: #2d383a50;
-  position: absolute;
   z-index: 9;
-  right: 1em;
-  top: 1em;
 
   &:hover {
     background: #2d383a80;

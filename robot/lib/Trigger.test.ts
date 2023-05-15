@@ -1,7 +1,6 @@
-import expect from "expect"
+import { describe, expect, it, vi } from "vitest"
 import Subject from "./Subject"
 import Trigger, { waitFor } from "./Trigger"
-import { spy } from "sinon"
 
 describe("Trigger", () => {
   it("should be completed if empty", async () => {
@@ -48,8 +47,8 @@ describe("Trigger", () => {
   })
 
   it("should unregister itself from all subjects", async () => {
-    const spyA = spy()
-    const spyB = spy()
+    const spyA = vi.fn()
+    const spyB = vi.fn()
     const trigger = Trigger()
     const subjectA = Subject("A")
     subjectA.unregisterObserver = spyA
@@ -58,14 +57,14 @@ describe("Trigger", () => {
     trigger.waitFor(subjectA, () => false)
     trigger.waitFor(subjectB)
     subjectA.notify(1)
-    expect(spyA.callCount).toEqual(0)
-    expect(spyB.callCount).toEqual(0)
+    expect(spyA).toBeCalledTimes(0)
+    expect(spyB).toBeCalledTimes(0)
     subjectB.notify(1)
-    expect(spyA.callCount).toEqual(0)
-    expect(spyB.callCount).toEqual(0)
+    expect(spyA).toBeCalledTimes(0)
+    expect(spyB).toBeCalledTimes(0)
     await trigger.race()
-    expect(spyA.callCount).toEqual(1)
-    expect(spyB.callCount).toEqual(1)
+    expect(spyA).toBeCalledTimes(1)
+    expect(spyB).toBeCalledTimes(1)
   })
 
   it("should allow simple creation of triggers for single subject", async () => {

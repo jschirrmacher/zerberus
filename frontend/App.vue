@@ -1,24 +1,29 @@
 <script setup lang="ts">
+import type { CarInfo, ThreeDeeCoords } from "@/types"
+import { storeToRefs } from "pinia"
+import { nextTick, ref, watch } from "vue"
+import FlightIndicator from "./components/FlightIndicator.vue"
 import JoystickHandle from "./components/JoystickHandle.vue"
-import ThreeDeeWorld from "./components/ThreeDeeWorld.vue"
-import KeyboardControl from "./components/KeyboardControl.vue"
 import TheCar from "./components/TheCar.vue"
+import ThreeDeeWorld from "./components/ThreeDeeWorld.vue"
 import { useSocket } from "./lib/WebSockets"
-import { nextTick, ref } from "vue"
+import { useCarStore } from "./stores/car"
 
 const camera = ref({ x: 450, y: 400, z: 0, angle: -10, zoom: 0 })
 const car = ref({ x: 0, y: 0, angle: 0 })
 const leftMotorSpeed = ref(0)
 const rightMotorSpeed = ref(0)
+const accel = ref({ x: 0, y: 0, z: 0 } as ThreeDeeCoords)
+const gyro = ref({ x: 0, y: 0, z: 0 } as ThreeDeeCoords)
+const speed = ref({ x: 0, y: 0, z: 0 } as ThreeDeeCoords)
 
-type MotorInfo = { throttle: number }
-type CarInfo = {
-  orientation: number
-  leftMotor: MotorInfo
-  rightMotor: MotorInfo
-  posX: number
-  posY: number
-}
+const carStore = useCarStore()
+const { orientation } = storeToRefs(carStore)
+
+const appEl = document.querySelector("#app")
+watch(orientation, () => {
+  appEl?.setAttribute("style", `background-position-x: ${orientation.value}%`)
+})
 
 const socket = useSocket()
 
@@ -27,11 +32,15 @@ socket.on("hi", () => {
 })
 
 socket.on("car-position", (info: CarInfo) => {
+  carStore.setInfo(info)
   car.value.x = +info.posX
   car.value.y = +info.posY
   car.value.angle = -info.orientation
   leftMotorSpeed.value = info.leftMotor.throttle
   rightMotorSpeed.value = info.rightMotor.throttle
+  accel.value = info.mpu.accel
+  gyro.value = info.mpu.accel
+  speed.value = info.mpu.accel
 })
 
 function setMotorThrottles(value: { x: number; y: number }) {
@@ -45,22 +54,18 @@ function setMotorThrottles(value: { x: number; y: number }) {
   socket.emit("motor-throttle", { left: y + x - offset, right: y - x - offset })
 }
 
-function cameraTurn({ x }: { x: number }) {
-  camera.value.angle += x || 0
-}
+// function cameraTurn({ x }: { x: number }) {
+//   camera.value.angle += x || 0
+// }
 
-function cameraMove({ x, y }: { x: number; y: number }) {
-  camera.value.x += x
-  camera.value.y += y
-}
+// function cameraMove({ x, y }: { x: number; y: number }) {
+//   camera.value.x += x
+//   camera.value.y += y
+// }
 
-function cameraZoom(amount: number) {
-  camera.value.zoom += amount
-}
-
-function posAndAngle({ x, y, angle }: Record<string, number>) {
-  return x.toFixed(3) + "/" + y.toFixed(3) + ", " + angle + "°"
-}
+// function cameraZoom(amount: number) {
+//   camera.value.zoom += amount
+// }
 
 function resize() {
   camera.value.x = (window.innerWidth || 1000) * 0.5
@@ -73,20 +78,13 @@ nextTick(resize)
 
 <template>
   <div id="info">
-    <div id="title">Zerberus</div>
-
-    <p>Camera:</p>
-    <p>{{ posAndAngle(camera) }}</p>
-    <KeyboardControl @turn="cameraTurn" @move="cameraMove" @zoom="cameraZoom" />
-
-    <p>Car:</p>
-    <p id="car-info">{{ posAndAngle(car) }}</p>
-
-    <p>Motor throttles:</p>
-    <p>{{ leftMotorSpeed + " / " + rightMotorSpeed }}</p>
+    <FlightIndicator />
+    <div />
+    <div>
+      <JoystickHandle @change="setMotorThrottles" />
+      <!-- <KeyboardControl @turn="cameraTurn" @move="cameraMove" @zoom="cameraZoom" /> -->
+    </div>
   </div>
-
-  <JoystickHandle @change="setMotorThrottles" />
 
   <ThreeDeeWorld
     :camera-pos-x="camera.x"
@@ -102,9 +100,9 @@ nextTick(resize)
 
 <style lang="scss">
 #info {
-  position: absolute;
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 200px auto 200px;
   grid-column-gap: 20px;
   z-index: 999;
 
@@ -126,6 +124,7 @@ nextTick(resize)
 }
 
 #app {
-  background: linear-gradient(0deg, rgb(5, 55, 64) 0, rgb(0, 212, 255) 100%);
+  background: url("./assets/background.jpeg");
+  background-size: cover;
 }
 </style>

@@ -3,6 +3,7 @@
 /coverage
 /*.log
 /pictures
+/dist
 /data
 /image_recognition/data/all_images
 /image_recognition/pictures

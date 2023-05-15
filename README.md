@@ -71,7 +71,7 @@ THe MPU needs to be connected to the I2C ports, motor controllers and encoders j
 - `sudo pip3 install opencv-python`
 - `sudo pip3 install scikit-image`
 
-### Setup local Wifi network
+### Setup local Wifi network (experimental)
 
 We use [RaspAP](https://raspap.com/) to have a local Wifi network on the Raspberry Pi, which is available
 even when using the car outdoor.
@@ -82,9 +82,10 @@ Currently, we don't got the AP-STA-mode working, so that it is possible to have 
 
 To run the production version which uses the actual GPIO and camera of the Raspi, run:
 
-    sudo npm start
+    npm run build
+    npm start
 
-You need 'sudo' here to make sure that the program can access the hardware.
+Your user needs 'sudo' permissions to access the hardware. Normally, that is the case. If not, an error message will occur.
 
 ### Simulation mode
 
@@ -92,19 +93,15 @@ If you just want to test the motor control software on your local computer witho
 
     npm run simulator
 
-There are two URLs with different use cases, which can be opened in your browser:
+There are URLs for different use cases, which can be opened in your browser:
 
-- [http://localhost:10000/remote.html](http://localhost:10000/remote.html) - A remote control, which lets you directly control the car.
-- [http://localhost:10000](http://localhost:10000) - this older frontend contains a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
+- [http://localhost:10000/](http://localhost:10000/) - The frontend with the remote controls.
+- [http://localhost:10000/old/remote.html](http://localhost:10000/old/remote.html) - A remote control, which lets you directly control the car. This is especially useful for a smartphone used as the control device. In this case, replace the 'localhost' part in the URL by the actual IP address or hostname of the car. Put it on your home screen for easier access and to get rid of the browser controls.
+- [http://localhost:10000/old](http://localhost:10000/old) - this older frontend contains a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
 
 The older frontend also listens to the "t" key, which toggles route tracking. Tracked routes currently reside in CSV files on the server in `data/routes`. The name of each CSV file is the unix time stamp, the tracking was started. Each entry starts with the time in millseconds relative to this start time.
 
-### Remote control mode
-
-To control the actual car manually, open `http://<raspberry-address>:10000/remote.html`. You should use this on your smartphone to be more flexible when running the car outdoors. Put it on your home screen
-for easier access and to get rid of the browser controls.
-
-### Install to run at boot
+### Install to run at boot (experimental)
 
     sudo cp /home/pi/zerberus/zerberus.service /lib/systemd/system/
     sudo systemctl start zerberus.service 

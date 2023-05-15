@@ -2,9 +2,9 @@
   "recommendations": [
     "rvest.vs-code-prettier-eslint",
     "hbenl.vscode-test-explorer",
-    "hbenl.vscode-mocha-test-adapter",
     "mhutchie.git-graph",
-    "Vue.volar",
-    "Vue.vscode-typescript-vue-plugin"
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+    "dbaeumer.vscode-eslint"
   ]
 }

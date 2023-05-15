@@ -1,19 +1,20 @@
 import type { Encoder } from "./Encoder"
 import ObservableValueFactory from "../lib/ObservableValue"
+import { Mock, vi } from "vitest"
 
 enum EncoderProp {
   tick = "tick",
   simulateSpeed = "simulateSpeed",
 }
 
-export function createEncoderSpies(sandbox: sinon.SinonSandbox) {
+export function createEncoderSpies() {
   return {
-    tick: sandbox.spy(),
-    simulateSpeed: sandbox.spy(),
+    tick: vi.fn(),
+    simulateSpeed: vi.fn(),
   }
 }
 
-export default function MockEncoderFactory(no: number, spies: Record<EncoderProp, sinon.SinonSpy>): Encoder {
+export default function MockEncoderFactory(no: number, spies: Record<EncoderProp, Mock>): Encoder {
   const encoder: Encoder = {
     no,
     simulated: true,

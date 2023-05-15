@@ -1,4 +1,4 @@
-import * as sinon from "sinon"
+import { Mock, vi } from "vitest"
 import { Motor, MotorMode } from "./Motor"
 import ObservableValueFactory from "../lib/ObservableValue"
 import SubjectFactory from "../lib/Subject"
@@ -13,19 +13,19 @@ enum MotorProp {
   destruct = "destruct",
 }
 
-export function createMotorSpies(sandbox: sinon.SinonSandbox) {
+export function createMotorSpies() {
   return {
-    setThrottle: sandbox.spy(),
-    accelerate: sandbox.spy(),
-    stop: sandbox.spy(),
-    float: sandbox.spy(),
-    go: sandbox.spy(),
-    releaseBlock: sandbox.spy(),
-    destruct: sandbox.spy(),
+    setThrottle: vi.fn(),
+    accelerate: vi.fn(),
+    stop: vi.fn(),
+    float: vi.fn(),
+    go: vi.fn(),
+    releaseBlock: vi.fn(),
+    destruct: vi.fn(),
   }
 }
 
-export default function (no: number, spies: Record<MotorProp, sinon.SinonSpy>): Motor {
+export default function (no: number, spies: Record<MotorProp, Mock>): Motor {
   const motor: Motor = {
     no,
     throttle: 0,

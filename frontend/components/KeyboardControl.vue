@@ -40,6 +40,10 @@ window.addEventListener("keydown", keydown)
 </template>
 
 <style scoped lang="scss">
+nav {
+  text-align: center;
+}
+
 button {
   height: 26px;
   width: 26px;

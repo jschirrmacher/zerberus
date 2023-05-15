@@ -1,6 +1,6 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.node.json",
-  "include": ["env.d.ts", "./**/*.ts"],
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "include": ["env.d.ts", "./**/*.ts", "./types.ts", "./**/*.vue"],
   "exclude": ["./**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
@@ -9,6 +9,7 @@
     "types": ["node"],
     "esModuleInterop": true,
     "strict": true,
+    "lib": ["DOM", "ES2016"],
     "paths": {
       "@/*": ["./*"]
     }

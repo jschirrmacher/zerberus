@@ -1,5 +1,4 @@
-import expect from "expect"
-import { spy } from "sinon"
+import { describe, expect, it, vi } from "vitest"
 import ObservableFactory, { addObservableProperty } from "./ObservableValue"
 import Subject from "./Subject"
 
@@ -19,41 +18,41 @@ describe("ObservableValue", () => {
 
   it("should notify observers when value changes", () => {
     const val = ObservableFactory("test", 1)
-    const observer = spy()
+    const observer = vi.fn()
     val.registerObserver(observer)
-    expect(observer.called).toBe(false)
+    expect(observer).not.toBeCalled()
     val.value = 2
-    expect(observer.lastCall.args[0]).toBe(2)
+    expect(observer.mock.lastCall).toEqual([2, expect.any(Object)])
   })
 
   it("should notify all registered observers", () => {
     const val = ObservableFactory("test", 1)
-    const observer1 = spy()
-    const observer2 = spy()
+    const observer1 = vi.fn()
+    const observer2 = vi.fn()
     val.registerObserver(observer1)
     val.registerObserver(observer2)
     val.value = 2
-    expect(observer1.calledWith(2)).toBe(true)
-    expect(observer2.calledWith(2)).toBe(true)
+    expect(observer1).toBeCalledWith(2, expect.any(Object))
+    expect(observer2).toBeCalledWith(2, expect.any(Object))
   })
 
   it("should not notify observers when set() is called with the same value", () => {
     const val = ObservableFactory("test", 1)
-    const observer = spy()
+    const observer = vi.fn()
     val.registerObserver(observer)
     val.value = 1
-    expect(observer.callCount).toBe(0)
+    expect(observer).toBeCalledTimes(0)
   })
 
   it("should not notify unregistered observers", () => {
     const val = ObservableFactory<number>("test", 1)
-    const observer = spy()
+    const observer = vi.fn()
     val.registerObserver(observer)
     val.value = 4
-    expect(observer.callCount).toBe(1)
+    expect(observer).toBeCalledTimes(1)
     val.unregisterObserver(observer)
     val.value = 8
-    expect(observer.callCount).toBe(1)
+    expect(observer).toBeCalledTimes(1)
   })
 
   it("should be usable as primitive value", () => {
@@ -72,10 +71,10 @@ describe("ObservableValue", () => {
       const subject = Subject("test-subject")
       const obj = {} as { test: number }
       addObservableProperty(obj, "test", subject, 42)
-      const observer = spy()
+      const observer = vi.fn()
       subject.registerObserver(observer)
       obj.test = 24
-      expect(observer.callCount).toBe(1)
+      expect(observer).toBeCalledTimes(1)
     })
   })
 })

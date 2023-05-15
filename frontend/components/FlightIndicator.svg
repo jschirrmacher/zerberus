@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <g id="windrose" transform="rotate(90)" transform-origin="500 500">
+    <circle class="speedo-divisions" cx="500" cy="500" r="460"
+      fill="transparent" stroke="rgba(255,0,0,0.3)"
+      stroke-width="80" stroke-dasharray="15 165.6" stroke-dashoffset="7.5" />
+    <text x="500" y="160" font-size="80" text-anchor="middle" fill="rgba(255,0,0,0.3)">N</text>
+    <text x="880" y="530" font-size="80" text-anchor="middle" fill="rgba(255,0,0,0.3)">E</text>
+    <text x="500" y="890" font-size="80" text-anchor="middle" fill="rgba(255,0,0,0.3)">S</text>
+    <text x="130" y="530" font-size="80" text-anchor="middle" fill="rgba(255,0,0,0.3)">W</text>
+  </g>
+
+  <line id="horizon-20" x1="300" x2="700" y1="300" y2="300"
+    stroke="rgba(255,0,0,0.3)" stroke-width="7" />
+  <line id="horizon-10" x1="200" x2="800" y1="400" y2="400"
+    stroke="rgba(255,0,0,0.3)" stroke-width="7" />
+  <line id="horizon--10" x1="200" x2="800" y1="600" y2="600"
+    stroke="rgba(255,0,0,0.3)" stroke-width="7" />
+  <line id="horizon--20" x1="300" x2="700" y1="700" y2="700"
+    stroke="rgba(255,0,0,0.3)" stroke-width="7" />
+
+  <circle id="speedo" cx="500" cy="500" r="460"
+    fill="transparent" stroke="rgba(255,0,0,0.3)"
+    stroke-width="80" stroke-dasharray="500" stroke-dashoffset="0" />
+
+  <line id="horizon" x1="0" x2="1000" y1="500" y2="500"
+    stroke="rgba(255,0,0,0.3)" stroke-width="15" />
+</svg>
