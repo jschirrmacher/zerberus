@@ -9,15 +9,15 @@
   "golang": {
     "enabled": false
   },
+  "schedule": ["at 5:00 pm on Saturday"],
   "packageRules": [
     {
       "updateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
     {
-      "datasources": ["docker"],
       "packageNames": ["node"],
-      "allowedVersions": "!/^15\\./"
+      "allowedVersions": "!/^18\\./"
     }
   ]
 }
