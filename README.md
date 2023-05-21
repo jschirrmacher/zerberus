@@ -47,14 +47,10 @@ THe MPU needs to be connected to the I2C ports, motor controllers and encoders j
 - Install on SD Card by using [Rasperry Pi Imager](https://www.raspberrypi.org/software/) with 64bit Raspberry Pi OS, using the options to pre-configure ssh and WLAN (see https://www.raspberrypi.com/news/raspberry-pi-bullseye-update-april-2022/)
 - Put SD card into Raspi and boot, the Raspi should appear in your WLAN after a short while
 - ssh into Raspi via its IP address with your pre-configured user and password: `ssh <username>@raspberrypi`
-- Install required libraries: `sudo apt-get install pigpio git`
-- `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash`
-- Close and re-open your terminal
-- `nvm install 18`
+- Install required libraries: `sudo apt-get install i2c-tools pigpio git`
 - Clone this repository: `git clone https://github.com/jschirrmacher/zerberus.git`
-- Go into cloned repository's folder: `cd zerberus`
-- Install dependencies: `npm i`
-- Enable I2C using `sudo raspi-config` (check that device is connected correctly by using `sudo apt-get install i2c-tools && sudo i2cdetect -y 1` - it should show a "68" between a lot of "--")
+- Run `zerberus/setup.sh
+- Enable I2C using `sudo raspi-config` (check that device is connected correctly by using `sudo i2cdetect -y 1` - it should show a "68" between a lot of "--")
 - Increase I2C baud rate by finding a `dtparam=i2c_arm=on` line in `/boot/config.txt` and replace it to `dtparam=i2c_arm=on,i2c_arm_baudrate=100000`
 
 #### Install image recognition software
@@ -82,8 +78,7 @@ Currently, we don't got the AP-STA-mode working, so that it is possible to have 
 
 To run the production version which uses the actual GPIO and camera of the Raspi, run:
 
-    npm run build
-    npm start
+    ~/zerberus/start.sh
 
 Your user needs 'sudo' permissions to access the hardware. Normally, that is the case. If not, an error message will occur.
 

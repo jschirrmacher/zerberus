@@ -5,6 +5,7 @@
     "mhutchie.git-graph",
     "vue.volar",
     "vue.vscode-typescript-vue-plugin",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "zixuanchen.vitest-explorer"
   ]
 }

@@ -12,6 +12,8 @@ import { connectCockpit } from "./ClientHandler/Cockpit"
 import { connectRemoteControl } from "./ClientHandler/RemoteControl"
 import { connectCamera } from "./ClientHandler/Camera"
 import { connectGPIOViewer } from "./ClientHandler/GPIOViewer"
+import io from 'socket.io-client';
+import { exec } from "child_process"
 
 async function initCar() {
   const prod = process.env.NODE_ENV === "production"
@@ -27,11 +29,14 @@ async function initCar() {
   const app = express()
   const server = HTTP.createServer(app)
   const io = new Server(server, { cors: { origin: true } })
-  server.listen(10000)
+  const port = process.env.PORT || 10000
+  server.listen(port, async () => {
+    const myIp = await new Promise(resolve => exec(`hostname -I | awk '{print $1;}'`, (err, out) => resolve(out.trim())))
+    console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections on http://${myIp}:${port}`)
+  })
   app.use("/", express.static(path.resolve(__dirname, "..", "dist")))
   app.use("/old", express.static(path.resolve(__dirname, "..", "old-frontend")))
   app.use("/", express.static(path.resolve(__dirname, "..", "pictures")))
-  console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections`)
 
   async function clientHasRegistered(client: Socket, types: string[]): Promise<void> {
     console.log(types)
