@@ -22,7 +22,9 @@ const { orientation } = storeToRefs(carStore)
 
 const appEl = document.querySelector("#app")
 watch(orientation, () => {
-  appEl?.setAttribute("style", `background-position-x: ${orientation.value}%`)
+  const pos = orientation.value / 3.6
+  appEl?.setAttribute("data-angle", "" + orientation.value)
+  appEl?.setAttribute("style", `background-position-x: ${pos}%`)
 })
 
 const socket = useSocket()
@@ -79,7 +81,12 @@ nextTick(resize)
 <template>
   <div id="info">
     <FlightIndicator />
-    <div />
+    <div>
+      <div>Angle: {{ car.angle }}°</div>
+      <div>Accel: {{ accel }}</div>
+      <div>Gyro: {{ gyro }}</div>
+      <div>Speed: {{ speed }}</div>
+    </div>
     <div>
       <JoystickHandle @change="setMotorThrottles" />
       <!-- <KeyboardControl @turn="cameraTurn" @move="cameraMove" @zoom="cameraZoom" /> -->
