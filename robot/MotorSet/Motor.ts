@@ -52,7 +52,7 @@ export default function MotorSetFactory(
   pin_in2: number,
   pin_ena: number,
   encoder: Encoder,
-  logger = ModuleLogger("motor")
+  logger = ModuleLogger("motor"),
 ): Motor {
   const in1 = gpio.create(pin_in1, { mode: OUTPUT })
   const in2 = gpio.create(pin_in2, { mode: OUTPUT })

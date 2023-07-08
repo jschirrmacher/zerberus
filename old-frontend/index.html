@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Robot Simulator</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
@@ -10,26 +10,86 @@
     <div class="board">
       <div class="unit">
         <table id="gpio">
-          <tr><td class="power-3-3v"><span>1</span></td>  <td class="power-5v"><span>2</span></td></tr>
-          <tr><td id="pin-3"><span>3</span></td>          <td class="power-5v"><span>4</span></td></tr>
-          <tr><td id="pin-5"><span>5</span></td>          <td class="gnd"><span>6</span></td></tr>
-          <tr><td id="pin-7"><span>7</span></td>          <td id="pin-8"><span>8</span></td></tr>
-          <tr><td class="gnd"><span>9</span></td>         <td id="pin-10"><span>10</span></td></tr>
-          <tr><td id="pin-11"><span>11</span></td>        <td id="pin-12"><span>12</span></td></tr>
-          <tr><td id="pin-13"><span>13</span></td>        <td class="gnd"><span>14</span></td></tr>
-          <tr><td id="pin-15"><span>15</span></td>        <td id="pin-16"><span>16</span></td></tr>
-          <tr><td class="power-3-3v"><span>17</span></td> <td id="pin-18"><span>18</span></td></tr>
-          <tr><td id="pin-19"><span>19</span></td>        <td class="gnd"><span>20</span></td></tr>
-          <tr><td id="pin-21"><span>21</span></td>        <td id="pin-22"><span>22</span></td></tr>
-          <tr><td id="pin-23"><span>23</span></td>        <td id="pin-24"><span>24</span></td></tr>
-          <tr><td class="gnd"><span>25</span></td>        <td id="pin-26"><span>26</span></td></tr>
-          <tr><td id="pin-27"><span>27</span></td>        <td id="pin-28"><span>28</span></td></tr>
-          <tr><td id="pin-29"><span>29</span></td>        <td class="gnd"><span>30</span></td></tr>
-          <tr><td id="pin-31"><span>31</span></td>        <td id="pin-32"><span>32</span></td></tr>
-          <tr><td id="pin-33"><span>33</span></td>        <td class="gnd"><span>34</span></td></tr>
-          <tr><td id="pin-35"><span>35</span></td>        <td id="pin-36"><span>36</span></td></tr>
-          <tr><td id="pin-37"><span>37</span></td>        <td id="pin-38"><span>38</span></td></tr>
-          <tr><td class="gnd"><span>39</span></td>        <td id="pin-40"><span>40</span></td></tr>
+          <tr>
+            <td class="power-3-3v"><span>1</span></td>
+            <td class="power-5v"><span>2</span></td>
+          </tr>
+          <tr>
+            <td id="pin-3"><span>3</span></td>
+            <td class="power-5v"><span>4</span></td>
+          </tr>
+          <tr>
+            <td id="pin-5"><span>5</span></td>
+            <td class="gnd"><span>6</span></td>
+          </tr>
+          <tr>
+            <td id="pin-7"><span>7</span></td>
+            <td id="pin-8"><span>8</span></td>
+          </tr>
+          <tr>
+            <td class="gnd"><span>9</span></td>
+            <td id="pin-10"><span>10</span></td>
+          </tr>
+          <tr>
+            <td id="pin-11"><span>11</span></td>
+            <td id="pin-12"><span>12</span></td>
+          </tr>
+          <tr>
+            <td id="pin-13"><span>13</span></td>
+            <td class="gnd"><span>14</span></td>
+          </tr>
+          <tr>
+            <td id="pin-15"><span>15</span></td>
+            <td id="pin-16"><span>16</span></td>
+          </tr>
+          <tr>
+            <td class="power-3-3v"><span>17</span></td>
+            <td id="pin-18"><span>18</span></td>
+          </tr>
+          <tr>
+            <td id="pin-19"><span>19</span></td>
+            <td class="gnd"><span>20</span></td>
+          </tr>
+          <tr>
+            <td id="pin-21"><span>21</span></td>
+            <td id="pin-22"><span>22</span></td>
+          </tr>
+          <tr>
+            <td id="pin-23"><span>23</span></td>
+            <td id="pin-24"><span>24</span></td>
+          </tr>
+          <tr>
+            <td class="gnd"><span>25</span></td>
+            <td id="pin-26"><span>26</span></td>
+          </tr>
+          <tr>
+            <td id="pin-27"><span>27</span></td>
+            <td id="pin-28"><span>28</span></td>
+          </tr>
+          <tr>
+            <td id="pin-29"><span>29</span></td>
+            <td class="gnd"><span>30</span></td>
+          </tr>
+          <tr>
+            <td id="pin-31"><span>31</span></td>
+            <td id="pin-32"><span>32</span></td>
+          </tr>
+          <tr>
+            <td id="pin-33"><span>33</span></td>
+            <td class="gnd"><span>34</span></td>
+          </tr>
+          <tr>
+            <td id="pin-35"><span>35</span></td>
+            <td id="pin-36"><span>36</span></td>
+          </tr>
+          <tr>
+            <td id="pin-37"><span>37</span></td>
+            <td id="pin-38"><span>38</span></td>
+          </tr>
+          <tr>
+            <td class="gnd"><span>39</span></td>
+            <td id="pin-40"><span>40</span></td>
+          </tr>
         </table>
       </div>
 
@@ -43,35 +103,37 @@
 
           <div class="unit">
             <div class="motor" data-connected="pin-13,pin-15,pin-7">
-              <img src="wheel.svg">
+              <img src="wheel.svg" />
               <div class="speed"></div>
             </div>
           </div>
 
           <div class="unit">
             <div class="motor" data-connected="pin-11,pin-13,pin-15">
-              <img src="wheel.svg">
+              <img src="wheel.svg" />
               <div class="speed"></div>
             </div>
           </div>
         </div>
 
         <label>
-          <input type="checkbox" id="camera-toggle">
-          <img id="camera-preview" src="http://192.168.178.78:10000/camera.jpg">
+          <input type="checkbox" id="camera-toggle" />
+          <img id="camera-preview" src="http://192.168.178.78:10000/camera.jpg" />
         </label>
 
         <div id="mpu">
-          <svg id="flightindicator" width="150" height="150" >
+          <svg id="flightindicator" width="150" height="150">
             <path id="horizon" d="M0,150L0,75L150,75L150,150Z" fill="red" />
             <g fill-rule="evenodd" fill="darkred">
-              <path d="M0,0L150,0L150,150L0,150z
+              <path
+                d="M0,0L150,0L150,150L0,150z
               M 75,75 m -75, 0
               a 75,75 0 1,0 150,0
-              a 75,75 0 1,0 -150,0" />
+              a 75,75 0 1,0 -150,0"
+              />
             </g>
           </svg>
-          <svg id="speedo" width="150" height="150" >
+          <svg id="speedo" width="150" height="150">
             <circle cx="75" cy="75" r="60" fill="transparent" stroke="darkred" stroke-width="30" />
           </svg>
           <div class="accel"></div>
@@ -82,13 +144,14 @@
 
       <div class="unit">
         <svg id="car-area">
-          <defs>                        |                      |
+          <defs>
+            | |
             <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0" stop-color="rgb(225, 255, 0)" />
               <stop offset="1" stop-color="rgb(255, 0, 255)" />
             </linearGradient>
           </defs>
-            
+
           <g id="car">
             <rect x="-25" width="50" y="-15" height="30" />
 
@@ -105,12 +168,10 @@
         <div id="car-pos"></div>
         <button id="clearPath">Clear Path</button>
       </div>
-      
+
       <div class="unit">
-        <div id="command-controller">
-        </div>
+        <div id="command-controller"></div>
       </div>
-        
     </div>
 
     <div class="credit">

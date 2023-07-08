@@ -8,7 +8,7 @@ export default function FileWriter(
   dir: string,
   name: string,
   formatter: RouteFormatter,
-  logger = ModuleLogger("filewriter")
+  logger = ModuleLogger("filewriter"),
 ) {
   fs.mkdirSync(dir, { recursive: true })
   const filePath = resolve(dir, name + "." + formatter.extension)

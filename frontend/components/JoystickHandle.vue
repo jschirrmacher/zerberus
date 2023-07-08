@@ -57,7 +57,7 @@ function handleMove(event: MouseEvent | TouchEvent) {
   const target = touches?.length ? touches[0] : (event as MouseEvent)
   newPos(
     Math.round(((clampX(target.clientX - padPos.value.x - handleCenter.value.x) / padSize.value.x) * 2 - 1) * 100),
-    -Math.round(((clampY(target.clientY - padPos.value.y - handleCenter.value.y) / padSize.value.y) * 2 - 1) * 100)
+    -Math.round(((clampY(target.clientY - padPos.value.y - handleCenter.value.y) / padSize.value.y) * 2 - 1) * 100),
   )
 }
 
@@ -65,7 +65,7 @@ function backTowardsCenter() {
   if (pos.value.x || pos.value.y) {
     newPos(
       Math.abs(pos.value.x) < 5 ? 0 : Math.round(pos.value.x * 0.8),
-      Math.abs(pos.value.y) < 5 ? 0 : Math.round(pos.value.y * 0.8)
+      Math.abs(pos.value.y) < 5 ? 0 : Math.round(pos.value.y * 0.8),
     )
     snapBackTimer = setTimeout(backTowardsCenter, 20)
   } else {

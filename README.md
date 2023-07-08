@@ -42,6 +42,7 @@ THe MPU needs to be connected to the I2C ports, motor controllers and encoders j
 - Right Motor ENA <-> Raspi GPIO 22 (Pin 15)
 
 ![Pinout](./pinout.drawio.svg)
+
 ### Setup raspberry pi
 
 - Install on SD Card by using [Rasperry Pi Imager](https://www.raspberrypi.org/software/) with 64bit Raspberry Pi OS, using the options to pre-configure ssh and WLAN (see https://www.raspberrypi.com/news/raspberry-pi-bullseye-update-april-2022/)
@@ -99,7 +100,7 @@ The older frontend also listens to the "t" key, which toggles route tracking. Tr
 ### Install to run at boot (experimental)
 
     sudo cp /home/pi/zerberus/zerberus.service /lib/systemd/system/
-    sudo systemctl start zerberus.service 
+    sudo systemctl start zerberus.service
 
 ## Development
 

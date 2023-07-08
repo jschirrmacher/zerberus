@@ -19,7 +19,7 @@ const props = withDefaults(
     cameraAngleY: 0,
     cameraAngleZ: 0,
     cameraZoom: 0,
-  }
+  },
 )
 
 const setupStyle = computed(() => {

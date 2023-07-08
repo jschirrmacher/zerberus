@@ -149,7 +149,7 @@ export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: M
       if (Math.abs(angle.angle) >= MINIMAL_TURN_ANGLE.angle) {
         const destination = car.orientation.value.add(angle)
         const trigger = waitFor(car.orientation, (orientation) =>
-          orientation.isCloseTo(destination, MINIMAL_TURN_ANGLE)
+          orientation.isCloseTo(destination, MINIMAL_TURN_ANGLE),
         )
         await car.turn(getTurnDirection(angle))
         await trigger
@@ -234,7 +234,7 @@ export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: M
       const delta = Math.PI / 2 - angle
       car.position.value = car.position.value.add(
         dY * Math.cos(angle) + dX * Math.cos(delta),
-        -dY * Math.sin(angle) + dX * Math.sin(delta)
+        -dY * Math.sin(angle) + dX * Math.sin(delta),
       )
       car.orientation.value = fromRadian(angle + theta)
       car.speed.value =

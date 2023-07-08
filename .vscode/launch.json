@@ -15,9 +15,7 @@
       "name": "Attach",
       "port": 9229,
       "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node"
     },
     {
@@ -25,14 +23,9 @@
       "program": "${workspaceFolder}/robot/index.ts",
       "request": "launch",
       "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node"
-    },
+    }
   ]
 }

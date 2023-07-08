@@ -77,13 +77,13 @@ describe("Encoder", () => {
       createBuffer([
         { flags: 0, level: 2, time: 10000 },
         { flags: 0, level: 6, time: 20000 },
-      ])
+      ]),
     )
     await new Promise((resolve) =>
       setImmediate(() => {
         expect(encoder.position.value).toEqual(2)
         resolve(undefined)
-      })
+      }),
     )
   })
 
@@ -92,13 +92,13 @@ describe("Encoder", () => {
       createBuffer([
         { flags: 0, level: 2, time: 10000 },
         { flags: PI_NTFY_FLAGS_ALIVE, level: 6, time: 20000 },
-      ])
+      ]),
     )
     await new Promise((resolve) =>
       setImmediate(() => {
         expect(encoder.position.value).toEqual(1)
         resolve(undefined)
-      })
+      }),
     )
   })
 
@@ -108,7 +108,7 @@ describe("Encoder", () => {
       setTimeout(() => {
         expect(encoder.position.value).toBeGreaterThan(0)
         resolve(undefined)
-      }, 100)
+      }, 100),
     )
   })
 })

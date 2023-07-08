@@ -21,7 +21,7 @@ describe("Orientation", () => {
 
   it("should swap around after substracting from a negative angle", () => {
     expect(Orientation.create(-threeQuartersPI).differenceTo(Orientation.create(halfPi)).angle).toEqual(
-      -threeQuartersPI
+      -threeQuartersPI,
     )
   })
 
