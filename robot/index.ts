@@ -12,11 +12,14 @@ import { connectCockpit } from "./ClientHandler/Cockpit"
 import { connectRemoteControl } from "./ClientHandler/RemoteControl"
 import { connectCamera } from "./ClientHandler/Camera"
 import { connectGPIOViewer } from "./ClientHandler/GPIOViewer"
-import io from 'socket.io-client';
 import { exec } from "child_process"
+import { promisify } from "util"
+
+const asyncExec = promisify(exec)
 
 async function initCar() {
-  const prod = process.env.NODE_ENV === "production"
+  const mode = process.env.NODE_ENV
+  const prod = mode === "production"
   const gpio = GPIOFactory(!prod)
   const mpu = await MPUFactory({ useFake: !prod })
 
@@ -31,8 +34,9 @@ async function initCar() {
   const io = new Server(server, { cors: { origin: true } })
   const port = process.env.PORT || 10000
   server.listen(port, async () => {
-    const myIp = await new Promise(resolve => exec(`hostname -I | awk '{print $1;}'`, (err, out) => resolve(out.trim())))
-    console.log(`Car controller is running in "${process.env.NODE_ENV}" mode and waits for connections on http://${myIp}:${port}`)
+    const { stdout } = await asyncExec(`hostname -I | awk '{print $1;}'`)
+    const url = `http://${stdout.trim()}:${port}`
+    console.log(`Car controller is running in "${mode}" mode and waits for connections on ${url}`)
   })
   app.use("/", express.static(path.resolve(__dirname, "..", "dist")))
   app.use("/old", express.static(path.resolve(__dirname, "..", "old-frontend")))
