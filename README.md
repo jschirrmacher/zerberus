@@ -1,8 +1,8 @@
 # Zerberus
 
-Software for a robot, which chases racoons out of your garden.
+Software for a robot, which chases raccoons out of your garden.
 
-It is build using the [4WD Wild Thumper Chassis with 34:1 gear](https://www.pololu.com/product/1566) and a Raspberry Pi 4B.
+It is built using the [4WD Wild Thumper Chassis with 34:1 gear](https://www.pololu.com/product/1566) and a Raspberry Pi 4B.
 
 The software consists of several parts:
 
@@ -10,7 +10,7 @@ The software consists of several parts:
 2. A viewer/controller in `/frontend` folder.
 3. An image recognition software located in `/image_recognition`.
 
-The robot control program is implmented in TypeScript (for motor control) and Python (for image recognition).
+The robot control program is implemented in TypeScript (for motor control) and Python (for image recognition).
 
 ## Installation
 
@@ -26,7 +26,7 @@ The robot control program is implmented in TypeScript (for motor control) and Py
 
 ### Wire motors, encoders and IMU
 
-THe MPU needs to be connected to the I2C ports, motor controllers and encoders just need some GPIO ports. We wired them like this:
+The MPU needs to be connected to the I2C ports, motor controllers and encoders just need some GPIO ports. We wired them like this:
 
 - MPU SDA <-> Raspi SDA (Pin 3)
 - MPU SCL <-> Raspi SCL (Pin 5)
@@ -95,7 +95,7 @@ There are URLs for different use cases, which can be opened in your browser:
 - [http://localhost:10000/old/remote.html](http://localhost:10000/old/remote.html) - A remote control, which lets you directly control the car. This is especially useful for a smartphone used as the control device. In this case, replace the 'localhost' part in the URL by the actual IP address or hostname of the car. Put it on your home screen for easier access and to get rid of the browser controls.
 - [http://localhost:10000/old](http://localhost:10000/old) - this older frontend contains a simple car control via arrow keys and space bar (for breaking) and a lot of information about GPIO state.
 
-The older frontend also listens to the "t" key, which toggles route tracking. Tracked routes currently reside in CSV files on the server in `data/routes`. The name of each CSV file is the unix time stamp, the tracking was started. Each entry starts with the time in millseconds relative to this start time.
+The older frontend also listens to the "t" key, which toggles route tracking. Tracked routes currently reside in CSV files on the server in `data/routes`. The name of each CSV file is the unix time stamp, the tracking was started. Each entry starts with the time in milliseconds relative to this start time.
 
 ### Install to run at boot (experimental)
 
@@ -110,6 +110,6 @@ If you change anything in `types.ts` (which is shared by server and frontend), b
 
 The log level (`debug`, `info`, `warn` or `error`) can be set via environment variable "LOGLEVEL".
 
-In log level `debug`, another environment variable, "DEBUG" controls, which modules are to be logged. This can be a comma separated list of module names in lower case, like in this example:
+In log level `debug`, another environment variable, "DEBUG" controls, which modules are to be logged. This can be a comma separated list of module names in lowercase, like in this example:
 
     export DEBUG=encoder,motor,car
