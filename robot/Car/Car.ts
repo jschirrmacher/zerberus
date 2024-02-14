@@ -226,8 +226,8 @@ export default function CarFactory(motors: { left: Motor; right: Motor }, mpu: M
       const dY = theta
         ? Math.sin(theta) * radius
         : Math.sign(a) === Math.sign(b)
-        ? Math.sign(a) * Math.min(Math.abs(a), Math.abs(b))
-        : a + b
+          ? Math.sign(a) * Math.min(Math.abs(a), Math.abs(b))
+          : a + b
       const dX = (1 - Math.cos(theta)) * radius
 
       const angle = car.orientation.value.angle
