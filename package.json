@@ -43,15 +43,15 @@
     "socket.io": "4.7.5",
     "socket.io-client": "4.7.5",
     "ts-node": "10.9.2",
-    "typescript": "5.5.2",
+    "typescript": "5.5.3",
     "vue": "3.4.31"
   },
   "devDependencies": {
     "@types/express": "4.17.21",
     "@types/i2c-bus": "5.1.2",
     "@types/socket.io": "3.0.1",
-    "@typescript-eslint/eslint-plugin": "7.14.1",
-    "@typescript-eslint/parser": "7.14.1",
+    "@typescript-eslint/eslint-plugin": "7.15.0",
+    "@typescript-eslint/parser": "7.15.0",
     "@vitejs/plugin-vue": "5.0.5",
     "@vitest/coverage-v8": "^1.6.0",
     "@vue/eslint-config-prettier": "9.0.0",
