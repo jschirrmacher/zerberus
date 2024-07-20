@@ -44,7 +44,7 @@
     "socket.io-client": "4.7.5",
     "ts-node": "10.9.2",
     "typescript": "5.5.3",
-    "vue": "3.4.32"
+    "vue": "3.4.33"
   },
   "devDependencies": {
     "@types/express": "4.17.21",
