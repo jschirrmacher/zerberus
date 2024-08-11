@@ -15,7 +15,7 @@
     "build:frontend": "vite build",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "update": "npx -y npm-check-updates -d -u -e 2"
+    "update": "npx -y npm-check-updates -du"
   },
   "keywords": [
     "rackoon",
