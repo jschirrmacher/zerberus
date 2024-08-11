@@ -17,7 +17,7 @@
     },
     {
       "packageNames": ["node"],
-      "allowedVersions": "!/^18\\./"
+      "allowedVersions": "!/^20\\./"
     }
   ]
 }
