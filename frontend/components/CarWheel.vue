@@ -34,10 +34,24 @@ const containerTransformTranslate = computed(() => `${-radius}px, ${-radius * 2}
 
 <template>
   <div class="wheel-container">
-    <div class="wheel" :style="animationSpeed">
-      <img class="side" :src="wheel" />
-      <img class="side" :src="wheel" />
-      <div v-for="(style, index) in tireStyles" :key="index" class="tire-tread" :style="style" />
+    <div
+      class="wheel"
+      :style="animationSpeed"
+    >
+      <img
+        class="side"
+        :src="wheel"
+      >
+      <img
+        class="side"
+        :src="wheel"
+      >
+      <div
+        v-for="(style, index) in tireStyles"
+        :key="index"
+        class="tire-tread"
+        :style="style"
+      />
     </div>
   </div>
 </template>

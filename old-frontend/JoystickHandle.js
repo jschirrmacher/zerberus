@@ -59,7 +59,9 @@ export default function JoystickHandle(handle) {
       snapBackTimer = setTimeout(backTowardsCenter, 20)
     }
 
-    snapBackTimer && clearTimeout(snapBackTimer)
+    if (snapBackTimer) {
+      clearTimeout(snapBackTimer)
+    }
     snapBackTimer = undefined
     document.addEventListener("mousemove", handleMove, { passive: false })
     document.addEventListener("touchmove", handleMove, { passive: false })

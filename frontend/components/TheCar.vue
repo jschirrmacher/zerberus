@@ -17,21 +17,42 @@ const wheelWidth = 50
 
 <template>
   <div class="car">
-    <CarChassis :length="length" :width="width" :height="height" color="#000000" />
+    <CarChassis
+      :length="length"
+      :width="width"
+      :height="height"
+      color="#000000"
+    />
     <div class="left">
       <div class="back">
-        <CarWheel :speed="motorSpeedLeft" :diameter="wheelDiameter" :width="wheelWidth" />
+        <CarWheel
+          :speed="motorSpeedLeft"
+          :diameter="wheelDiameter"
+          :width="wheelWidth"
+        />
       </div>
       <div class="front">
-        <CarWheel :speed="motorSpeedLeft" :diameter="wheelDiameter" :width="wheelWidth" />
+        <CarWheel
+          :speed="motorSpeedLeft"
+          :diameter="wheelDiameter"
+          :width="wheelWidth"
+        />
       </div>
     </div>
     <div class="right">
       <div class="back">
-        <CarWheel :speed="motorSpeedRight" :diameter="wheelDiameter" :width="wheelWidth" />
+        <CarWheel
+          :speed="motorSpeedRight"
+          :diameter="wheelDiameter"
+          :width="wheelWidth"
+        />
       </div>
       <div class="front">
-        <CarWheel :speed="motorSpeedRight" :diameter="wheelDiameter" :width="wheelWidth" />
+        <CarWheel
+          :speed="motorSpeedRight"
+          :diameter="wheelDiameter"
+          :width="wheelWidth"
+        />
       </div>
     </div>
   </div>

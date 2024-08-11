@@ -36,7 +36,7 @@ export function createObservable<T>(subject: Subject<T>, value: T) {
   }
 }
 
-export function addObservableProperty<T>(object: Object, propertyName: string, subject: Subject<T>, initialValue: T) {
+export function addObservableProperty<T>(object: object, propertyName: string, subject: Subject<T>, initialValue: T) {
   const observable = createObservable(subject, initialValue)
 
   Object.defineProperty(object, propertyName, {

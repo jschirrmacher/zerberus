@@ -84,7 +84,9 @@ export default function MotorSetFactory(
       }
       blockCount = 0
     }
-    motor.throttle !== motor.currentThrottle && adaptSpeed()
+    if (motor.throttle !== motor.currentThrottle) {
+      adaptSpeed()
+    }
   }
 
   function setMode(motor: Motor, mode: MotorMode): void {

@@ -10,7 +10,13 @@ defineProps<{
 </script>
 
 <template>
-  <ABox class="car-chassis" :length="length + 'px'" :width="width + 'px'" :height="height + 'px'" :color="color" />
+  <ABox
+    class="car-chassis"
+    :length="length + 'px'"
+    :width="width + 'px'"
+    :height="height + 'px'"
+    :color="color"
+  />
 </template>
 
 <style scoped lang="scss"></style>

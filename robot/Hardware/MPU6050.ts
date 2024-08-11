@@ -88,7 +88,9 @@ export default async function MPUFactory(options: MPUOptions = {}): Promise<MPU>
     update,
 
     close: () => {
-      interval && clearInterval(interval)
+      if (interval) {
+        clearInterval(interval)
+      }
     },
   }
 }

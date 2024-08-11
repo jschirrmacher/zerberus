@@ -8,37 +8,37 @@ exports[`KeyboardControl > should render as expected 1`] = `
     data-v-89b5344a=""
     id="ArrowUp"
   >
-    ᐃ
+     ᐃ 
   </button>
   <button
     data-v-89b5344a=""
     id="ArrowLeft"
   >
-    ᐊ
+     ᐊ 
   </button>
   <button
     data-v-89b5344a=""
     id="ArrowRight"
   >
-    ᐅ
+     ᐅ 
   </button>
   <button
     data-v-89b5344a=""
     id="ArrowDown"
   >
-    ᐁ
+     ᐁ 
   </button>
   <button
     data-v-89b5344a=""
     id="Plus"
   >
-    +
+     + 
   </button>
   <button
     data-v-89b5344a=""
     id="Minus"
   >
-     
+       
   </button>
 </nav>
 `;

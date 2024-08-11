@@ -6,7 +6,7 @@ import express from "express"
 import { Server, Socket } from "socket.io"
 import GPIOFactory from "./Hardware/gpio"
 import MPUFactory from "./Hardware/MPU6050"
-import HTTP = require("http")
+import HTTP from "http"
 import { CLIENT_TYPE } from "../types"
 import { connectCockpit } from "./ClientHandler/Cockpit"
 import { connectRemoteControl } from "./ClientHandler/RemoteControl"
@@ -20,7 +20,7 @@ const asyncExec = promisify(exec)
 async function initCar() {
   const mode = process.env.NODE_ENV
   const prod = mode === "production"
-  const gpio = GPIOFactory(!prod)
+  const gpio = await GPIOFactory(!prod)
   const mpu = await MPUFactory({ useFake: !prod })
 
   const leftEncoder = Encoder(gpio, 14, 15)

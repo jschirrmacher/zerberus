@@ -101,7 +101,11 @@ nextTick(resize)
     :camera-angle-y="-car.angle"
     :camera-zoom="camera.zoom"
   >
-    <TheCar :motor-speed-left="leftMotorSpeed" :motor-speed-right="rightMotorSpeed" :direction="car.angle" />
+    <TheCar
+      :motor-speed-left="leftMotorSpeed"
+      :motor-speed-right="rightMotorSpeed"
+      :direction="car.angle"
+    />
   </ThreeDeeWorld>
 </template>
 

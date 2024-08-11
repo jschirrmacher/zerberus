@@ -25,7 +25,9 @@ export function connectRemoteControl(client: IO.Socket, car: Car, mpu: MPU, logg
   function keyControl(info: { cmd: keyof typeof keyControls }) {
     logger.debug("Direct control " + info.cmd)
     const cmd = keyControls[info.cmd]
-    cmd && cmd()
+    if (cmd) {
+      cmd()
+    }
   }
 
   function setTracker(state: "on" | "off") {

@@ -25,8 +25,20 @@ const speedoStart = computed(() => (speedoPerimeter * 2) / 3)
 </script>
 
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="200" height="200">
-    <circle cx="500" cy="500" r="495" :stroke="color" stroke-width="10" fill="transparent" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1000 1000"
+    width="200"
+    height="200"
+  >
+    <circle
+      cx="500"
+      cy="500"
+      r="495"
+      :stroke="color"
+      stroke-width="10"
+      fill="transparent"
+    />
     <g id="windrose">
       <circle
         transform-origin="center center"
@@ -40,16 +52,64 @@ const speedoStart = computed(() => (speedoPerimeter * 2) / 3)
         :stroke-dasharray="windroseDashArray"
         :stroke-dashoffset="windroseDivisionWidth / 2"
       />
-      <text :transform="transformText" x="500" y="120">N</text>
-      <text :transform="transformText" x="940" y="530">E</text>
-      <text :transform="transformText" x="500" y="990">S</text>
-      <text :transform="transformText" x="80" y="530">W</text>
+      <text
+        :transform="transformText"
+        x="500"
+        y="120"
+      >N</text>
+      <text
+        :transform="transformText"
+        x="940"
+        y="530"
+      >E</text>
+      <text
+        :transform="transformText"
+        x="500"
+        y="990"
+      >S</text>
+      <text
+        :transform="transformText"
+        x="80"
+        y="530"
+      >W</text>
     </g>
 
-    <line id="horizon-20" x1="300" x2="700" y1="300" y2="300" :stroke="color" stroke-width="7" />
-    <line id="horizon-10" x1="200" x2="800" y1="400" y2="400" :stroke="color" stroke-width="7" />
-    <line id="horizon--10" x1="200" x2="800" y1="600" y2="600" :stroke="color" stroke-width="7" />
-    <line id="horizon--20" x1="300" x2="700" y1="700" y2="700" :stroke="color" stroke-width="7" />
+    <line
+      id="horizon-20"
+      x1="300"
+      x2="700"
+      y1="300"
+      y2="300"
+      :stroke="color"
+      stroke-width="7"
+    />
+    <line
+      id="horizon-10"
+      x1="200"
+      x2="800"
+      y1="400"
+      y2="400"
+      :stroke="color"
+      stroke-width="7"
+    />
+    <line
+      id="horizon--10"
+      x1="200"
+      x2="800"
+      y1="600"
+      y2="600"
+      :stroke="color"
+      stroke-width="7"
+    />
+    <line
+      id="horizon--20"
+      x1="300"
+      x2="700"
+      y1="700"
+      y2="700"
+      :stroke="color"
+      stroke-width="7"
+    />
 
     <circle
       id="speedo"
@@ -63,9 +123,25 @@ const speedoStart = computed(() => (speedoPerimeter * 2) / 3)
       :stroke-dashoffset="speedoStart"
     />
 
-    <text data-v-0b94a63f="" y="600" x="500" style="font-size: 300px" fill="white">{{ speed }}</text>
+    <text
+      data-v-0b94a63f=""
+      y="600"
+      x="500"
+      style="font-size: 300px"
+      fill="white"
+    >
+      {{ speed }}
+    </text>
 
-    <line id="horizon" x1="0" x2="1000" y1="500" y2="500" :stroke="color" stroke-width="15" />
+    <line
+      id="horizon"
+      x1="0"
+      x2="1000"
+      y1="500"
+      y2="500"
+      :stroke="color"
+      stroke-width="15"
+    />
   </svg>
 </template>
 

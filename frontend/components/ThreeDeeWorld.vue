@@ -33,7 +33,10 @@ const setupStyle = computed(() => {
 <template>
   <div id="perspective">
     <div id="camera">
-      <div id="setup" :style="setupStyle">
+      <div
+        id="setup"
+        :style="setupStyle"
+      >
         <!-- <div id="floor" />
         <div id="directions">
           <div id="north">N</div>

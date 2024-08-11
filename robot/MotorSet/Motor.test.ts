@@ -17,9 +17,9 @@ describe("Motor", () => {
     encoder.speed.notify(speed)
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     logger = TestLogger()
-    gpio = GPIOFactory(true)
+    gpio = await GPIOFactory(true)
     encoderSpy = createEncoderSpies()
     encoder = MockEncoderFactory(1, encoderSpy)
     motor = MotorFactory(gpio, 1, 2, 3, encoder, logger)

@@ -80,7 +80,9 @@ function touchstart() {
     snapBackTimer = setTimeout(backTowardsCenter, 20)
   }
 
-  snapBackTimer && clearTimeout(snapBackTimer)
+  if (snapBackTimer) {
+    clearTimeout(snapBackTimer)
+  }
   snapBackTimer = undefined
   document.addEventListener("mousemove", handleMove, { passive: false })
   document.addEventListener("touchmove", handleMove, { passive: false })
@@ -90,8 +92,17 @@ function touchstart() {
 </script>
 
 <template>
-  <div id="pad" ref="pad">
-    <div id="pad-handle" ref="padHandle" :style="padHandleStyle" @mousedown="touchstart" @touchstart="touchstart"></div>
+  <div
+    id="pad"
+    ref="pad"
+  >
+    <div
+      id="pad-handle"
+      ref="padHandle"
+      :style="padHandleStyle"
+      @mousedown="touchstart"
+      @touchstart="touchstart"
+    />
   </div>
 </template>
 

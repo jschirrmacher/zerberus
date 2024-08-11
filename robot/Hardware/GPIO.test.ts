@@ -5,9 +5,9 @@ describe("GPIO", () => {
   const events = [] as { event: string | symbol; args: unknown }[]
   let gpio: GPIO
 
-  beforeEach(() => {
+  beforeEach(async () => {
     events.length = 0
-    gpio = GPIOFactory(true)
+    gpio = await GPIOFactory(true)
     gpio.addListener((event, args) => !!events.push({ event, args }))
   })
 

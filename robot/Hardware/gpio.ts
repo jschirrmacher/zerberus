@@ -47,7 +47,9 @@ class FakeNotifer {
     return new Stream.Readable({
       read() {
         const value = readableData.shift()
-        value && this.push(value)
+        if (value) {
+          this.push(value)
+        }
       },
       objectMode: true,
     })
@@ -100,9 +102,9 @@ const gpioPins = {
   21: 40,
 }
 
-export default function (useFake = false): GPIO {
+export default async function (useFake = false) {
   const pigpio = !useFake
-    ? require("pigpio")
+    ? await import("pigpio")
     : {
         Gpio: FakeGPIO,
         Notifier: FakeNotifer,
@@ -115,9 +117,9 @@ export default function (useFake = false): GPIO {
   }
 
   return {
-    initializedPins: {},
+    initializedPins: {} as Record<number, Record<string, unknown>>,
 
-    create(pin: number, options = {} as Record<string, unknown>): GPIOPin {
+    create(pin: number, options = {} as Record<string, unknown>) {
       const pigpioObj = new pigpio.Gpio(pin, options)
       const actualPin = gpioPins[pin as keyof typeof gpioPins]
 
@@ -144,17 +146,17 @@ export default function (useFake = false): GPIO {
       }
     },
 
-    createNotifier(pins: number[]): GPIONotifier {
+    createNotifier(pins: number[]) {
       const bits = pins.map((pin) => 1 << pin).reduce((bits, bit) => bits | bit)
-      return new pigpio.Notifier({ bits })
+      return new pigpio.Notifier({ bits }) as GPIONotifier
     },
 
-    addListener(listener: ListenerFunction): ListenerId {
+    addListener(listener: ListenerFunction) {
       listeners[++listenerId] = listener
-      return listenerId
+      return listenerId as ListenerId
     },
 
-    removeListener(listenerId: ListenerId): void {
+    removeListener(listenerId: ListenerId) {
       delete listeners[listenerId]
     },
   }

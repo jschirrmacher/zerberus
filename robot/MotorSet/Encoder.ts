@@ -32,7 +32,7 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = Modu
   let oldVal = 0
   let lastTick = undefined as number | undefined
   const notifier = gpio.createNotifier([pin_a, pin_b])
-  let tickTimer = undefined as NodeJS.Timer | undefined
+  let tickTimer = undefined as NodeJS.Timeout | undefined
   let zeroSent = false
   let zeroTimeOut: NodeJS.Timeout
 
@@ -53,13 +53,17 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = Modu
       encoder.speed.value = timeDiff ? ((diff / timeDiff) * 1000000) / TICKS_PER_REV : 0
       logger.debug(`Encoder,${encoder.no},${encoder.position.value},${encoder.speed.value},${timeDiff}`)
       lastTick = time
-      zeroTimeOut && clearTimeout(zeroTimeOut)
+      if (zeroTimeOut) {
+        clearTimeout(zeroTimeOut)
+      }
       zeroTimeOut = setTimeout(() => (encoder.speed.value = 0), 50)
     },
 
     simulateSpeed(speed: number): void {
       if (encoder.simulated) {
-        tickTimer && clearInterval(tickTimer)
+        if (tickTimer) {
+          clearInterval(tickTimer)
+        }
         tickTimer = undefined
         if (speed || !zeroSent) {
           zeroSent = !speed
@@ -85,7 +89,9 @@ export default function (gpio: GPIO, pin_a: number, pin_b: number, logger = Modu
         logger.error({ buffer: chunk.toString("hex").match(/../g)?.join(" ") })
       }
 
-      chunk.length > 12 && encoder.handleChunk(chunk.slice(12))
+      if (chunk.length > 12) {
+        encoder.handleChunk(chunk.slice(12))
+      }
     },
   } as Encoder
 

@@ -22,7 +22,9 @@ const keyMap = {
 function keydown(event: KeyboardEvent) {
   const key = keyMap[event.key as keyof typeof keyMap] || event.key
   const code = (event.shiftKey ? "Shift" : "") + key
-  commands[code] && commands[code]()
+  if (commands[code]) {
+    commands[code]()
+  }
 }
 
 window.addEventListener("keydown", keydown)
@@ -30,12 +32,42 @@ window.addEventListener("keydown", keydown)
 
 <template>
   <nav>
-    <button id="ArrowUp" @click="commands.ArrowUp">ᐃ</button>
-    <button id="ArrowLeft" @click="commands.ArrowLeft">ᐊ</button>
-    <button id="ArrowRight" @click="commands.ArrowRight">ᐅ</button>
-    <button id="ArrowDown" @click="commands.ArrowDown">ᐁ</button>
-    <button id="Plus" @click="commands.Plus">+</button>
-    <button id="Minus" @click="commands.Minus">&nbsp;</button>
+    <button
+      id="ArrowUp"
+      @click="commands.ArrowUp"
+    >
+      ᐃ
+    </button>
+    <button
+      id="ArrowLeft"
+      @click="commands.ArrowLeft"
+    >
+      ᐊ
+    </button>
+    <button
+      id="ArrowRight"
+      @click="commands.ArrowRight"
+    >
+      ᐅ
+    </button>
+    <button
+      id="ArrowDown"
+      @click="commands.ArrowDown"
+    >
+      ᐁ
+    </button>
+    <button
+      id="Plus"
+      @click="commands.Plus"
+    >
+      +
+    </button>
+    <button
+      id="Minus"
+      @click="commands.Minus"
+    >
+&nbsp;
+    </button>
   </nav>
 </template>
 

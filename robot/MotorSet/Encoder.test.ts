@@ -8,13 +8,15 @@ describe("Encoder", () => {
   let encoder: Encoder
   let timer: number | undefined
 
-  beforeEach(() => {
-    gpio = GPIOFactory(true)
+  beforeEach(async () => {
+    gpio = await GPIOFactory(true)
     encoder = EncoderFactory(gpio, 1, 2)
   })
 
   afterEach(() => {
-    timer && clearInterval(timer)
+    if (timer) {
+      clearInterval(timer)
+    }
     timer = undefined
     encoder.simulateSpeed(0)
   })
