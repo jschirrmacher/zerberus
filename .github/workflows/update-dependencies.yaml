@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3
+        uses: actions/checkout@v4
 
       - name: Setup nodejs version
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+        uses: actions/setup-node@v4
         with:
-          node-version-file: ".node-version"
+          node-version: "lts/*"
+          check-latest: true
 
       - name: Install dependencies
         run: npm ci
@@ -42,7 +43,7 @@ jobs:
       - name: Create Pull Request
         id: createPR
         if: steps.gitCheck.outputs.modified == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           branch: update-dependencies
           author: Dependency Updater <dependency-updater@users.noreply.github.com>
@@ -59,7 +60,6 @@ jobs:
 
       - name: Enable auth-merge
         if: steps.gitCheck.outputs.modified == 'true'
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          pull-request-number: ${{ steps.createPR.outputs.pull-request-number }}
-          merge-method: rebase
+        run: gh pr merge --rebase --auto "${{ steps.createPR.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
