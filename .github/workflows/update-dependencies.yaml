@@ -14,7 +14,7 @@ jobs:
       - name: Setup nodejs version
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version-file: .node-version
           check-latest: true
 
       - name: Install dependencies
