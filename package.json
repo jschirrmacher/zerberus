@@ -32,7 +32,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "concurrently": "9.1.0",
+    "concurrently": "9.1.1",
     "express": "4.21.2",
     "i2c-bus": "5.2.3",
     "pigpio": "3.3.1",
