@@ -58,7 +58,7 @@
     "eslint-plugin-vue": "9.33.0",
     "jsdom": "26.0.0",
     "node-fetch": "3.3.2",
-    "pre-commit": "1.2.2",
+    "@fastify/pre-commit": "2.2.0",
     "prettier": "3.5.3",
     "ts-node-dev": "2.0.0",
     "typescript-eslint": "8.26.0",
